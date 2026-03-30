@@ -12,9 +12,11 @@
 import * as cheerio from 'cheerio';
 
 class GazetteScraper {
-  constructor() {
+  constructor(options = {}) {
     this.baseUrl = 'https://gazette.gov.mv';
     this.iulaanUrl = 'https://gazette.gov.mv/iulaan';
+    this.timeout = options.timeout || 30000; // 30 seconds default
+    this.retries = options.retries || 3;
     // Tender-related categories we care about
     this.tenderTypes = ['masakkaiy', 'work']; // masakkaiy = work/tenders
     this.categories = {
@@ -28,22 +30,58 @@ class GazetteScraper {
     };
   }
 
+  // Helper: Fetch with timeout and retry logic
+  async fetchWithRetry(url, options = {}, retries = this.retries) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'DNT': '1',
+          'Connection': 'keep-alive',
+          ...options.headers
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      return response;
+      
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (retries > 0 && (error.name === 'AbortError' || error.code === 'UND_ERR_CONNECT_TIMEOUT')) {
+        console.log(`⏳ Timeout, retrying... (${retries} attempts left)`);
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s before retry
+        return this.fetchWithRetry(url, options, retries - 1);
+      }
+      
+      throw error;
+    }
+  }
+
   // Fetch latest tenders from gazette
   async fetchLatestTenders() {
     try {
       console.log('🔍 Fetching tenders from gazette.gov.mv...');
+      console.log(`   URL: ${this.iulaanUrl}`);
+      console.log(`   Timeout: ${this.timeout}ms, Retries: ${this.retries}`);
       
-      const response = await fetch(this.iulaanUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-      });
+      const response = await this.fetchWithRetry(this.iulaanUrl);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
       const html = await response.text();
+      console.log(`   📄 Received ${html.length} bytes`);
+      
       const $ = cheerio.load(html);
       
       const tenders = [];
@@ -86,7 +124,10 @@ class GazetteScraper {
       return tenders.slice(0, 10);
       
     } catch (error) {
-      console.error('❌ Failed to fetch tenders from gazette:', error);
+      console.error('❌ Failed to fetch tenders from gazette:', error.message);
+      if (error.name === 'AbortError' || error.code === 'UND_ERR_CONNECT_TIMEOUT') {
+        console.error('   💡 The website may be slow or blocking requests. Try increasing timeout.');
+      }
       return [];
     }
   }
@@ -243,11 +284,9 @@ class GazetteScraper {
   async fetchTenderDetails(gazetteId) {
     try {
       const tenderUrl = `${this.baseUrl}/iulaan/${gazetteId}`;
-      const response = await fetch(tenderUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-      });
+      console.log(`   🔍 Fetching details from ${tenderUrl}`);
+      
+      const response = await this.fetchWithRetry(tenderUrl);
       
       if (!response.ok) return {};
       
@@ -378,6 +417,62 @@ class GazetteScraper {
     });
     
     return requirements;
+  }
+
+  // Generate mock tenders for testing when website is unreachable
+  generateMockTenders(count = 5) {
+    const mockTitles = [
+      'Supply and Delivery of Computer Equipment',
+      'IT Infrastructure Upgrade Project',
+      'Office Furniture and Equipment Procurement',
+      'Medical Equipment Supply Tender',
+      'Construction of Office Building',
+      'Consultancy Services for IT Systems',
+      'Supply of Laptops and Monitors',
+      'Server Installation and Maintenance'
+    ];
+    
+    const mockAuthorities = [
+      'Ministry of Health',
+      'Ministry of Education',
+      'Ministry of Finance',
+      'Male City Council',
+      'State Electric Company',
+      'Maldives Immigration',
+      'Civil Service Commission'
+    ];
+    
+    return Array.from({ length: count }, (_, i) => {
+      const id = 10000 + Math.floor(Math.random() * 90000);
+      const title = mockTitles[Math.floor(Math.random() * mockTitles.length)];
+      
+      return {
+        id: `TND-${new Date().getFullYear()}-${id}`,
+        gazette_id: id.toString(),
+        title,
+        title_dhivehi: title,
+        authority: mockAuthorities[Math.floor(Math.random() * mockAuthorities.length)],
+        category: this.detectCategory(title),
+        gazette_url: `${this.baseUrl}/iulaan/${id}`,
+        status: 'Open',
+        scraped_at: new Date().toISOString(),
+        type: 'masakkaiy',
+        requirements: this.extractRequirements(title),
+        is_mock: true
+      };
+    });
+  }
+
+  // Test mode - returns mock data if real fetch fails
+  async fetchLatestTendersSafe(useMockOnFailure = true) {
+    const tenders = await this.fetchLatestTenders();
+    
+    if (tenders.length === 0 && useMockOnFailure) {
+      console.log('⚠️  Using mock data for testing...');
+      return this.generateMockTenders(5);
+    }
+    
+    return tenders;
   }
 
   // Main method: Fetch and process new tenders
