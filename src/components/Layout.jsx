@@ -16,13 +16,13 @@ const Layout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar />
-      <main className={`flex-1 flex flex-col min-h-screen ${isMobile ? 'ml-0 pt-16' : ''}`}>
-        <div className="flex-1 p-4 lg:p-8 overflow-x-hidden">
+      <main className={`flex-1 flex flex-col h-screen ${isMobile ? 'ml-0' : ''}`}>
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-8 ${isMobile ? 'pt-20' : ''}`}>
           {children}
+          <Footer />
         </div>
-        <Footer />
       </main>
     </div>
   );

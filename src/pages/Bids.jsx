@@ -565,8 +565,10 @@ const Bids = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
+      {/* Sticky Header Section */}
+      <div className="sticky top-0 z-10 bg-gray-50 space-y-6 pb-4">
+        {/* Header */}
+        <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <img 
             src="/illustrations/Business%20Plan-amico.svg" 
@@ -705,6 +707,7 @@ const Bids = () => {
           <option value="All">All Results</option>
           {results.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
+      </div>
       </div>
 
       {/* Bids Display - Cards or Table */}

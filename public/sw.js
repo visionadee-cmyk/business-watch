@@ -3,10 +3,25 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/logo/logo.png',
-  '/manifest.json',
-  '/src/main.jsx',
-  '/src/index.css'
+  '/manifest.json'
 ];
+
+// Skip Vite dev server URLs
+const shouldSkip = (url) => {
+  return (
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    url.includes('__vite') ||
+    url.includes('@vite') ||
+    url.includes('.t=') ||
+    url.includes('?t=') ||
+    url.endsWith('.jsx') ||
+    url.endsWith('.tsx') ||
+    url.endsWith('.ts') ||
+    url.startsWith('http://localhost') ||
+    url.startsWith('http://127.0.0.1')
+  );
+};
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {
@@ -42,33 +57,52 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = request.url;
+
+  // Skip Vite dev server and WebSocket requests
+  if (shouldSkip(url) || request.mode === 'websocket') {
+    return;
+  }
+
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then((response) => {
         // Return cached version or fetch from network
         if (response) {
           return response;
         }
-        return fetch(event.request)
-          .then((response) => {
-            // Check if valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+        
+        return fetch(request)
+          .then((networkResponse) => {
+            // Check if valid response and cacheable
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
             }
+            
             // Clone and cache the response
-            const responseToCache = response.clone();
+            const responseToCache = networkResponse.clone();
             caches.open(CACHE_NAME)
               .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
+                cache.put(request, responseToCache);
+              })
+              .catch(err => console.log('SW: Cache put failed:', err));
+            
+            return networkResponse;
+          })
+          .catch((err) => {
+            console.log('SW: Fetch failed:', err);
+            // Fallback for offline navigation
+            if (request.mode === 'navigate') {
+              return caches.match('/index.html');
+            }
+            throw err;
           });
-      })
-      .catch(() => {
-        // Fallback for offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
       })
   );
 });
