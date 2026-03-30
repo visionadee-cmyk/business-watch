@@ -4,7 +4,21 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "crons": [
+    {
+      "path": "/api/check-deadlines",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/scrape-gazette",
+      "schedule": "0 */6 * * *"
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

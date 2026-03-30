@@ -12,8 +12,7 @@ import {
   Menu,
   X,
   CheckCircle,
-  Clock,
-  PieChart
+  Clock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
@@ -67,7 +66,6 @@ const Sidebar = () => {
     { path: '/procurement', icon: ShoppingCart, label: 'Procurement' },
     { path: '/suppliers', icon: Building2, label: 'Suppliers' },
     { path: '/deliveries', icon: Truck, label: 'Deliveries' },
-    { path: '/finance', icon: PieChart, label: 'Finance' },
   ];
 
   // Only show Users link to admins

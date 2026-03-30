@@ -576,8 +576,25 @@ const Bids = ({ initialFilter }) => {
             className="w-16 h-16 object-contain"
           />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Bid Management</h1>
-            <p className="text-gray-500 mt-1">Create and manage tender bids with full details from working_file.json</p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900">
+                {initialFilter ? `${initialFilter} Bids` : 'Bid Management'}
+              </h1>
+              {initialFilter && (
+                <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                  initialFilter === 'Won' ? 'bg-green-100 text-green-800' : 
+                  initialFilter === 'Pending' ? 'bg-purple-100 text-purple-800' : 
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  Filtered
+                </span>
+              )}
+            </div>
+            <p className="text-gray-500 mt-1">
+              {initialFilter 
+                ? `Showing bids with result: ${initialFilter}` 
+                : 'Create and manage tender bids with full details'}
+            </p>
           </div>
         </div>
         <div className="flex gap-3">
@@ -703,6 +720,8 @@ const Bids = ({ initialFilter }) => {
           value={filterResult}
           onChange={(e) => setFilterResult(e.target.value)}
           className="input w-48"
+          disabled={initialFilter}
+          title={initialFilter ? `Filter locked to ${initialFilter}` : 'Filter by result'}
         >
           <option value="All">All Results</option>
           {results.map(r => <option key={r} value={r}>{r}</option>)}
