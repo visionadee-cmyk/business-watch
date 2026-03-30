@@ -7,7 +7,9 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  ShoppingCart,
+  Package
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -79,6 +81,7 @@ const Dashboard = () => {
       const accountsSnapshot = await getDocs(collection(db, 'accounts'));
       const transactionsSnapshot = await getDocs(collection(db, 'transactions'));
       const budgetsSnapshot = await getDocs(collection(db, 'budgets'));
+      const poSnapshot = await getDocs(collection(db, 'purchaseOrders'));
       
       const tenders = tendersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const bids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -87,6 +90,7 @@ const Dashboard = () => {
       const accounts = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const transactions = transactionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const budgets = budgetsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const purchaseOrders = poSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       setAccounts(accounts);
       setTransactions(transactions);
@@ -100,6 +104,9 @@ const Dashboard = () => {
       
       const budget = budgets[0] || {};
       const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+      const totalPOValue = purchaseOrders.reduce((sum, po) => sum + (po.totalAmount || 0), 0);
+      const poInTransit = purchaseOrders.filter(po => po.deliveryStatus === 'In Transit').length;
+      const poReceived = purchaseOrders.filter(po => po.receivingStatus === 'Fully Received').length;
       
       setStats({
         activeTenders,
@@ -111,7 +118,11 @@ const Dashboard = () => {
         totalBalance,
         totalRevenue: budget.total_revenue || 0,
         totalExpenses: budget.total_expenses || 0,
-        netProfit: budget.net_profit || 0
+        netProfit: budget.net_profit || 0,
+        totalPOValue,
+        poCount: purchaseOrders.length,
+        poInTransit,
+        poReceived
       });
 
       // Tender status data for pie chart
@@ -196,9 +207,9 @@ const Dashboard = () => {
   const statCards = [
     { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue' },
     { title: 'Won Tenders', value: stats.wonTenders, icon: Trophy, color: 'green' },
-    { title: 'Total Accounts', value: stats.totalAccounts, icon: DollarSign, color: 'purple' },
-    { title: 'Total Balance', value: `MVR ${stats.totalBalance.toLocaleString()}`, icon: CheckCircle, color: 'teal' },
-    { title: 'Net Profit', value: `MVR ${stats.netProfit.toLocaleString()}`, icon: DollarSign, color: 'green' }
+    { title: 'Purchase Orders', value: stats.poCount || 0, icon: ShoppingCart, color: 'purple' },
+    { title: 'PO Value', value: `MVR ${(stats.totalPOValue || 0).toLocaleString()}`, icon: DollarSign, color: 'teal' },
+    { title: 'In Transit', value: stats.poInTransit || 0, icon: Truck, color: 'orange' }
   ];
 
   const getActivityIcon = (type) => {
@@ -206,6 +217,7 @@ const Dashboard = () => {
       case 'tender': return <FileText className="w-5 h-5 text-blue-500" />;
       case 'bid': return <DollarSign className="w-5 h-5 text-purple-500" />;
       case 'delivery': return <Truck className="w-5 h-5 text-orange-500" />;
+      case 'purchaseOrder': return <ShoppingCart className="w-5 h-5 text-green-500" />;
       default: return <Clock className="w-5 h-5 text-gray-500" />;
     }
   };
@@ -218,6 +230,8 @@ const Dashboard = () => {
         return `Bid submitted for tender`;
       case 'delivery':
         return `Delivery status updated to ${item.data.status}`;
+      case 'purchaseOrder':
+        return `Purchase Order ${item.data.poNumber} created`;
       default:
         return 'Activity recorded';
     }

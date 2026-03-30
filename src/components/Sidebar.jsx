@@ -34,6 +34,7 @@ const Sidebar = () => {
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/tenders', icon: FileText, label: 'Tenders' },
     { path: '/bids', icon: DollarSign, label: 'Bids' },
+    { path: '/purchase-orders', icon: ShoppingCart, label: 'Purchase Orders' },
     { path: '/quotations', icon: Receipt, label: 'Quotations' },
     { path: '/procurement', icon: ShoppingCart, label: 'Procurement' },
     { path: '/suppliers', icon: Building2, label: 'Suppliers' },

@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Tenders from './pages/Tenders';
 import Bids from './pages/Bids';
+import PurchaseOrders from './pages/PurchaseOrders';
 import Procurement from './pages/Procurement';
 import Suppliers from './pages/Suppliers';
 import Deliveries from './pages/Deliveries';
@@ -62,6 +63,14 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <Quotations />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/purchase-orders" element={
+        <ProtectedRoute>
+          <Layout>
+            <PurchaseOrders />
           </Layout>
         </ProtectedRoute>
       } />
