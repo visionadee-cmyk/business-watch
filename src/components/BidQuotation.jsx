@@ -87,7 +87,7 @@ const BidQuotation = ({ bid, onClose }) => {
       const itemGrandTotal = itemTotal + itemTax;
 
       return (
-        <div key={`item-page-${item.id || index}`} className="quotation-page mb-8 bg-white p-8 print:p-6">
+        <div key={`item-page-${index}-${item.id || 'no-id'}`} data-item-index={index} className="quotation-page mb-8 bg-white p-8 print:p-6">
           {/* Header */}
           <div className="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-6">
             <div>
@@ -143,6 +143,7 @@ const BidQuotation = ({ bid, onClose }) => {
               <div className="inline-block border-2 border-gray-800 px-3 py-1">
                 <span className="font-bold text-lg">ITEM-{index + 1} of {items.length}</span>
               </div>
+              <div className="text-xs text-gray-500 mt-1">ID: {item.id || 'N/A'}</div>
             </div>
           </div>
 
