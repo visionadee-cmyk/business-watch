@@ -1,0 +1,82 @@
+{
+  "test_date": "2026-03-30T19:01:32.112Z",
+  "tender_count": 5,
+  "tenders": [
+    {
+      "id": "TND-2026-40177",
+      "gazette_id": "40177",
+      "title": "Server Installation and Maintenance",
+      "title_dhivehi": "Server Installation and Maintenance",
+      "authority": "State Electric Company",
+      "category": "IT",
+      "gazette_url": "https://gazette.gov.mv/iulaan/40177",
+      "status": "Open",
+      "scraped_at": "2026-03-30T19:01:31.767Z",
+      "type": "masakkaiy",
+      "requirements": {
+        "servers": "Various"
+      },
+      "is_mock": true
+    },
+    {
+      "id": "TND-2026-26205",
+      "gazette_id": "26205",
+      "title": "IT Infrastructure Upgrade Project",
+      "title_dhivehi": "IT Infrastructure Upgrade Project",
+      "authority": "Maldives Immigration",
+      "category": "IT",
+      "gazette_url": "https://gazette.gov.mv/iulaan/26205",
+      "status": "Open",
+      "scraped_at": "2026-03-30T19:01:31.767Z",
+      "type": "masakkaiy",
+      "requirements": {},
+      "is_mock": true
+    },
+    {
+      "id": "TND-2026-27650",
+      "gazette_id": "27650",
+      "title": "Medical Equipment Supply Tender",
+      "title_dhivehi": "Medical Equipment Supply Tender",
+      "authority": "State Electric Company",
+      "category": "Medical",
+      "gazette_url": "https://gazette.gov.mv/iulaan/27650",
+      "status": "Open",
+      "scraped_at": "2026-03-30T19:01:31.768Z",
+      "type": "masakkaiy",
+      "requirements": {
+        "equipment": "Various"
+      },
+      "is_mock": true
+    },
+    {
+      "id": "TND-2026-95570",
+      "gazette_id": "95570",
+      "title": "IT Infrastructure Upgrade Project",
+      "title_dhivehi": "IT Infrastructure Upgrade Project",
+      "authority": "Ministry of Health",
+      "category": "IT",
+      "gazette_url": "https://gazette.gov.mv/iulaan/95570",
+      "status": "Open",
+      "scraped_at": "2026-03-30T19:01:31.768Z",
+      "type": "masakkaiy",
+      "requirements": {},
+      "is_mock": true
+    },
+    {
+      "id": "TND-2026-85705",
+      "gazette_id": "85705",
+      "title": "Office Furniture and Equipment Procurement",
+      "title_dhivehi": "Office Furniture and Equipment Procurement",
+      "authority": "Male City Council",
+      "category": "IT",
+      "gazette_url": "https://gazette.gov.mv/iulaan/85705",
+      "status": "Open",
+      "scraped_at": "2026-03-30T19:01:31.768Z",
+      "type": "masakkaiy",
+      "requirements": {
+        "equipment": "Various"
+      },
+      "is_mock": true
+    }
+  ]
+}
