@@ -1,0 +1,800 @@
+{
+  "metadata": {
+    "title": "Gazette Tender Data Collection",
+    "description": "Collection of tenders from gazette.gov.mv",
+    "extracted_at": "2026-03-30T13:35:00",
+    "total_tenders": 35,
+    "source": "https://gazette.gov.mv/iulaan"
+  },
+  "tenders": [
+    {
+      "id": "TND-2026-001",
+      "gazette_id": "384475",
+      "title": "Monitor and Laptop Supply - Islamic University of Maldives",
+      "title_dhivehi": "ދިވެހިރާއްޖޭގެ އިސްލާމީ ޔުނިވަރސިޓީގެ ބޭނުމަށް 44 މޮނިޓަރ، އަދި 01 ލެޕްޓޮޕް",
+      "authority": "Islamic University of Maldives",
+      "category": "IT",
+      "requirements": {
+        "monitors": 44,
+        "laptop": 1
+      },
+      "submission_deadline": "2026-03-30",
+      "submission_time": "14:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "13:00",
+      "contact_email": "procurement@ium.edu.mv",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384475",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272012.pdf",
+      "estimated_budget": 250000.00,
+      "bid_amount": 235000.00,
+      "project_status": "Submitted",
+      "result": "Pending",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-002",
+      "gazette_id": "384476",
+      "title": "40 Laptops Supply - Islamic University of Maldives",
+      "title_dhivehi": "ދިވެހިރާއްޖޭގެ އިސްލާމީ ޔުނިވަރސިޓީގެ ބޭނުމަށް 40 ލެޕްޓޮޕް",
+      "authority": "Islamic University of Maldives",
+      "category": "IT",
+      "requirements": {
+        "laptops_i5": 40
+      },
+      "submission_deadline": "2026-03-30",
+      "submission_time": "14:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "14:00",
+      "contact_email": "procurement@ium.edu.mv",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384476",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272015.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-003",
+      "gazette_id": "384477",
+      "title": "48 Computer Systems - Islamic University of Maldives",
+      "title_dhivehi": "ދިވެހިރާއްޖޭގެ އިސްލާމީ ޔުނިވަރސިޓީގެ ބޭނުމަށް 48 ކޮމްޕިއުޓަރު ސިސްޓަމް",
+      "authority": "Islamic University of Maldives",
+      "category": "IT",
+      "requirements": {
+        "computer_systems": 48
+      },
+      "submission_deadline": "2026-03-30",
+      "submission_time": "14:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "13:30",
+      "contact_email": "procurement@ium.edu.mv",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384477",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/271993.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-004",
+      "gazette_id": "384000",
+      "title": "IT Equipment - National Cyber Security Agency",
+      "title_dhivehi": "ނޭޝަނަލް ސައިބަރ ސެކިއުރިޓީ އެޖެންސީގެ އޮފީހަށް ބޭނުންވާ އައި.ޓީ. އިކްއިޕްމަންޓް",
+      "authority": "National Cyber Security Agency",
+      "category": "IT",
+      "requirements": {
+        "it_equipment": "Various"
+      },
+      "submission_deadline": "2026-03-31",
+      "submission_time": "10:30",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384000",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-005",
+      "gazette_id": "383988",
+      "title": "20 Chairs - Department of Juvenile Justice",
+      "title_dhivehi": "ޑިޕަރޓްމަންޓް އޮފް ޖުވެނައިލް ޖަސްޓިސްގެ ކޮންފަރެންސް ރޫމަށް ބޭނުންވާ 20 ގޮނޑި",
+      "authority": "Department of Juvenile Justice",
+      "category": "Furniture",
+      "requirements": {
+        "chairs": 20
+      },
+      "submission_deadline": "2026-03-31",
+      "submission_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/383988",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-006",
+      "gazette_id": "383885",
+      "title": "Main Cable for Building Electrical Works - Maldives Police Service",
+      "authority": "Maldives Police Service",
+      "category": "Electrical",
+      "requirements": {
+        "main_cable": "Building electrical works"
+      },
+      "submission_deadline": "2026-03-26",
+      "submission_time": "12:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/383885",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-007",
+      "gazette_id": "384412",
+      "title": "High End PC and Laptops - Authority",
+      "authority": "State Authority",
+      "category": "IT",
+      "requirements": {
+        "high_end_pc": "Various",
+        "laptops": "Various"
+      },
+      "registration_deadline": "2026-03-24",
+      "bid_submission": "2026-03-31",
+      "bid_opening": "2026-03-31",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384412",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-008",
+      "gazette_id": "384945",
+      "title": "High End Computer System and UPS - Elections Commission",
+      "authority": "Elections Commission",
+      "category": "IT",
+      "requirements": {
+        "high_end_computer": 1,
+        "ups": 1
+      },
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "10:30",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384945",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-009",
+      "gazette_id": "384943",
+      "title": "Plywood Seal - Elections Commission",
+      "authority": "Elections Commission",
+      "category": "Supply",
+      "requirements": {
+        "plywood_seal": "Various"
+      },
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "11:30",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384943",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-010",
+      "gazette_id": "385186",
+      "title": "Camera Lens - Elections Commission",
+      "authority": "Elections Commission",
+      "category": "Electronics",
+      "requirements": {
+        "camera_lens": "Various"
+      },
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "14:30",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385186",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-011",
+      "gazette_id": "385624",
+      "title": "Protective Work Gloves - Stelco",
+      "authority": "State Electric Company Limited (STELCO)",
+      "category": "Safety Equipment",
+      "requirements": {
+        "protective_work_gloves": "Various"
+      },
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385624",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-012",
+      "gazette_id": "384318",
+      "title": "10 Laptops - Ministry of Health (Multi Indicator Survey)",
+      "authority": "Ministry of Health",
+      "category": "IT",
+      "requirements": {
+        "laptops": 10
+      },
+      "registration_deadline": "2026-03-30",
+      "registration_time": "13:00",
+      "bid_submission": "2026-04-05",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384318",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-013",
+      "gazette_id": "385212",
+      "title": "Computer Systems, Switches, Tablets, Desktop RAM",
+      "authority": "Government Office",
+      "category": "IT",
+      "requirements": {
+        "computer_systems": 7,
+        "poe_managed_gigabit_switches_48port": 2,
+        "poe_tablets": 5,
+        "desktop_ram": 8
+      },
+      "registration_deadline": "2026-03-31",
+      "registration_time": "10:00",
+      "bid_submission": "2026-04-01",
+      "bid_time": "10:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385212",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-014",
+      "gazette_id": "383150",
+      "title": "Scan Machine (Echocardiography) - Dr. Abdul Samad Memorial Hospital",
+      "authority": "Dr. Abdul Samad Memorial Hospital",
+      "category": "Medical Equipment",
+      "requirements": {
+        "echocardiography_machine": 1
+      },
+      "registration_period": "2026-02-26 to 2026-03-05",
+      "bid_submission": "2026-04-02",
+      "bid_time": "10:00",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/383150",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-015",
+      "gazette_id": "385040",
+      "title": "Machinery Supply - B. Maalhos West Management Center (2nd Announcement)",
+      "authority": "B. Maalhos Council",
+      "category": "Machinery",
+      "requirements": {
+        "machinery": "Various"
+      },
+      "registration_deadline": "2026-03-30",
+      "registration_time": "13:00",
+      "bid_submission": "2026-04-02",
+      "bid_time": "11:00",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385040",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-016",
+      "gazette_id": "385030",
+      "title": "4 Computer Systems and 4 Monitors - National Disaster Management Authority",
+      "authority": "National Disaster Management Authority",
+      "category": "IT",
+      "requirements": {
+        "computer_systems": 4,
+        "monitors": 4
+      },
+      "bid_submission": "2026-04-02",
+      "bid_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385030",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-017",
+      "gazette_id": "385705",
+      "title": "22 Fetal Doppler - IGM Hospital",
+      "authority": "Indira Gandhi Memorial Hospital",
+      "category": "Medical Equipment",
+      "requirements": {
+        "fetal_doppler": 22
+      },
+      "gazette_url": "https://gazette.gov.mv/iulaan/385705",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-018",
+      "gazette_id": "385231",
+      "title": "5 Laptops for Ministry Travel",
+      "authority": "Ministry",
+      "category": "IT",
+      "requirements": {
+        "laptops": 5
+      },
+      "bid_submission": "2026-04-02",
+      "bid_time": "11:00",
+      "contact_phones": ["3339239", "3322625", "3339279"],
+      "gazette_url": "https://gazette.gov.mv/iulaan/385231",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-019",
+      "gazette_id": "384197",
+      "title": "Mobile Broadband Quality Monitoring Equipment - Ministry of Homeland Security",
+      "authority": "Ministry of Homeland Security",
+      "category": "IT/Equipment",
+      "requirements": {
+        "mobile_broadband_monitoring_equipment": "Various"
+      },
+      "gazette_url": "https://gazette.gov.mv/iulaan/384197",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-020",
+      "gazette_id": "385800",
+      "title": "Gifts for Students - Imaduddin School",
+      "authority": "Imaduddin School",
+      "category": "Supply",
+      "requirements": {
+        "student_gifts": "Various"
+      },
+      "registration_period": "2026-03-28 to 2026-03-30",
+      "pre_bid_meeting": "2026-03-31",
+      "bid_submission": "2026-04-05",
+      "contact_email": "[email protected]",
+      "phone": "3315765",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385800",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-021",
+      "gazette_id": "385332",
+      "title": "4 Computer Systems - National Institute of Education",
+      "authority": "National Institute of Education",
+      "category": "IT",
+      "requirements": {
+        "computer_systems": 4
+      },
+      "registration_period": "2026-03-24 to 2026-03-30",
+      "bid_submission": "2026-04-05",
+      "bid_time": "10:00",
+      "contact_email": "[email protected]",
+      "phone": "3041414/3041430",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385332",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-022",
+      "gazette_id": "385360",
+      "title": "Office Space Design and Furniture - Weather Authority",
+      "authority": "Maldives Meteorological Service",
+      "category": "Construction/Furniture",
+      "requirements": {
+        "office_design": "Floor plan and furniture",
+        "renovation_works": "Various"
+      },
+      "clarification_deadline": "2026-03-31",
+      "clarification_time": "13:30",
+      "bid_submission": "2026-04-06",
+      "bid_time": "13:30",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385360",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-023",
+      "gazette_id": "385522",
+      "title": "IT Equipment - Ministry of Agriculture",
+      "authority": "Ministry of Agriculture",
+      "category": "IT",
+      "requirements": {
+        "it_equipment": "Various"
+      },
+      "bid_security": "5,000 MVR (or 500,000+ MVR bids)",
+      "performance_guarantee": "2% for bids over 500,000 MVR",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385522",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-024",
+      "gazette_id": "384549",
+      "title": "Computer Systems (CPU, Monitor and UPS) - HDC",
+      "authority": "Housing Development Corporation",
+      "category": "IT",
+      "requirements": {
+        "cpu": "Various",
+        "monitor": "Various",
+        "ups": "Various"
+      },
+      "tender_no": "HDC (161)-PLM/IU/2026/72",
+      "eligibility": "100% Maldivian Shareholding only",
+      "portal": "https://bids.hdc.mv",
+      "inquiry_deadline": "2026-03-31",
+      "inquiry_time": "12:00",
+      "bid_deadline": "2026-04-07",
+      "bid_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384549",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-025",
+      "gazette_id": "385406",
+      "title": "Trophy, Plaque and Sash - Prize Day",
+      "authority": "School/Institution",
+      "category": "Awards",
+      "requirements": {
+        "trophy": "Various",
+        "plaque": "Various",
+        "sash": "Various"
+      },
+      "registration_deadline": "2026-03-29",
+      "registration_time": "10:00",
+      "bid_security": "5,000 MVR",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385406",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-026",
+      "gazette_id": "385237",
+      "title": "Computer Systems, Document Scanner, Printer - Veymandoo Council",
+      "authority": "Veymandoo Council",
+      "category": "IT",
+      "requirements": {
+        "computer_systems": 4,
+        "document_scanner": 1,
+        "printer": 1
+      },
+      "bid_submission": "2026-04-07",
+      "bid_time": "10:00",
+      "contact_phones": ["6527177", "6527192", "6527113"],
+      "gazette_url": "https://gazette.gov.mv/iulaan/385237",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-027",
+      "gazette_id": "384981",
+      "title": "Outdoor Gym Equipment - Male City Council (4 Locations)",
+      "authority": "Male City Council",
+      "category": "Sports Equipment",
+      "requirements": {
+        "outdoor_gym_equipment": "Various"
+      },
+      "clarification_date": "2026-03-29",
+      "clarification_time": "11:00",
+      "bid_submission": "2026-04-07",
+      "bid_time": "11:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384981",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-028",
+      "gazette_id": "385724",
+      "title": "Book Printing (200 Books) - National University",
+      "authority": "Maldives National University",
+      "category": "Printing",
+      "requirements": {
+        "books": 200
+      },
+      "bid_submission": "2026-04-07",
+      "bid_time": "10:00",
+      "contact_email": "[email protected]",
+      "phone": "3345424",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385724",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-029",
+      "gazette_id": "385596",
+      "title": "Camera System Installation - Iskandhar School",
+      "authority": "Iskandhar School",
+      "category": "Security/IT",
+      "requirements": {
+        "camera_system": 1
+      },
+      "registration_period": "2026-03-26 to 2026-03-30",
+      "pre_bid_meeting": "2026-03-31",
+      "bid_time": "11:00",
+      "bid_submission": "2026-04-07",
+      "contact_email": "[email protected]",
+      "phone": "3323244",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385596",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-030",
+      "gazette_id": "385545",
+      "title": "Hajj Assistant T-shirts - Maldives Hajj Corporation",
+      "authority": "Maldives Hajj Corporation Limited",
+      "category": "Apparel",
+      "requirements": {
+        "hajj_assistant_tshirts": "Various"
+      },
+      "registration_deadline": "2026-04-07",
+      "registration_time": "13:00",
+      "bid_submission": "2026-04-08",
+      "bid_time": "11:00",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385545",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-031",
+      "gazette_id": "385674",
+      "title": "IT Equipment - SAILS Project (World Bank)",
+      "authority": "Ministry of Higher Education, Labour and Skills Development",
+      "category": "IT",
+      "requirements": {
+        "it_equipment": "Various"
+      },
+      "project": "Sustainable and Integrated Labor Services (SAILS) Project",
+      "funding": "World Bank",
+      "bid_deadline": "2026-04-09",
+      "bid_time": "13:00",
+      "contact_name": "Mohamed Jailam Rafeeg",
+      "contact_email": "[email protected]",
+      "phone": "1474",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385674",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-032",
+      "gazette_id": "385744",
+      "title": "Working Clothes - Maldives Post (MSCL)",
+      "authority": "Maldives Post Limited",
+      "category": "Apparel/Uniform",
+      "requirements": {
+        "trouser": "Various",
+        "t_shirt": "Various",
+        "security_t_shirt": "Various",
+        "dress_t_shirt": "Various",
+        "shawl": "Various",
+        "socks": "Various",
+        "caps": "Various",
+        "raincoat": "Various",
+        "helmet": "Various",
+        "traffic_jacket": "Various",
+        "overalls": "Various",
+        "gumboots": "Various"
+      },
+      "eligibility": [
+        "Ministry of Economic Development business license",
+        "GST registered",
+        "Valid tax clearance"
+      ],
+      "registration_period": "2026-03-26 to 2026-03-31",
+      "clarification_date": "2026-04-01",
+      "clarification_time": "11:00",
+      "bid_submission": "2026-04-07",
+      "bid_time": "11:00",
+      "bid_security": "5,000 MVR",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385744",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-033",
+      "gazette_id": "385119",
+      "title": "Toner and Cartridge - Aviation and Port Security Command",
+      "authority": "Aviation and Port Security Command",
+      "category": "Office Supplies",
+      "requirements": {
+        "toner": "Various lots",
+        "cartridge": "Various lots"
+      },
+      "lots": 3,
+      "bid_submission": "2026-04-02",
+      "bid_time": "10:00",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385119",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-034",
+      "gazette_id": "383975",
+      "title": "Report Printing Services",
+      "authority": "Government Office",
+      "category": "Printing",
+      "requirements": {
+        "report_printing": "Various"
+      },
+      "gazette_url": "https://gazette.gov.mv/iulaan/383975",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-035",
+      "gazette_id": "384707",
+      "title": "IT Hardware (Computers, Monitors & Tablet) - Customs",
+      "authority": "Maldives Customs Service",
+      "category": "IT",
+      "requirements": {
+        "computers": "Various",
+        "monitors": "Various",
+        "tablet": "Various"
+      },
+      "bid_submission": "2026-04-02",
+      "bid_time": "14:00",
+      "contact_email": "[email protected]",
+      "contact_phones": ["3334113", "3334154"],
+      "gazette_url": "https://gazette.gov.mv/iulaan/384707",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-036",
+      "gazette_id": "384000",
+      "title": "IT Equipment - National Cyber Security Agency",
+      "authority": "National Cyber Security Agency",
+      "category": "IT",
+      "requirements": {
+        "it_equipment": "Various"
+      },
+      "registration_deadline": "2026-03-26",
+      "registration_time": "13:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "10:30",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384000",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/271557.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-037",
+      "gazette_id": "385445",
+      "title": "Hulhumale Campus Conceptual Design - IUM (2nd Announcement)",
+      "authority": "Islamic University of Maldives",
+      "category": "Construction",
+      "requirements": {
+        "conceptual_design": "Campus buildings aligned with university TOR"
+      },
+      "submission_deadline": "2026-04-02",
+      "submission_time": "14:00",
+      "bid_opening_date": "2026-04-05",
+      "bid_opening_time": "11:00",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/385445",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/273003.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-038",
+      "gazette_id": "384554",
+      "title": "Edge Server Supply - Ministry of Health",
+      "authority": "Ministry of Health",
+      "category": "IT",
+      "requirements": {
+        "edge_server": 1
+      },
+      "registration_period": "2026-03-08 to 2026-03-30",
+      "bid_submission": "2026-04-05",
+      "bid_time": "13:00",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384554",
+      "register_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272075.xlsx",
+      "tender_document_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272076.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-039",
+      "gazette_id": "382227",
+      "title": "Course Outline Writing - Bachelor of Arts in Political Science and International Relations (MNU)",
+      "authority": "Maldives National University - Faculty of Arts",
+      "category": "Education/Services",
+      "requirements": {
+        "course_outlines": "Bachelor of Arts course outlines"
+      },
+      "bid_opening_date": "2026-03-02",
+      "bid_opening_time": "10:30",
+      "contact_phones": ["3345277", "3345292"],
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/382227",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-040",
+      "gazette_id": "383311",
+      "title": "Module Development - Bachelor of Teaching Special Education Needs (IUM)",
+      "authority": "Islamic University of Maldives - Faculty of Education",
+      "category": "Education/Services",
+      "requirements": {
+        "module_development": "Teaching Special Education Needs modules"
+      },
+      "submission_deadline": "2026-03-24",
+      "submission_time": "13:00",
+      "bid_opening_date": "2026-03-25",
+      "bid_opening_time": "10:30",
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/383311",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/270927.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-041",
+      "gazette_id": "383644",
+      "title": "Surveys and SOP Development - Male City Council (2nd Announcement)",
+      "authority": "Male City Council",
+      "category": "Services",
+      "requirements": {
+        "surveys": "Various",
+        "sop_development": "Standard Operating Procedures"
+      },
+      "clarification_date": "2026-03-24",
+      "clarification_time": "10:00",
+      "bid_submission": "2026-04-02",
+      "bid_time": "10:00",
+      "contact_location": "Male City Council Hall, Boduthakurufaanu Magu/Meeting Room",
+      "gazette_url": "https://gazette.gov.mv/iulaan/383644",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/271222.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-042",
+      "gazette_id": "384479",
+      "title": "Sound and Communication Equipment - Kulhudhuffushi City Council",
+      "authority": "Kulhudhuffushi City Council",
+      "category": "Electronics/Equipment",
+      "requirements": {
+        "sound_equipment": "Various",
+        "communication_equipment": "Various"
+      },
+      "registration_link": "https://forms.office.com/r/DUAKLUdvJC",
+      "bid_closing": "2026-04-06",
+      "bid_time": "10:30",
+      "contact_phones": ["6527177", "6527192", "6527113"],
+      "gazette_url": "https://gazette.gov.mv/iulaan/384479",
+      "tender_doc_url": "https://kulhudhuffushicity.gov.mv/procurement/496",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272011.pdf",
+      "status": "Open"
+    },
+    {
+      "id": "TND-2026-043",
+      "gazette_id": "344071",
+      "title": "58MW Power Plant Design and Build - Hulhumale (Fifth Power Development Project Phase II)",
+      "authority": "State Electric Company Limited (STELCO)",
+      "category": "Construction/Power",
+      "requirements": {
+        "power_plant": "58MW Design and Build",
+        "location": "Hulhumale"
+      },
+      "reference_no": "H/IUL/2025/109",
+      "financing": "Contractor Financing",
+      "eligibility": "Local and International bidders",
+      "document_fee": "USD 10,000",
+      "bid_security": "USD 25,000",
+      "performance_security": "15% of Bid Price",
+      "registration_period": "2025-06-01 to 2025-06-17",
+      "pre_bid_meeting": "2025-06-18",
+      "pre_bid_time": "13:00",
+      "bid_deadline": "2025-06-25",
+      "bid_time": "13:00",
+      "contact_phones": ["3338124", "3338160", "3338123", "3338121"],
+      "contact_email": "[email protected]",
+      "gazette_url": "https://gazette.gov.mv/iulaan/344071",
+      "status": "Open"
+    }
+  ],
+  "summary": {
+    "total_tenders": 43,
+    "by_category": {
+      "IT": 17,
+      "Medical Equipment": 3,
+      "Office Supplies": 2,
+      "Apparel/Uniform": 2,
+      "Furniture": 1,
+      "Electrical": 1,
+      "Electronics": 1,
+      "Safety Equipment": 1,
+      "Machinery": 1,
+      "Construction": 2,
+      "Sports Equipment": 1,
+      "Printing": 1,
+      "Security/IT": 1,
+      "Awards": 1,
+      "Supply": 2,
+      "Education/Services": 2,
+      "Services": 1,
+      "Electronics/Equipment": 1,
+      "Construction/Power": 1
+    },
+    "urgent_deadlines": [
+      {
+        "tender_id": "TND-2026-001",
+        "deadline": "2026-03-30",
+        "time": "14:00",
+        "title": "Monitor and Laptop Supply - IUM"
+      },
+      {
+        "tender_id": "TND-2026-002",
+        "deadline": "2026-03-30",
+        "time": "14:00",
+        "title": "40 Laptops - IUM"
+      },
+      {
+        "tender_id": "TND-2026-003",
+        "deadline": "2026-03-30",
+        "time": "14:00",
+        "title": "48 Computer Systems - IUM"
+      }
+    ]
+  }
+}

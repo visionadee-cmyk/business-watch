@@ -1,0 +1,126 @@
+{
+  "metadata": {
+    "title": "Projects 2026",
+    "year": 2026,
+    "created_at": "2026-03-29",
+    "version": "1.0"
+  },
+  "tenders": [
+    {
+      "id": "TND-2026-001",
+      "title": "IT Infrastructure Upgrade - Ministry of Education",
+      "authority": "Ministry of Education",
+      "category": "IT",
+      "published_date": "2026-01-15",
+      "submission_deadline": "2026-02-15",
+      "estimated_budget": 250000.00,
+      "status": "Submitted",
+      "bid_amount": 235000.00,
+      "result": "Pending"
+    },
+    {
+      "id": "TND-2026-002",
+      "title": "Office Furniture Supply - Hulhumale Hospital",
+      "authority": "Hulhumale Hospital",
+      "category": "Supply",
+      "published_date": "2026-02-01",
+      "submission_deadline": "2026-03-01",
+      "estimated_budget": 75000.00,
+      "status": "Won",
+      "bid_amount": 68000.00,
+      "result": "Won",
+      "won_date": "2026-03-10"
+    },
+    {
+      "id": "TND-2026-003",
+      "title": "Construction Work - Male' City Council",
+      "authority": "Male' City Council",
+      "category": "Construction",
+      "published_date": "2026-02-20",
+      "submission_deadline": "2026-03-20",
+      "estimated_budget": 500000.00,
+      "status": "Bidding",
+      "bid_amount": null,
+      "result": "Pending"
+    },
+    {
+      "id": "TND-2026-004",
+      "title": "Consultancy Services - Environmental Protection Agency",
+      "authority": "EPA Maldives",
+      "category": "Consultancy",
+      "published_date": "2026-03-01",
+      "submission_deadline": "2026-04-01",
+      "estimated_budget": 120000.00,
+      "status": "Open",
+      "bid_amount": null,
+      "result": "Pending"
+    },
+    {
+      "id": "TND-2026-005",
+      "title": "Vehicle Maintenance Services - Maldives Police Service",
+      "authority": "Maldives Police Service",
+      "category": "Services",
+      "published_date": "2026-01-20",
+      "submission_deadline": "2026-02-20",
+      "estimated_budget": 45000.00,
+      "status": "Lost",
+      "bid_amount": 42000.00,
+      "result": "Lost"
+    },
+    {
+      "id": "TND-2026-006",
+      "title": "Monitor and Laptop Supply - Islamic University of Maldives",
+      "authority": "Islamic University of Maldives",
+      "category": "IT",
+      "published_date": "2026-03-08",
+      "submission_deadline": "2026-03-30",
+      "submission_time": "14:00",
+      "bid_opening_date": "2026-03-31",
+      "bid_opening_time": "13:00",
+      "requirements": "44 Monitors, 1 Laptop",
+      "gazette_url": "https://gazette.gov.mv/iulaan/384475",
+      "info_sheet_url": "https://storage.googleapis.com/gazette.gov.mv/docs/iulaan/272012.pdf",
+      "contact_email": "procurement@ium.edu.mv",
+      "estimated_budget": null,
+      "status": "Open",
+      "bid_amount": null,
+      "result": "Pending"
+    }
+  ],
+  "projects_summary": {
+    "total_tenders": 5,
+    "active_bids": 2,
+    "submitted": 1,
+    "won": 1,
+    "lost": 1,
+    "total_bid_value": 345000.00,
+    "total_won_value": 68000.00,
+    "pending_value": 250000.00
+  },
+  "quarterly_targets": {
+    "q1": {
+      "target_revenue": 300000.00,
+      "actual_revenue": 68000.00,
+      "target_tenders": 4,
+      "actual_tenders": 5
+    },
+    "q2": {
+      "target_revenue": 400000.00,
+      "actual_revenue": 0.00,
+      "target_tenders": 5,
+      "actual_tenders": 0
+    },
+    "q3": {
+      "target_revenue": 350000.00,
+      "actual_revenue": 0.00,
+      "target_tenders": 4,
+      "actual_tenders": 0
+    },
+    "q4": {
+      "target_revenue": 500000.00,
+      "actual_revenue": 0.00,
+      "target_tenders": 6,
+      "actual_tenders": 0
+    }
+  }
+}

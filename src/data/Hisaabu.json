@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "title": "Hisaabu - Accounting Data",
+    "created_at": "2026-03-29",
+    "version": "1.0"
+  },
+  "accounts": [
+    {
+      "id": "ACC-001",
+      "account_name": "Cash Account",
+      "account_type": "Asset",
+      "balance": 125000.00,
+      "currency": "MVR",
+      "last_updated": "2026-03-28"
+    },
+    {
+      "id": "ACC-002",
+      "account_name": "Bank Account - BML",
+      "account_type": "Asset",
+      "balance": 450000.00,
+      "currency": "MVR",
+      "last_updated": "2026-03-28"
+    },
+    {
+      "id": "ACC-003",
+      "account_name": "Accounts Receivable",
+      "account_type": "Asset",
+      "balance": 89000.00,
+      "currency": "MVR",
+      "last_updated": "2026-03-27"
+    },
+    {
+      "id": "ACC-004",
+      "account_name": "Accounts Payable",
+      "account_type": "Liability",
+      "balance": 34000.00,
+      "currency": "MVR",
+      "last_updated": "2026-03-28"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "TXN-2026-001",
+      "date": "2026-03-01",
+      "description": "Tender Bid Payment - Ministry of Education",
+      "debit_account": "ACC-002",
+      "credit_account": "ACC-001",
+      "amount": 5000.00,
+      "reference": "BID-EDU-2026-001",
+      "category": "Tender Expense"
+    },
+    {
+      "id": "TXN-2026-002",
+      "date": "2026-03-05",
+      "description": "Supplier Payment - Tech Solutions",
+      "debit_account": "ACC-004",
+      "credit_account": "ACC-002",
+      "amount": 25000.00,
+      "reference": "SUP-001",
+      "category": "Procurement"
+    },
+    {
+      "id": "TXN-2026-003",
+      "date": "2026-03-10",
+      "description": "Revenue - Won Tender HPA-2026-003",
+      "debit_account": "ACC-003",
+      "credit_account": "REV-001",
+      "amount": 125000.00,
+      "reference": "TND-HPA-003",
+      "category": "Tender Revenue"
+    },
+    {
+      "id": "TXN-2026-004",
+      "date": "2026-03-15",
+      "description": "Staff Salary Payment",
+      "debit_account": "EXP-001",
+      "credit_account": "ACC-002",
+      "amount": 45000.00,
+      "reference": "SAL-MAR-2026",
+      "category": "Operating Expense"
+    }
+  ],
+  "budget_summary": {
+    "total_revenue": 345000.00,
+    "total_expenses": 178000.00,
+    "net_profit": 167000.00,
+    "profit_margin": 48.41
+  }
+}

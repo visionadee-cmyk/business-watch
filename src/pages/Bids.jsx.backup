@@ -1,0 +1,635 @@
+import { useState, useEffect } from 'react';
+import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, FileSpreadsheet } from 'lucide-react';
+import { format } from 'date-fns';
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  collection, 
+  query, 
+  getDocs, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc,
+  orderBy,
+  serverTimestamp
+} from 'firebase/firestore';
+import { db } from '../services/firebase';
+import { useNavigate } from 'react-router-dom';
+
+const Bids = () => {
+  const [bids, setBids] = useState([]);
+  const [tenders, setTenders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [filterResult, setFilterResult] = useState('All');
+  const [showModal, setShowModal] = useState(false);
+  const [editingBid, setEditingBid] = useState(null);
+  const [viewingBid, setViewingBid] = useState(null);
+  const navigate = useNavigate();
+  
+  const { isAdmin } = useAuth();
+
+  const [formData, setFormData] = useState({
+    // Tender Info
+    tenderId: '',
+    gazetteId: '',
+    title: '',
+    titleDhivehi: '',
+    authority: '',
+    category: '',
+    
+    // Requirements
+    requirements: {},
+    
+    // Dates & Deadlines
+    submissionDeadline: '',
+    submissionTime: '',
+    bidOpeningDate: '',
+    bidOpeningTime: '',
+    registrationDeadline: '',
+    registrationTime: '',
+    bidSubmissionDate: '',
+    bidTime: '',
+    clarificationDeadline: '',
+    clarificationTime: '',
+    preBidMeeting: '',
+    
+    // Contact Info
+    contactEmail: '',
+    contactPhones: [],
+    contactName: '',
+    
+    // Links
+    gazetteUrl: '',
+    infoSheetUrl: '',
+    
+    // Additional Fields
+    tenderNo: '',
+    eligibility: '',
+    portal: '',
+    bidSecurity: '',
+    performanceGuarantee: '',
+    funding: '',
+    project: '',
+    lots: null,
+    
+    // Bid Status
+    status: 'Draft',
+    result: 'Pending',
+    
+    // Financial
+    bidAmount: '',
+    costEstimate: '',
+    profitMargin: '',
+    
+    // Documents & Notes
+    documents: [],
+    notes: ''
+  });
+
+  const statuses = ['Draft', 'Submitted', 'Under Review', 'Accepted', 'Rejected', 'Open', 'Closed'];
+  const results = ['Pending', 'Won', 'Lost', 'Cancelled'];
+  const categories = ['IT', 'Medical Equipment', 'Office Supplies', 'Furniture', 'Electrical', 'Electronics', 'Safety Equipment', 'Machinery', 'Construction', 'Sports Equipment', 'Printing', 'Security/IT', 'Apparel', 'Apparel/Uniform', 'Supply', 'Awards', 'IT/Equipment', 'Construction/Furniture'];
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const bidsQuery = query(collection(db, 'bids'), orderBy('createdAt', 'desc'));
+      const bidsSnapshot = await getDocs(bidsQuery);
+      setBids(bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const tendersSnapshot = await getDocs(collection(db, 'tenders'));
+      setTenders(tendersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateProfit = () => {
+    const bid = parseFloat(formData.bidAmount) || 0;
+    const cost = parseFloat(formData.costEstimate) || 0;
+    const profit = bid - cost;
+    setFormData(prev => ({ ...prev, profitMargin: profit.toFixed(2) }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const bidData = {
+        ...formData,
+        bidAmount: parseFloat(formData.bidAmount) || 0,
+        costEstimate: parseFloat(formData.costEstimate) || 0,
+        profitMargin: parseFloat(formData.profitMargin) || 0,
+        updatedAt: serverTimestamp()
+      };
+
+      if (editingBid) {
+        await updateDoc(doc(db, 'bids', editingBid.id), bidData);
+      } else {
+        bidData.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'bids'), bidData);
+      }
+
+      setShowModal(false);
+      setEditingBid(null);
+      resetForm();
+      fetchData();
+    } catch (error) {
+      console.error('Error saving bid:', error);
+      alert('Error saving bid. Please try again.');
+    }
+  };
+
+  const handleDelete = async (bidId) => {
+    if (!window.confirm('Are you sure you want to delete this bid?')) return;
+    
+    try {
+      await deleteDoc(doc(db, 'bids', bidId));
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting bid:', error);
+      alert('Error deleting bid. Please try again.');
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Store file metadata only (no storage upload)
+    setFormData(prev => ({
+      ...prev,
+      documents: [...prev.documents, { 
+        name: file.name, 
+        type: file.type,
+        size: file.size
+      }]
+    }));
+  };
+
+  const removeDocument = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      documents: prev.documents.filter((_, i) => i !== index)
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      // Tender Info
+      tenderId: '',
+      gazetteId: '',
+      title: '',
+      titleDhivehi: '',
+      authority: '',
+      category: '',
+      
+      // Requirements
+      requirements: {},
+      
+      // Dates & Deadlines
+      submissionDeadline: '',
+      submissionTime: '',
+      bidOpeningDate: '',
+      bidOpeningTime: '',
+      registrationDeadline: '',
+      registrationTime: '',
+      bidSubmissionDate: '',
+      bidTime: '',
+      clarificationDeadline: '',
+      clarificationTime: '',
+      preBidMeeting: '',
+      
+      // Contact Info
+      contactEmail: '',
+      contactPhones: [],
+      contactName: '',
+      
+      // Links
+      gazetteUrl: '',
+      infoSheetUrl: '',
+      
+      // Additional Fields
+      tenderNo: '',
+      eligibility: '',
+      portal: '',
+      bidSecurity: '',
+      performanceGuarantee: '',
+      funding: '',
+      project: '',
+      lots: null,
+      
+      // Bid Status
+      status: 'Draft',
+      result: 'Pending',
+      
+      // Financial
+      bidAmount: '',
+      costEstimate: '',
+      profitMargin: '',
+      
+      // Documents & Notes
+      documents: [],
+      notes: ''
+    });
+  };
+
+  const openEditModal = (bid) => {
+    setEditingBid(bid);
+    setFormData({
+      tenderId: bid.tenderId || '',
+      tenderTitle: bid.tenderTitle || '',
+      clientName: bid.clientName || '',
+      bidAmount: bid.bidAmount || '',
+      costEstimate: bid.costEstimate || '',
+      profitMargin: bid.profitMargin || '',
+      status: bid.status || 'Draft',
+      result: bid.result || 'Pending',
+      submissionDate: bid.submissionDate || '',
+      documents: bid.documents || [],
+      notes: bid.notes || '',
+      items: bid.items || []
+    });
+    setShowModal(true);
+  };
+
+  const openAddModal = () => {
+    setEditingBid(null);
+    resetForm();
+    setShowModal(true);
+  };
+
+  const getTenderTitle = (tenderId) => {
+    const tender = tenders.find(t => t.id === tenderId);
+    return tender ? tender.title : 'Unknown Tender';
+  };
+
+  const filteredBids = bids.filter(bid => {
+    const tenderTitle = getTenderTitle(bid.tenderId).toLowerCase();
+    const matchesSearch = tenderTitle.includes(searchTerm.toLowerCase()) || 
+                         bid.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         bid.tenderTitle?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'All' || bid.status === filterStatus;
+    const matchesResult = filterResult === 'All' || bid.result === filterResult;
+    return matchesSearch && matchesStatus && matchesResult;
+  });
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'Draft': 'bg-gray-100 text-gray-800',
+      'Submitted': 'bg-blue-100 text-blue-800',
+      'Under Review': 'bg-yellow-100 text-yellow-800',
+      'Accepted': 'bg-green-100 text-green-800',
+      'Rejected': 'bg-red-100 text-red-800'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  const getResultColor = (result) => {
+    const colors = {
+      'Pending': 'bg-gray-100 text-gray-800',
+      'Won': 'bg-green-100 text-green-800',
+      'Lost': 'bg-red-100 text-red-800'
+    };
+    return colors[result] || 'bg-gray-100 text-gray-800';
+  };
+
+  const totalBidValue = bids.reduce((sum, bid) => sum + (bid.bidAmount || 0), 0);
+  const totalProfit = bids.reduce((sum, bid) => sum + (bid.profitMargin || 0), 0);
+  const wonBids = bids.filter(b => b.result === 'Won').length;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Bid Management</h1>
+          <p className="text-gray-500 mt-1">Create and manage bids for tenders</p>
+        </div>
+        <button onClick={openAddModal} className="btn-primary">
+          <Plus className="w-5 h-5 mr-2" />
+          Create Bid
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="card bg-blue-50 border-blue-200">
+          <div className="flex items-center gap-3">
+            <FileText className="w-8 h-8 text-blue-600" />
+            <div>
+              <p className="text-sm text-gray-600">Total Bids</p>
+              <p className="text-2xl font-bold text-blue-700">{bids.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="card bg-green-50 border-green-200">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="w-8 h-8 text-green-600" />
+            <div>
+              <p className="text-sm text-gray-600">Won Bids</p>
+              <p className="text-2xl font-bold text-green-700">
+                {bids.filter(b => b.result === 'Won').length}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="card bg-red-50 border-red-200">
+          <div className="flex items-center gap-3">
+            <XCircle className="w-8 h-8 text-red-600" />
+            <div>
+              <p className="text-sm text-gray-600">Lost</p>
+              <p className="text-2xl font-bold text-red-700">
+                {bids.filter(b => b.result === 'Lost').length}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="card bg-yellow-50 border-yellow-200">
+          <div className="flex items-center gap-3">
+            <Clock className="w-8 h-8 text-yellow-600" />
+            <div>
+              <p className="text-sm text-gray-600">Pending</p>
+              <p className="text-2xl font-bold text-yellow-700">
+                {bids.filter(b => b.result === 'Pending').length}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4">
+        <div className="relative flex-1 min-w-[300px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search bids..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input pl-10"
+          />
+        </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="input w-48"
+        >
+          <option value="All">All Statuses</option>
+          {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select
+          value={filterResult}
+          onChange={(e) => setFilterResult(e.target.value)}
+          className="input w-48"
+        >
+          <option value="All">All Results</option>
+          {results.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+      </div>
+
+      {/* Bids Table */}
+      <div className="card overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          </div>
+        ) : filteredBids.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p>No bids found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tender/Client</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Bid Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Result</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredBids.map((bid) => (
+                  <tr key={bid.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-medium text-gray-900">{bid.tenderTitle || getTenderTitle(bid.tenderId)}</p>
+                        <p className="text-sm text-gray-500">{bid.clientName || 'No client'}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right font-medium">
+                      MVR {bid.bidAmount?.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(bid.status)}`}>
+                        {bid.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={bid.result}
+                        onChange={(e) => {
+                          updateDoc(doc(db, 'bids', bid.id), { result: e.target.value });
+                          fetchData();
+                        }}
+                        className={`text-xs font-medium rounded-full px-2 py-1 border-0 cursor-pointer ${getResultColor(bid.result)}`}
+                      >
+                        {results.map(r => <option key={r} value={r}>{r}</option>)}
+                      </select>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-2">
+                        <button 
+                          onClick={() => handleEdit(bid)}
+                          className="p-1 text-gray-400 hover:text-blue-600"
+                          title="Edit"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(bid.id)}
+                          className="p-1 text-gray-400 hover:text-red-600"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-900">
+                {editingBid ? 'Edit Bid' : 'Create New Bid'}
+              </h2>
+              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="label">Select Tender</label>
+                <select
+                  value={formData.tenderId}
+                  onChange={(e) => setFormData({...formData, tenderId: e.target.value})}
+                  className="input"
+                  required
+                >
+                  <option value="">Select a tender</option>
+                  {tenders.map(tender => (
+                    <option key={tender.id} value={tender.id}>{tender.title}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Bid Amount (MVR)</label>
+                  <input
+                    type="number"
+                    value={formData.bidAmount}
+                    onChange={(e) => {
+                      setFormData({...formData, bidAmount: e.target.value});
+                      setTimeout(calculateProfit, 0);
+                    }}
+                    onBlur={calculateProfit}
+                    className="input"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label">Cost Estimate (MVR)</label>
+                  <input
+                    type="number"
+                    value={formData.costEstimate}
+                    onChange={(e) => {
+                      setFormData({...formData, costEstimate: e.target.value});
+                      setTimeout(calculateProfit, 0);
+                    }}
+                    onBlur={calculateProfit}
+                    className="input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Profit Margin (Auto-calculated)</label>
+                <input
+                  type="number"
+                  value={formData.profitMargin}
+                  readOnly
+                  className="input bg-gray-50"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Calculated as: Bid Amount - Cost Estimate
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    className="input"
+                  >
+                    {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="label">Result</label>
+                  <select
+                    value={formData.result}
+                    onChange={(e) => setFormData({...formData, result: e.target.value})}
+                    className="input"
+                  >
+                    {results.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Notes</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  className="input h-24"
+                  placeholder="Additional notes about this bid..."
+                />
+              </div>
+
+              <div>
+                <label className="label">Documents</label>
+                <div className="space-y-2">
+                  {formData.documents.map((doc, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <span className="text-sm text-gray-700">{doc.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeDocument(index)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      disabled={uploadingFile}
+                      className="hidden"
+                      id="bid-file-upload"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    />
+                    <label
+                      htmlFor="bid-file-upload"
+                      className="btn-secondary cursor-pointer inline-flex"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {uploadingFile ? 'Uploading...' : 'Upload Document'}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary">
+                  {editingBid ? 'Update' : 'Create'} Bid
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Bids;
