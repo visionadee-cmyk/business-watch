@@ -1,35 +1,80 @@
-import { useState, useEffect } from 'react';
-import { getAccountingData } from '../services/localDataService';
+import { useMemo, useState } from 'react';
 import { Wallet, CreditCard, TrendingUp, TrendingDown, DollarSign, PieChart, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useData } from '../hooks/useData';
 
 const Finance = () => {
-  const [accounts, setAccounts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [budgetSummary, setBudgetSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('accounts');
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { bids, loading } = useData();
 
-  const fetchData = async () => {
-    try {
-      const data = await getAccountingData();
-      setAccounts(data.accounts || []);
-      setTransactions(data.transactions || []);
-      setBudgetSummary(data.budgetSummary || null);
-    } catch (error) {
-      console.error('Error fetching accounting data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const accounts = useMemo(() => {
+    const totalBidValue = bids.reduce((sum, b) => sum + (b.bid_amount || 0), 0);
+    const wonValue = bids.filter(b => b.result === 'Won').reduce((sum, b) => sum + (b.bid_amount || 0), 0);
+    const pendingValue = bids.filter(b => !b.result || b.result === 'Pending').reduce((sum, b) => sum + (b.bid_amount || 0), 0);
+    const lostValue = bids.filter(b => b.result === 'Lost').reduce((sum, b) => sum + (b.bid_amount || 0), 0);
+
+    return [
+      {
+        id: 'ACC-PIPELINE',
+        account_name: 'Bid Pipeline (All)',
+        account_type: 'Asset',
+        balance: totalBidValue,
+        last_updated: new Date().toLocaleDateString()
+      },
+      {
+        id: 'ACC-WON',
+        account_name: 'Won Bids Value',
+        account_type: 'Asset',
+        balance: wonValue,
+        last_updated: new Date().toLocaleDateString()
+      },
+      {
+        id: 'ACC-PENDING',
+        account_name: 'Pending Bids Value',
+        account_type: 'Asset',
+        balance: pendingValue,
+        last_updated: new Date().toLocaleDateString()
+      },
+      {
+        id: 'ACC-LOST',
+        account_name: 'Lost Bids Value',
+        account_type: 'Liability',
+        balance: lostValue,
+        last_updated: new Date().toLocaleDateString()
+      }
+    ];
+  }, [bids]);
+
+  const transactions = useMemo(() => {
+    return bids
+      .map((b) => ({
+        id: `TXN-${b.id}`,
+        date: b.submission_deadline || b.bid_opening_date || '',
+        description: b.tender_title || b.title || 'Bid',
+        category: b.category || 'Bid',
+        amount: b.bid_amount || 0,
+        reference: b.result || b.status || ''
+      }))
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  }, [bids]);
+
+  const budgetSummary = useMemo(() => {
+    const wonValue = bids.filter(b => b.result === 'Won').reduce((sum, b) => sum + (b.bid_amount || 0), 0);
+    const estimatedCost = wonValue * 0.75;
+    const netProfit = wonValue - estimatedCost;
+    const profitMargin = wonValue > 0 ? ((netProfit / wonValue) * 100).toFixed(1) : 0;
+    return {
+      total_revenue: wonValue,
+      total_expenses: estimatedCost,
+      net_profit: netProfit,
+      profit_margin: profitMargin
+    };
+  }, [bids]);
 
   const totalAssets = accounts
     .filter(a => a.account_type === 'Asset')
     .reduce((sum, a) => sum + (a.balance || 0), 0);
-  
+ 
   const totalLiabilities = accounts
     .filter(a => a.account_type === 'Liability')
     .reduce((sum, a) => sum + (a.balance || 0), 0);
@@ -37,7 +82,7 @@ const Finance = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <img 
             src="/illustrations/Finance-amico.svg" 
@@ -47,7 +92,7 @@ const Finance = () => {
           />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Finance</h1>
-            <p className="text-gray-500 mt-1">Hisaabu - Accounting & Budget Data</p>
+            <p className="text-gray-500 mt-1">Bid-based finance summary</p>
           </div>
         </div>
         {budgetSummary && (

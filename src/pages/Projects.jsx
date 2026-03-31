@@ -50,7 +50,7 @@ const Projects = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <img 
             src="/illustrations/Work%20time-amico.svg" 
@@ -60,7 +60,7 @@ const Projects = () => {
           />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-            <p className="text-gray-500 mt-1">Hisaabu.xlsx project sheets</p>
+            <p className="text-gray-500 mt-1">Project sheets</p>
           </div>
         </div>
         <div className="card px-6 py-3 flex items-center gap-3">

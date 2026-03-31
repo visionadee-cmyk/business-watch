@@ -2,7 +2,6 @@
 // This service loads data from local JSON files instead of Firebase
 // For future Firebase migration, replace imports in components
 
-import hisaabuData from '../data/Hisaabu.json';
 import projectsData from '../data/Projects 2026.json';
 
 // Simulate async delay like Firebase
@@ -406,16 +405,6 @@ export const getDashboardStats = async () => {
     bids,
     purchases,
     deliveries
-  };
-};
-
-// Accounting data from Hisaabu.json
-export const getAccountingData = async () => {
-  await delay(300);
-  return {
-    accounts: hisaabuData.accounts,
-    transactions: hisaabuData.transactions,
-    budgetSummary: hisaabuData.budget_summary
   };
 };
 

@@ -39,8 +39,8 @@ jobs:
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-org-id: team_QDQRJ6aUwBLKDx4FTgXYkckD
+          vercel-project-id: prj_WuS7yXmvKor8k3BueSGIniKDsD40
           vercel-args: '--prod'
           working-directory: ./
 
@@ -49,6 +49,6 @@ jobs:
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-org-id: team_QDQRJ6aUwBLKDx4FTgXYkckD
+          vercel-project-id: prj_WuS7yXmvKor8k3BueSGIniKDsD40
           working-directory: ./

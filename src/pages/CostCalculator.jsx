@@ -78,7 +78,7 @@ export default function CostCalculator() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Cost Calculator</h1>
-          <p className="text-gray-500 mt-1">Calculate tender costs from Hisaabu data</p>
+          <p className="text-gray-500 mt-1">Calculate tender costs from bid data</p>
         </div>
         <div className="flex gap-3">
           <button 
