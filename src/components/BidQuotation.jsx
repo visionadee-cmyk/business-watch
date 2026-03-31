@@ -7,11 +7,23 @@ const BidQuotation = ({ bid, onClose }) => {
   const [gstRate, setGstRate] = useState(8);
   const [selectedSignatory, setSelectedSignatory] = useState(0);
 
-  // Signatory options
+  // Signatory options with e-signatures
   const signatories = [
-    { name: 'Aboobakuru', position: 'Managing Director' },
-    { name: 'Person 2', position: 'Finance Manager' },
-    { name: 'Person 3', position: 'Operations Manager' }
+    { 
+      name: 'Abobakuru Qasim', 
+      position: 'Managing Director',
+      signature: '/Abobakuru e signature.jpeg'
+    },
+    { 
+      name: 'Abdul Rasheed Ali', 
+      position: 'Director',
+      signature: '/Abdulla rasheed e sigantuure.jpeg'
+    },
+    { 
+      name: 'Ziyad Rashadh', 
+      position: 'Director',
+      signature: '/Ziyad E signature.jpeg'
+    }
   ];
 
   // Generate quotation number
@@ -99,23 +111,30 @@ const BidQuotation = ({ bid, onClose }) => {
 
       pages.push(
         <div key={`page-${idx}`} className="quotation-page mb-8 bg-white p-8 print:p-6">
-          {/* Header */}
+          {/* Header with Company Stamp */}
           <div className="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-2xl font-bold text-gray-900">Business Watch</span>
-                <span className="text-sm text-gray-600">Private Limited</span>
-              </div>
-              <div className="text-xs text-gray-600 space-y-0.5">
-                <p>Reg No: C0006/2025</p>
-                <p>TIN: 1169863/GST/T/501</p>
-                <p>Address: Gulfamge, Lh.Hinnavaru</p>
-                <p className="flex items-center gap-1">
-                  <Phone className="w-3 h-3" /> (960) 7786629, (960) 9829050
-                </p>
-                <p className="flex items-center gap-1">
-                  <Mail className="w-3 h-3" /> businesswatchmv@gmail.com
-                </p>
+            <div className="flex items-start gap-4">
+              <img 
+                src="/Company Stamp.jpeg" 
+                alt="Company Stamp" 
+                className="w-24 h-24 object-contain"
+              />
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl font-bold text-gray-900">Business Watch</span>
+                  <span className="text-sm text-gray-600">Private Limited</span>
+                </div>
+                <div className="text-xs text-gray-600 space-y-0.5">
+                  <p>Reg No: C0006/2025</p>
+                  <p>TIN: 1169863/GST/T/501</p>
+                  <p>Address: Gulfamge, Lh.Hinnavaru</p>
+                  <p className="flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> (960) 7786629, (960) 9829050
+                  </p>
+                  <p className="flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> businesswatchmv@gmail.com
+                  </p>
+                </div>
               </div>
             </div>
             <div className="text-right">
@@ -221,14 +240,18 @@ const BidQuotation = ({ bid, onClose }) => {
             <p>Quotation / bid Validity: {bid?.quotationValidity || 60} days from bid opening.</p>
           </div>
 
-          {/* Signature */}
+          {/* Signature with E-signature */}
           <div className="flex justify-end mt-12">
             <div className="text-center">
-              <div className="border-b border-gray-400 w-48 mb-2 pb-8">
-                <span className="text-xs text-gray-500">Authorized Signature</span>
+              <div className="w-48 mb-2">
+                <img 
+                  src={signatories[selectedSignatory].signature} 
+                  alt="E-signature" 
+                  className="w-full h-16 object-contain"
+                />
               </div>
-              <p className="font-semibold text-sm">Aboobakuru</p>
-              <p className="text-xs text-gray-600">Managing Director</p>
+              <p className="font-semibold text-sm">{signatories[selectedSignatory].name}</p>
+              <p className="text-xs text-gray-600">{signatories[selectedSignatory].position}</p>
               <p className="text-xs text-gray-500">Business Watch Pvt Ltd, Gulfamge, Lh.Hinnavaru</p>
             </div>
           </div>
@@ -246,23 +269,30 @@ const BidQuotation = ({ bid, onClose }) => {
   const renderAllItems = () => {
     return (
       <div className="quotation-page bg-white p-8 print:p-6">
-        {/* Header */}
+        {/* Header with Company Stamp */}
         <div className="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl font-bold text-gray-900">Business Watch</span>
-              <span className="text-sm text-gray-600">Private Limited</span>
-            </div>
-            <div className="text-xs text-gray-600 space-y-0.5">
-              <p>Reg No: C0006/2025</p>
-              <p>TIN: 1169863/GST/T/501</p>
-              <p>Address: Gulfamge, Lh.Hinnavaru</p>
-              <p className="flex items-center gap-1">
-                <Phone className="w-3 h-3" /> (960) 7786629, (960) 9829050
-              </p>
-              <p className="flex items-center gap-1">
-                <Mail className="w-3 h-3" /> businesswatchmv@gmail.com
-              </p>
+          <div className="flex items-start gap-4">
+            <img 
+              src="/Company Stamp.jpeg" 
+              alt="Company Stamp" 
+              className="w-24 h-24 object-contain"
+            />
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl font-bold text-gray-900">Business Watch</span>
+                <span className="text-sm text-gray-600">Private Limited</span>
+              </div>
+              <div className="text-xs text-gray-600 space-y-0.5">
+                <p>Reg No: C0006/2025</p>
+                <p>TIN: 1169863/GST/T/501</p>
+                <p>Address: Gulfamge, Lh.Hinnavaru</p>
+                <p className="flex items-center gap-1">
+                  <Phone className="w-3 h-3" /> (960) 7786629, (960) 9829050
+                </p>
+                <p className="flex items-center gap-1">
+                  <Mail className="w-3 h-3" /> businesswatchmv@gmail.com
+                </p>
+              </div>
             </div>
           </div>
           <div className="text-right">
@@ -382,11 +412,15 @@ const BidQuotation = ({ bid, onClose }) => {
           </div>
         </div>
 
-        {/* Signature */}
+        {/* Signature with E-signature */}
         <div className="flex justify-end mt-12">
           <div className="text-center">
-            <div className="border-b border-gray-400 w-48 mb-2 pb-8">
-              <span className="text-xs text-gray-500">Authorized Signature</span>
+            <div className="w-48 mb-2">
+              <img 
+                src={signatories[selectedSignatory].signature} 
+                alt="E-signature" 
+                className="w-full h-16 object-contain"
+              />
             </div>
             <p className="font-semibold text-sm">{signatories[selectedSignatory].name}</p>
             <p className="text-xs text-gray-600">{signatories[selectedSignatory].position}</p>
