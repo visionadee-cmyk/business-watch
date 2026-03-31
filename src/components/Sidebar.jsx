@@ -18,7 +18,18 @@ import {
   FolderOpen,
   Calendar,
   FileText as TemplateIcon,
-  FileBarChart
+  FileBarChart,
+  Briefcase,
+  CreditCard,
+  CheckSquare,
+  MessageSquare,
+  Flag,
+  Scale,
+  AlertTriangle,
+  Target,
+  Bell,
+  History,
+  Search
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
@@ -78,11 +89,22 @@ const Sidebar = () => {
     { path: '/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/templates', icon: TemplateIcon, label: 'Templates' },
     { path: '/reports', icon: FileBarChart, label: 'Reports' },
+    { path: '/contracts', icon: Briefcase, label: 'Contracts' },
+    { path: '/invoices', icon: CreditCard, label: 'Invoices' },
+    { path: '/tasks', icon: CheckSquare, label: 'Tasks' },
+    { path: '/collaboration', icon: MessageSquare, label: 'Collaboration' },
+    { path: '/milestones', icon: Flag, label: 'Milestones' },
+    { path: '/bid-comparison', icon: Scale, label: 'Bid Comparison' },
+    { path: '/risk-assessment', icon: AlertTriangle, label: 'Risk Assessment' },
+    { path: '/kpi', icon: Target, label: 'KPI Dashboard' },
+    { path: '/notifications', icon: Bell, label: 'Notifications' },
+    { path: '/search', icon: Search, label: 'Advanced Search' },
   ];
 
-  // Only show Users link to admins
+  // Only show Users and Audit Log links to admins
   if (isAdmin()) {
     navItems.push({ path: '/users', icon: Users, label: 'Users' });
+    navItems.push({ path: '/audit-log', icon: History, label: 'Audit Log' });
   }
 
   return (

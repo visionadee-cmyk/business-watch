@@ -23,6 +23,17 @@ import DocumentManager from './pages/DocumentManager';
 import CalendarView from './pages/CalendarView';
 import BidTemplates from './pages/BidTemplates';
 import Reports from './pages/Reports';
+import ContractManagement from './pages/ContractManagement';
+import InvoiceTracking from './pages/InvoiceTracking';
+import TaskManagement from './pages/TaskManagement';
+import TeamCollaboration from './pages/TeamCollaboration';
+import MilestoneTracker from './pages/MilestoneTracker';
+import BidComparison from './pages/BidComparison';
+import RiskAssessment from './pages/RiskAssessment';
+import KPIDashboard from './pages/KPIDashboard';
+import NotificationCenter from './pages/NotificationCenter';
+import AuditLog from './pages/AuditLog';
+import AdvancedSearch from './pages/AdvancedSearch';
 
 import { useAuth } from './contexts/AuthContext';
 
@@ -215,6 +226,94 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <Reports />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/contracts" element={
+        <ProtectedRoute>
+          <Layout>
+            <ContractManagement />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/invoices" element={
+        <ProtectedRoute>
+          <Layout>
+            <InvoiceTracking />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/tasks" element={
+        <ProtectedRoute>
+          <Layout>
+            <TaskManagement />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/collaboration" element={
+        <ProtectedRoute>
+          <Layout>
+            <TeamCollaboration />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/milestones" element={
+        <ProtectedRoute>
+          <Layout>
+            <MilestoneTracker />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/bid-comparison" element={
+        <ProtectedRoute>
+          <Layout>
+            <BidComparison />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/risk-assessment" element={
+        <ProtectedRoute>
+          <Layout>
+            <RiskAssessment />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/kpi" element={
+        <ProtectedRoute>
+          <Layout>
+            <KPIDashboard />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/notifications" element={
+        <ProtectedRoute>
+          <Layout>
+            <NotificationCenter />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/audit-log" element={
+        <ProtectedRoute requireAdmin={true}>
+          <Layout>
+            <AuditLog />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/search" element={
+        <ProtectedRoute>
+          <Layout>
+            <AdvancedSearch />
           </Layout>
         </ProtectedRoute>
       } />
