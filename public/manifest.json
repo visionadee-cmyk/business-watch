@@ -61,22 +61,6 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/illustrations/At the office-amico.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "form_factor": "wide",
-      "label": "Business Watch Dashboard"
-    },
-    {
-      "src": "/illustrations/Business Plan-amico.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "form_factor": "narrow",
-      "label": "Business Watch Mobile"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Dashboard",

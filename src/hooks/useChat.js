@@ -3,35 +3,49 @@ import { useAuth } from '../contexts/AuthContext';
 import Pusher from 'pusher-js';
 
 // Pusher free tier: 200k messages/day, no credit card, no expiration
-const PUSHER_KEY = 'a6f9d8c2a8e8c2a8e8c2'; // Replace with your Pusher key
+// Replace with your actual Pusher key from pusher.com
+const PUSHER_KEY = 'a6f9d8c2a8e8c2a8e8c2'; // Placeholder - replace with real key
 const PUSHER_CLUSTER = 'ap2'; // Mumbai cluster
+const IS_DUMMY_KEY = PUSHER_KEY === 'a6f9d8c2a8e8c2a8e8c2';
 
 export const useChat = () => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem('bw_chat_messages');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+        return parsed.filter((m) => m.timestamp > oneDayAgo).slice(-100);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(IS_DUMMY_KEY ? 'Pusher not configured. Chat will work locally only. See USER_MANUAL.md for setup.' : null);
+  const [needsSetup, setNeedsSetup] = useState(IS_DUMMY_KEY);
   const [pusher, setPusher] = useState(null);
 
-  // Initialize Pusher
+  // Initialize Pusher (if key is valid)
   useEffect(() => {
-    if (!user) {
+    if (!user || IS_DUMMY_KEY) {
       setLoading(false);
       return;
     }
 
+    let pusherClient;
     try {
-      const pusherClient = new Pusher(PUSHER_KEY, {
+      pusherClient = new Pusher(PUSHER_KEY, {
         cluster: PUSHER_CLUSTER,
         forceTLS: true,
       });
 
       const channel = pusherClient.subscribe('business-watch-chat');
 
-      // Listen for new messages
       channel.bind('message', (data) => {
         setMessages((prev) => {
-          // Prevent duplicates
           if (prev.some((m) => m.id === data.id)) {
             return prev;
           }
@@ -39,21 +53,6 @@ export const useChat = () => {
         });
       });
 
-      // Load initial messages from localStorage (for persistence across sessions)
-      const saved = localStorage.getItem('bw_chat_messages');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          // Keep only last 100 messages, within last 24 hours
-          const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-          const recent = parsed.filter((m) => m.timestamp > oneDayAgo).slice(-100);
-          setMessages(recent);
-        } catch (e) {
-          console.error('Failed to parse saved messages:', e);
-        }
-      }
-
-      setPusher(pusherClient);
       setLoading(false);
 
       return () => {
@@ -61,20 +60,20 @@ export const useChat = () => {
         pusherClient.disconnect();
       };
     } catch (err) {
-      setError('Failed to connect to chat. Please try again.');
+      setError('Failed to connect to chat. Please check your Pusher configuration.');
       setLoading(false);
       console.error('Pusher init error:', err);
     }
   }, [user]);
 
-  // Save messages to localStorage whenever they change
+  // Save messages to localStorage
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem('bw_chat_messages', JSON.stringify(messages));
     }
   }, [messages]);
 
-  // Send message
+  // Send message (works locally even without Pusher)
   const sendMessage = useCallback(
     async (text, type = 'text') => {
       if (!user || !text.trim()) return false;
@@ -90,13 +89,9 @@ export const useChat = () => {
           type,
         };
 
-        // Add to local state immediately
         setMessages((prev) => [...prev, message]);
 
-        // Trigger Pusher event
         if (pusher) {
-          // Note: In production, you'd send to your backend which triggers Pusher
-          // For now, we broadcast locally and rely on other clients receiving it
           const channel = pusher.channel('business-watch-chat');
           if (channel) {
             channel.trigger('client-message', message);
@@ -115,7 +110,12 @@ export const useChat = () => {
 
   // Clear old messages (keep last 50)
   const clearOldMessages = useCallback(() => {
-    setMessages((prev) => prev.slice(-50));
+    setMessages((prev) => {
+      const trimmed = prev.slice(-50);
+      localStorage.setItem('bw_chat_messages', JSON.stringify(trimmed));
+      return trimmed;
+    });
+  }, []);
     localStorage.setItem('bw_chat_messages', JSON.stringify(messages.slice(-50)));
   }, [messages]);
 

@@ -11,7 +11,7 @@ const USERS = [
 ];
 
 export const CommunityChat = () => {
-  const { messages, loading, sendMessage, currentUser } = useChat();
+  const { messages, loading, sendMessage, currentUser, needsSetup } = useChat();
   const [newMessage, setNewMessage] = useState('');
   const [showMentions, setShowMentions] = useState(false);
   const [mentionSearch, setMentionSearch] = useState('');
@@ -140,6 +140,29 @@ export const CommunityChat = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (needsSetup) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+        <MessageCircle className="w-16 h-16 mb-4 text-blue-300" />
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Team Chat Setup Required</h3>
+        <p className="text-gray-600 mb-4 max-w-md">
+          Real-time chat needs Pusher configuration. Chat will work locally without real-time sync until configured.
+        </p>
+        <div className="bg-gray-50 rounded-lg p-4 text-left text-sm text-gray-700 max-w-md mb-4">
+          <p className="font-medium mb-2">Quick Setup:</p>
+          <ol className="list-decimal pl-4 space-y-1">
+            <li>Sign up at <a href="https://pusher.com" target="_blank" rel="noopener" className="text-blue-600 hover:underline">pusher.com</a> (free, no card)</li>
+            <li>Create app → Copy your <strong>App Key</strong></li>
+            <li>Replace in <code className="bg-gray-200 px-1 rounded">src/hooks/useChat.js</code></li>
+          </ol>
+        </div>
+        <p className="text-xs text-gray-500">
+          Messages still work locally but won't sync to other devices until configured.
+        </p>
       </div>
     );
   }
