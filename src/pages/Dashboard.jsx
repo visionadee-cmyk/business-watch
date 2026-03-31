@@ -97,12 +97,23 @@ const Dashboard = () => {
       setAccounts(accounts);
       setTransactions(transactions);
       
-      // Calculate stats
+      // Calculate stats from bids
       const activeTenders = tenders.filter(t => t.status === 'Open' || t.status === 'Bidding').length;
       const submittedBids = bids.filter(b => b.status === 'Submitted').length;
       const wonTenders = tenders.filter(t => t.status === 'Won').length;
       const pendingDeliveries = deliveries.filter(d => d.status === 'Pending').length;
       const completedProjects = deliveries.filter(d => d.completed).length;
+      
+      // Calculate financials from bids
+      const totalBidValue = bids.reduce((sum, b) => sum + (b.bidAmount || 0), 0);
+      const totalBidCost = bids.reduce((sum, b) => sum + (b.costEstimate || 0), 0);
+      const totalBidProfit = bids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
+      
+      // Won bids financials
+      const wonBids = bids.filter(b => b.result === 'Won' || b.status === 'Won');
+      const wonBidRevenue = wonBids.reduce((sum, b) => sum + (b.bidAmount || 0), 0);
+      const wonBidCost = wonBids.reduce((sum, b) => sum + (b.costEstimate || 0), 0);
+      const wonBidProfit = wonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
       
       const budget = budgets[0] || {};
       const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
@@ -118,9 +129,13 @@ const Dashboard = () => {
         completedProjects,
         totalAccounts: accounts.length,
         totalBalance,
-        totalRevenue: budget.total_revenue || 0,
-        totalExpenses: budget.total_expenses || 0,
-        netProfit: budget.net_profit || 0,
+        totalRevenue: wonBidRevenue || budget.total_revenue || 0,
+        totalExpenses: wonBidCost || budget.total_expenses || 0,
+        netProfit: wonBidProfit || budget.net_profit || 0,
+        totalBidValue,
+        totalBidCost,
+        totalBidProfit,
+        wonBidCount: wonBids.length,
         totalPOValue,
         poCount: purchaseOrders.length,
         poInTransit,
@@ -144,13 +159,13 @@ const Dashboard = () => {
         { name: 'Lost', value: statusCounts['Lost'], color: '#ef4444' }
       ].filter(item => item.value > 0));
 
-      // Profit data - last 6 months
+      // Profit data - last 6 months (from actual bid data)
       const monthlyData = {};
       const today = new Date();
       for (let i = 5; i >= 0; i--) {
         const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
         const monthKey = format(date, 'MMM yyyy');
-        monthlyData[monthKey] = { month: monthKey, profit: 0, revenue: 0 };
+        monthlyData[monthKey] = { month: monthKey, revenue: 0, expenses: 0, profit: 0 };
       }
 
       bids.forEach(bid => {
@@ -161,6 +176,7 @@ const Dashboard = () => {
             const monthKey = format(dateValue, 'MMM yyyy');
             if (monthlyData[monthKey]) {
               monthlyData[monthKey].revenue += bid.bidAmount || 0;
+              monthlyData[monthKey].expenses += bid.costEstimate || 0;
               monthlyData[monthKey].profit += bid.profitMargin || 0;
             }
           } catch (e) {
