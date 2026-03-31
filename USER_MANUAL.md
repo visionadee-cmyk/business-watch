@@ -564,6 +564,55 @@ Stay informed with automatic alerts.
 
 ---
 
+## Team Chat
+
+Real-time messaging for team collaboration.
+
+### Chat Features
+
+- **Real-time messaging**: Instant message delivery
+- **@mentions**: Tag specific users or @all to notify everyone
+- **User identification**: See who's online with role badges (Admin/Staff)
+- **Message history**: Last 100 messages stored locally for 24 hours
+- **Mobile responsive**: Full chat functionality on mobile devices
+
+### Using @mentions
+
+To tag someone in a message:
+1. Type `@` in the message box
+2. Select a user from the dropdown, or type their name
+3. Use `@all` to notify all team members
+4. Mentioned users see a yellow highlight on the message
+
+### Pusher Setup (Required for Chat)
+
+Chat uses **Pusher** for real-time messaging (free forever, 200k messages/day, no credit card).
+
+**Setup Steps:**
+
+1. **Create free account**: Go to [pusher.com](https://pusher.com) and sign up
+2. **Create app**: Click "Create app" → Name it "Business Watch Chat"
+3. **Get credentials**: 
+   - Go to "App Keys" tab
+   - Copy your `app_id`, `key`, and `secret`
+4. **Update code**: Open `src/hooks/useChat.js` and replace:
+   ```javascript
+   const PUSHER_KEY = 'a6f9d8c2a8e8c2a8e8c2'; // Replace with your actual key
+   const PUSHER_CLUSTER = 'ap2'; // Or your cluster (mt1, eu, etc.)
+   ```
+5. **Enable client events** (for @all mentions):
+   - In Pusher dashboard → App Settings
+   - Enable "Client Events"
+   - Save changes
+
+**Free Tier Limits:**
+- 200,000 messages per day
+- 100 concurrent connections
+- No expiration
+- No credit card required
+
+---
+
 ## Administration (Admin Only)
 
 ### User Management
