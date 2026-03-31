@@ -1,7 +1,7 @@
 {
   "metadata": {
     "total_tenders": 1,
-    "last_updated": "2026-03-31T12:05:34.688Z",
+    "last_updated": "2026-03-31T19:13:03.932Z",
     "source": "gazette.gov.mv",
     "description": "Properly scraped with Dhivehi title"
   },
@@ -20,7 +20,7 @@
       },
       "submission_deadline": "2026-03-31",
       "submission_time": "14:00",
-      "bid_opening_date": "2026-03-31",
+      "bid_opening_date": "2026-03-08",
       "bid_opening_time": "13:00",
       "registration_deadline": "",
       "registration_time": "",
@@ -51,7 +51,7 @@
       "lots": null,
       "status": "Open",
       "result": "Pending",
-      "scraped_at": "2026-03-31T12:05:34.683Z"
+      "scraped_at": "2026-03-31T19:13:03.925Z"
     }
   ]
 }

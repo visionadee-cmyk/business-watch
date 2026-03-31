@@ -245,8 +245,49 @@ async function scrapeTender(url, index) {
       }
     }
     
-    // Extract dates
-    const dateMatches = html.match(/\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4}/g) || [];
+    // Extract dates from Dhivehi text in the HTML
+    let submissionDeadline = '';
+    let bidOpeningDate = '';
+    let clarificationDeadline = '';
+    let preBidMeeting = '';
+    
+    // Look for Dhivehi dates like "08 މާރިޗު 2026" or "30 މާރިޗް 2026"
+    const dhivehiDatePattern = /(\d{1,2})\s*މާރިޗ[ުން]*\s*(\d{4})/g;
+    let dhivehiDates = [];
+    let match;
+    while ((match = dhivehiDatePattern.exec(html)) !== null) {
+      const day = match[1].padStart(2, '0');
+      const year = match[2];
+      const isoDate = `${year}-03-${day}`;
+      if (!dhivehiDates.includes(isoDate)) {
+        dhivehiDates.push(isoDate);
+      }
+    }
+    
+    // Sort dates
+    dhivehiDates.sort();
+    
+    // Map dates: earliest = bid opening, latest = submission/pre-bid
+    if (dhivehiDates.length >= 1) {
+      bidOpeningDate = dhivehiDates[0];
+      const lastDate = dhivehiDates[dhivehiDates.length - 1];
+      submissionDeadline = lastDate;
+      preBidMeeting = lastDate;
+      if (dhivehiDates.length >= 2) {
+        clarificationDeadline = dhivehiDates[dhivehiDates.length - 2];
+      } else {
+        clarificationDeadline = lastDate;
+      }
+    }
+    
+    // Fallback to basic date extraction
+    if (!submissionDeadline) {
+      const dateMatches = html.match(/\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{2,4}/g) || [];
+      submissionDeadline = dateMatches[0] || '';
+      bidOpeningDate = dateMatches[1] || dateMatches[0] || '';
+      clarificationDeadline = dateMatches[2] || dateMatches[0] || '';
+      preBidMeeting = dateMatches[3] || dateMatches[1] || dateMatches[0] || '';
+    }
     
     // Extract email
     const emailMatch = html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
@@ -290,17 +331,17 @@ async function scrapeTender(url, index) {
       category: category,
       tender_no: tenderId,
       requirements: {},
-      submission_deadline: dateMatches[0] || '',
+      submission_deadline: submissionDeadline,
       submission_time: '',
-      bid_opening_date: dateMatches[1] || '',
+      bid_opening_date: bidOpeningDate,
       bid_opening_time: '',
       registration_deadline: '',
       registration_time: '',
       bid_submission: '',
       bid_time: '',
-      clarification_deadline: '',
+      clarification_deadline: clarificationDeadline,
       clarification_time: '',
-      pre_bid_meeting: '',
+      pre_bid_meeting: preBidMeeting,
       contact_email: contactEmail,
       contact_phones: contactPhones,
       contact_name: '',
