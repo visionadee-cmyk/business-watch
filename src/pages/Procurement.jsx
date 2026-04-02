@@ -16,13 +16,17 @@ import {
 import { db } from '../services/firebase';
 
 const Procurement = () => {
+  console.log('PROCUREMENT COMPONENT MOUNTING');
+  
   const [purchases, setPurchases] = useState([]);
+  const [bids, setBids] = useState([]);
   const [tenders, setTenders] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState(null);
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'fromBids', 'manual'
   
   const { isAdmin } = useAuth();
 
@@ -38,18 +42,101 @@ const Procurement = () => {
     notes: ''
   });
 
-  const statuses = ['Pending', 'Ordered', 'Received', 'Cancelled'];
+  const statuses = ['Pending', 'Ordered', 'Received', 'Cancelled']; 
 
   useEffect(() => {
+    console.log('USE EFFECT RUNNING - fetching data');
     fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
+      // Fetch purchases
       const purchasesQuery = query(collection(db, 'purchases'), orderBy('createdAt', 'desc'));
       const purchasesSnapshot = await getDocs(purchasesQuery);
-      setPurchases(purchasesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const purchasesData = purchasesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+      // Fetch bids (won bids with items)
+      const bidsSnapshot = await getDocs(collection(db, 'bids'));
+      const bidsData = bidsSnapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.() || new Date()
+      }));
+      setBids(bidsData);
+
+      // Auto-create purchases from bid items if not already created
+      const wonBids = bidsData.filter(bid => bid.result === 'Won');
+      console.log('=== DEBUG ===');
+      console.log('Total bids:', bidsData.length);
+      console.log('Won bids found:', wonBids.length);
+      console.log('Sample bid result values:', bidsData.slice(0, 5).map(b => ({ id: b.id, result: b.result, title: b.title?.substring(0, 30) })));
+      
+      wonBids.forEach((bid, idx) => {
+        console.log(`Won bid ${idx + 1}:`, {
+          id: bid.id,
+          title: bid.title?.substring(0, 40),
+          itemsCount: bid.items?.length || 0,
+          items: bid.items?.map(i => ({ name: i.name, id: i.id, costPrice: i.costPrice }))
+        });
+      });
+      
+      const newPurchasesFromBids = [];
+      
+      for (const bid of wonBids) {
+        if (bid.items && bid.items.length > 0) {
+          for (let i = 0; i < bid.items.length; i++) {
+            const item = bid.items[i];
+            // Generate item ID if not exists
+            const itemId = item.id || `item-${i}`;
+            
+            // Check if this bid item already has a purchase record
+            const existingPurchase = purchasesData.find(p => 
+              p.bidId === bid.id && (p.bidItemId === itemId || p.itemName === item.name)
+            );
+            
+            if (!existingPurchase) {
+              console.log('Creating purchase for:', item.name);
+              // Create purchase from bid item
+              newPurchasesFromBids.push({
+                bidId: bid.id,
+                bidItemId: itemId,
+                tenderId: bid.tenderId || '',
+                tenderTitle: bid.title || 'Unknown Tender',
+                itemName: item.name || `Item ${i + 1}`,
+                quantity: item.quantity || 1,
+                supplierId: item.supplier || '',
+                supplierName: item.supplier || item.supplierName || '',
+                costPerUnit: item.costPrice || item.cost || 0,
+                totalCost: (item.costPrice || item.cost || 0) * (item.quantity || 1),
+                status: 'Pending',
+                notes: `Auto-created from bid: ${bid.title || 'Unknown'}`,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+                fromBid: true
+              });
+            }
+          }
+        }
+      }
+      
+      console.log('New purchases to create:', newPurchasesFromBids.length);
+      console.log('================');
+      
+      // Add new purchases from bids to Firestore
+      for (const purchase of newPurchasesFromBids) {
+        await addDoc(collection(db, 'purchases'), purchase);
+      }
+      
+      // Refresh purchases after adding new ones
+      if (newPurchasesFromBids.length > 0) {
+        const refreshedSnapshot = await getDocs(purchasesQuery);
+        setPurchases(refreshedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } else {
+        setPurchases(purchasesData);
+      }
+
+      // Fetch tenders and suppliers
       const tendersSnapshot = await getDocs(collection(db, 'tenders'));
       setTenders(tendersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
@@ -150,17 +237,28 @@ const Procurement = () => {
     return tender ? tender.title : 'Unknown Tender';
   };
 
-  const getSupplierName = (supplierId) => {
-    const supplier = suppliers.find(s => s.id === supplierId);
-    return supplier ? supplier.name : 'Unknown Supplier';
+  const getSupplierName = (purchase) => {
+    // If purchase has supplierName (from bid), use it directly
+    if (purchase.supplierName && typeof purchase.supplierName === 'string' && purchase.supplierName.trim()) {
+      return purchase.supplierName;
+    }
+    // Otherwise look up by ID
+    const supplier = suppliers.find(s => s.id === purchase.supplierId);
+    return supplier ? supplier.name : (purchase.supplierId || 'No Supplier');
   };
 
   const filteredPurchases = purchases.filter(purchase => {
     const matchesSearch = 
       purchase.itemName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       getTenderTitle(purchase.tenderId).toLowerCase().includes(searchTerm.toLowerCase()) ||
-      getSupplierName(purchase.supplierId).toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+      getSupplierName(purchase).toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesTab = 
+      activeTab === 'all' ? true :
+      activeTab === 'fromBids' ? purchase.fromBid === true :
+      activeTab === 'manual' ? !purchase.fromBid : true;
+    
+    return matchesSearch && matchesTab;
   });
 
   const getStatusColor = (status) => {
@@ -176,9 +274,30 @@ const Procurement = () => {
   const totalPurchaseCost = purchases.reduce((sum, p) => sum + (p.totalCost || 0), 0);
   const pendingPurchases = purchases.filter(p => p.status === 'Pending').length;
   const receivedPurchases = purchases.filter(p => p.status === 'Received').length;
+  const bidPurchases = purchases.filter(p => p.fromBid === true).length;
+  
+  // Debug info for visible display
+  const debugInfo = {
+    totalBids: bids.length,
+    wonBids: bids.filter(b => b.result === 'Won').length,
+    wonBidsWithItems: bids.filter(b => b.result === 'Won' && b.items?.length > 0).length,
+    totalPurchases: purchases.length,
+    bidPurchases: bidPurchases
+  };
 
   return (
     <div className="space-y-6">
+      {/* Debug Panel - Visible */}
+      <div className="card bg-yellow-50 border border-yellow-200 p-4">
+        <p className="font-bold text-yellow-800 mb-2">DEBUG INFO (Visible for troubleshooting):</p>
+        <div className="grid grid-cols-5 gap-2 text-sm">
+          <div>Total Bids: <strong>{debugInfo.totalBids}</strong></div>
+          <div>Won Bids: <strong>{debugInfo.wonBids}</strong></div>
+          <div>Won with Items: <strong>{debugInfo.wonBidsWithItems}</strong></div>
+          <div>Total Purchases: <strong>{debugInfo.totalPurchases}</strong></div>
+          <div>From Bids: <strong>{debugInfo.bidPurchases}</strong></div>
+        </div>
+      </div>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <img 
@@ -189,20 +308,25 @@ const Procurement = () => {
           />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Procurement</h1>
-            <p className="text-gray-500 mt-1">Manage purchases for won tenders</p>
+            <p className="text-gray-500 mt-1">Manage purchases for won tenders - Auto-populated from bid items</p>
           </div>
         </div>
         <button onClick={openAddModal} className="btn-primary">
           <Plus className="w-5 h-5 mr-2" />
-          Add Purchase
+          Add Manual Purchase
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="card p-4">
           <p className="text-sm text-gray-500">Total Purchases</p>
           <p className="text-2xl font-bold text-gray-900">{purchases.length}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-sm text-gray-500">From Won Bids</p>
+          <p className="text-2xl font-bold text-blue-600">{bidPurchases}</p>
+          <p className="text-xs text-gray-400">Auto-created items</p>
         </div>
         <div className="card p-4">
           <p className="text-sm text-gray-500">Total Purchase Cost</p>
@@ -212,6 +336,40 @@ const Procurement = () => {
           <p className="text-sm text-gray-500">Pending Orders</p>
           <p className="text-2xl font-bold text-warning-600">{pendingPurchases}</p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('all')}
+          className={`px-4 py-2 font-medium text-sm transition-colors ${
+            activeTab === 'all' 
+              ? 'text-blue-600 border-b-2 border-blue-600' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          All Purchases ({purchases.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('fromBids')}
+          className={`px-4 py-2 font-medium text-sm transition-colors ${
+            activeTab === 'fromBids' 
+              ? 'text-blue-600 border-b-2 border-blue-600' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          From Won Bids ({bidPurchases})
+        </button>
+        <button
+          onClick={() => setActiveTab('manual')}
+          className={`px-4 py-2 font-medium text-sm transition-colors ${
+            activeTab === 'manual' 
+              ? 'text-blue-600 border-b-2 border-blue-600' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Manual ({purchases.length - bidPurchases})
+        </button>
       </div>
 
       {/* Search */}
@@ -237,13 +395,28 @@ const Procurement = () => {
         ) : filteredPurchases.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>No purchases found</p>
+            <p className="font-medium mb-2">No purchases found</p>
+            <p className="text-sm mb-4">
+              {activeTab === 'fromBids' 
+                ? "No won bids with items yet. Win a bid and add items to see them here."
+                : activeTab === 'manual'
+                ? "No manual purchases added yet."
+                : "Purchase records will appear here automatically when you win bids with items, or you can add manual purchases."
+              }
+            </p>
+            {activeTab !== 'fromBids' && (
+              <button onClick={openAddModal} className="btn-primary text-sm">
+                <Plus className="w-4 h-4 mr-1 inline" />
+                Add Purchase
+              </button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tender</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
@@ -257,13 +430,25 @@ const Procurement = () => {
               <tbody className="divide-y divide-gray-200">
                 {filteredPurchases.map((purchase) => (
                   <tr key={purchase.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      {purchase.fromBid ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800" title="Auto-created from won bid">
+                          <Package className="w-3 h-3 mr-1" />
+                          Bid
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                          Manual
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-900 font-medium">
-                      {getTenderTitle(purchase.tenderId)}
+                      {purchase.tenderTitle || getTenderTitle(purchase.tenderId)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">{purchase.itemName}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{purchase.quantity}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {getSupplierName(purchase.supplierId)}
+                      {getSupplierName(purchase)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       MVR {purchase.costPerUnit?.toLocaleString()}
