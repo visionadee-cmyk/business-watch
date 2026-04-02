@@ -115,6 +115,7 @@ const Dashboard = () => {
       
       // Won bids financials
       const wonBids = bids.filter(b => b.result === 'Won' || b.status === 'Won');
+      const activeWonTenders = bids.filter(b => b.result === 'Won' && (b.status === 'Open' || b.status === 'In Progress')).length;
       const wonBidRevenue = wonBids.reduce((sum, b) => sum + (b.bidAmount || 0), 0);
       const wonBidCost = wonBids.reduce((sum, b) => sum + (b.costEstimate || 0), 0);
       const wonBidProfit = wonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
@@ -129,6 +130,7 @@ const Dashboard = () => {
         activeTenders,
         submittedBids,
         wonTenders,
+        activeWonTenders,
         pendingDeliveries,
         completedProjects,
         totalAccounts: accounts.length,
@@ -249,7 +251,7 @@ const Dashboard = () => {
 
   const statCards = [
     { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue' },
-    { title: 'Active Won Tenders', value: bids.filter(b => b.result === 'Won' && (b.status === 'Open' || b.status === 'In Progress')).length, icon: Trophy, color: 'green' },
+    { title: 'Active Won Tenders', value: stats.activeWonTenders, icon: Trophy, color: 'green' },
     { title: 'Won Tenders', value: stats.wonTenders, icon: CheckCircle, color: 'green' },
     { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple' },
     { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green' },
