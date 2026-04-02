@@ -101,10 +101,10 @@ const Dashboard = () => {
       setAccounts(accounts);
       setTransactions(transactions);
       
-      // Calculate stats from bids
-      const activeTenders = tenders.filter(t => t.status === 'Open' || t.status === 'Bidding').length;
+      // Calculate stats from bids (not tenders, since data is in bids collection)
+      const activeTenders = bids.filter(b => b.status === 'Open' || b.status === 'Bidding' || b.status === 'Draft').length;
       const submittedBids = bids.filter(b => b.status === 'Submitted').length;
-      const wonTenders = tenders.filter(t => t.status === 'Won').length;
+      const wonTenders = bids.filter(b => b.result === 'Won' || b.status === 'Won').length;
       const pendingDeliveries = deliveries.filter(d => d.status === 'Pending').length;
       const completedProjects = deliveries.filter(d => d.completed).length;
       
