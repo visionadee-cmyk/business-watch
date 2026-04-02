@@ -65,6 +65,17 @@ class NotificationService {
     }
   }
 
+  // Send new bid alert
+  async sendNewBidAlert(bid) {
+    const subject = `📢 New Bid Created: ${bid.title}`;
+    const html = this.generateNewBidEmail(bid);
+    
+    for (const [userId, subscriber] of this.subscribers) {
+      // Send to all subscribers - new bid alerts
+      await this.sendEmail(subscriber.email, subject, html);
+    }
+  }
+
   // Send new tender alert
   async sendNewTenderAlert(tender) {
     const subject = `📢 New Tender: ${tender.title}`;
@@ -145,6 +156,29 @@ class NotificationService {
           <p><strong>Time:</strong> ${tender.bid_opening_time || 'N/A'}</p>
           <p><strong>Date:</strong> ${tender.bid_opening_date}</p>
         </div>
+      </div>
+    `;
+  }
+
+  generateNewBidEmail(bid) {
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #3b82f6;">📢 New Bid Created</h2>
+        <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">${bid.title}</h3>
+          <p><strong>Tender ID:</strong> ${bid.tenderId || bid.id}</p>
+          <p><strong>Authority:</strong> ${bid.authority || 'N/A'}</p>
+          ${bid.bidAmount ? `<p><strong>Bid Amount:</strong> ${bid.bidAmount.toLocaleString()} MVR</p>` : ''}
+          ${bid.costEstimate ? `<p><strong>Cost Estimate:</strong> ${bid.costEstimate.toLocaleString()} MVR</p>` : ''}
+          ${bid.profitMargin ? `<p><strong>Profit Margin:</strong> ${bid.profitMargin.toLocaleString()} MVR</p>` : ''}
+          ${bid.items && bid.items.length > 0 ? `<p><strong>Items:</strong> ${bid.items.length} item(s)</p>` : ''}
+          <p><strong>Created:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+        <p>
+          <a href="https://businesswatch.mv/bids" style="background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View All Bids
+          </a>
+        </p>
       </div>
     `;
   }

@@ -403,6 +403,17 @@ const Bids = ({ initialFilter }) => {
       } else {
         bidData.createdAt = serverTimestamp();
         await addDoc(collection(db, 'bids'), bidData);
+        
+        // Send new bid notification
+        try {
+          await fetch('/api/notifications/new-bid', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bidData)
+          });
+        } catch (notifyError) {
+          console.error('Failed to send bid notification:', notifyError);
+        }
       }
 
       setShowModal(false);

@@ -13,51 +13,51 @@
   "categories": ["business", "productivity", "finance"],
   "icons": [
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "72x72",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "96x96",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "128x128",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "144x144",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "152x152",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "384x384",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo/logo.png",
+      "src": "/logo/logo.jpeg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ],
@@ -67,21 +67,21 @@
       "short_name": "Dashboard",
       "description": "View dashboard and statistics",
       "url": "/",
-      "icons": [{ "src": "/logo/logo.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo/logo.jpeg", "sizes": "96x96" }]
     },
     {
       "name": "Tenders",
       "short_name": "Tenders",
       "description": "View and manage tenders",
       "url": "/tenders",
-      "icons": [{ "src": "/logo/logo.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo/logo.jpeg", "sizes": "96x96" }]
     },
     {
       "name": "Bids",
       "short_name": "Bids",
       "description": "View and manage bids",
       "url": "/bids",
-      "icons": [{ "src": "/logo/logo.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo/logo.jpeg", "sizes": "96x96" }]
     }
   ],
   "related_applications": [],
