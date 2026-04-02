@@ -275,29 +275,9 @@ const Procurement = () => {
   const pendingPurchases = purchases.filter(p => p.status === 'Pending').length;
   const receivedPurchases = purchases.filter(p => p.status === 'Received').length;
   const bidPurchases = purchases.filter(p => p.fromBid === true).length;
-  
-  // Debug info for visible display
-  const debugInfo = {
-    totalBids: bids.length,
-    wonBids: bids.filter(b => b.result === 'Won').length,
-    wonBidsWithItems: bids.filter(b => b.result === 'Won' && b.items?.length > 0).length,
-    totalPurchases: purchases.length,
-    bidPurchases: bidPurchases
-  };
 
   return (
     <div className="space-y-6">
-      {/* Debug Panel - Visible */}
-      <div className="card bg-yellow-50 border border-yellow-200 p-4">
-        <p className="font-bold text-yellow-800 mb-2">DEBUG INFO (Visible for troubleshooting):</p>
-        <div className="grid grid-cols-5 gap-2 text-sm">
-          <div>Total Bids: <strong>{debugInfo.totalBids}</strong></div>
-          <div>Won Bids: <strong>{debugInfo.wonBids}</strong></div>
-          <div>Won with Items: <strong>{debugInfo.wonBidsWithItems}</strong></div>
-          <div>Total Purchases: <strong>{debugInfo.totalPurchases}</strong></div>
-          <div>From Bids: <strong>{debugInfo.bidPurchases}</strong></div>
-        </div>
-      </div>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <img 
