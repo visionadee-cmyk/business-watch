@@ -20,6 +20,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Force unregister all existing ServiceWorkers to clear stuck cache
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('ServiceWorker unregistered:', registration.scope);
+          }
+        });
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
     <script>
       // Service Worker temporarily disabled to clear stuck cache
