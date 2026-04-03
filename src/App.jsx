@@ -15,7 +15,7 @@ import TenderSheets from './pages/TenderSheets';
 import Quotes from './pages/Quotes';
 import Finance from './pages/Finance';
 import Quotations from './pages/Quotations';
-import Users from './pages/Users';
+import UsersPage from './pages/Users';
 import Analytics from './pages/Analytics';
 import EnhancedSuppliers from './pages/EnhancedSuppliers';
 import CostCalculator from './pages/CostCalculator';
@@ -339,7 +339,7 @@ function App() {
       <Route path="/users" element={
         <ProtectedRoute requireAdmin={true}>
           <Layout>
-            <Users />
+            <UsersPage />
           </Layout>
         </ProtectedRoute>
       } />
