@@ -4,6 +4,19 @@ A full-stack web application for managing Maldives government tenders, bids, pro
 
 ## 🌟 New Features (April 2026)
 
+### Capital Tracking & Investment Management
+- **Track Capital Sources**: Record borrowed amounts from Company Staff or Other Parties
+- **3 Directors Predefined**: Abobakuru Qasim (Managing Director), Abdul Rasheed Ali (Director), Ziyad Rashadh (Director)
+- **Source Categorization**: Separate tracking for Company Staff vs Other Party investments
+- **Partial Payments**: Record borrowed and paid amounts separately with different dates
+- **Interest Tracking**: Mark entries as having interest charges or not
+- **Dashboard Integration**: Capital Summary appears on main dashboard with:
+  - Total Borrowed, Paid, and Outstanding balances
+  - Other Party Capital (consolidated total)
+  - Company Staff Capital (individual breakdown by person)
+- **Standalone**: Capital does NOT affect profit/cost calculations - completely separate tracking
+- **Full CRUD**: Create, read, update, delete capital entries from Staff Expense > Capital tab
+
 ### Staff Expense Management
 - **Track Staff Expenses**: Salary, printing, binding, laminating, and custom expense types
 - **Expense Dashboard**: Visual statistics by type and time period

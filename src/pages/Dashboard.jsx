@@ -231,7 +231,8 @@ const Dashboard = () => {
       }
 
       bids.forEach(bid => {
-        const dateSource = bid.submittedAt || bid.submissionDate || bid.submissionDeadline || bid.createdAt;
+        // Use submissionDeadline (due date) for chart grouping, not logged/submitted date
+        const dateSource = bid.submissionDeadline || bid.submissionDate || bid.submittedAt || bid.createdAt;
         if (dateSource) {
           try {
             const dateValue = dateSource?.toDate ? dateSource.toDate() : new Date(dateSource);

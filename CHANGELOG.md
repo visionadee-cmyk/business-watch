@@ -2,6 +2,35 @@
 
 All notable changes to the Business Watch project.
 
+## [1.5.0] - 2026-04-03
+
+### ✨ Added
+
+#### Capital Tracking & Investment Management
+- **New Capital Tab**: Added to Staff Expense page for tracking borrowed/paid capital
+  - Source Type selection: Company Staff vs Other Party
+  - Predefined Company Staff: 3 Directors (Abobakuru Qasim - Managing Director, Abdul Rasheed Ali - Director, Ziyad Rashadh - Director)
+  - Partial payment support: Separate borrowed and paid amounts with different dates
+  - Interest tracking: Mark entries with/without interest charges
+  - Purpose and notes fields for each entry
+- **Dashboard Capital Summary**: New section on main dashboard showing:
+  - Overall totals: Total Borrowed, Total Paid, Outstanding Balance
+  - Other Party Capital: Consolidated totals for all external sources
+  - Company Staff Capital: Individual breakdown by person (borrowed/paid/balance per staff)
+  - Staff Totals: Combined borrowed/paid/outstanding for all staff
+- **Standalone System**: Capital tracking completely separate from profit/cost calculations
+- **Full CRUD**: Create, read, update, delete capital entries with Firebase Firestore
+
+### 🔧 Changed
+- **StaffExpense.jsx**: Added Capital tab with source type selection, staff dropdown, capital table
+- **Dashboard.jsx**: Added Capital Summary section with staff breakdown and Other Party consolidation
+- **Chart Fix**: Monthly Revenue chart now uses submissionDeadline (due date) instead of submittedAt (logged date)
+
+### 📁 New Files/Collections
+- Firestore Collection: `capital` (stores all capital entries)
+
+---
+
 ## [1.4.0] - 2026-04-03
 
 ### ✨ Added
