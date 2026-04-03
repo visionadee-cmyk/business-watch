@@ -1,4 +1,4 @@
-const CACHE_NAME = 'business-watch-v1';
+const CACHE_NAME = 'business-watch-v2';
 const urlsToCache = [
   '/',
   '/index.html',
