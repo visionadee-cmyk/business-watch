@@ -29,6 +29,7 @@ All notable changes to the Business Watch project.
 ### 🐛 Fixed
 - **Dashboard.jsx**: Renamed `Users` import to `UsersIcon` to resolve ReferenceError caused by naming collision with Users page component
 - **Bids.jsx**: Added missing `Download` icon import for Gazette URL fetch button
+- **Bids.jsx**: Replaced "Experience (%)" with "Feasibility" in Evaluation Criteria section
 
 ### 📁 New Files/Collections
 - Firestore Collection: `capital` (stores all capital entries)
