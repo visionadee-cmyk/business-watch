@@ -212,12 +212,20 @@ const BidQuotation = ({ bid, onClose }) => {
             </tfoot>
           </table>
 
-          {/* Footer */}
-          <div className="text-xs text-gray-700 space-y-0.5 mb-4">
-            <p>All rates and amounts are in MVR.</p>
-            <p>Delivery period: {bid?.deliveryDays || 35} Days</p>
-            <p>Quotation / bid Validity: {bid?.quotationValidity || 60} days from bid opening.</p>
-          </div>
+        {/* Bank Information */}
+        <div className="text-xs text-gray-700 space-y-0.5 mb-2 border-t border-gray-300 pt-2">
+          <p className="font-semibold">Bank Account Information:</p>
+          <p>Bank: MIB (Maldives Islamic Bank)</p>
+          <p>Account Name: Business Watch Pvt Ltd</p>
+          <p>MVR: 90101480036671000 | USD: 90101480036672000</p>
+        </div>
+
+        {/* Footer */}
+        <div className="text-xs text-gray-700 space-y-0.5 mb-4">
+          <p>All rates and amounts are in MVR.</p>
+          <p>Delivery period: {bid?.deliveryDays || 35} Days</p>
+          <p>Quotation / bid Validity: {bid?.quotationValidity || 60} days from bid opening.</p>
+        </div>
 
           {/* Stamp and Signature - Side by Side to save space */}
           <div className="flex justify-between items-end">
@@ -366,6 +374,14 @@ const BidQuotation = ({ bid, onClose }) => {
           </tfoot>
         </table>
 
+        {/* Bank Information */}
+        <div className="text-xs text-gray-700 mb-2 border-t border-gray-300 pt-2">
+          <p className="font-semibold mb-1">Bank Account Information:</p>
+          <p>Bank: MIB (Maldives Islamic Bank)</p>
+          <p>Account Name: Business Watch Pvt Ltd</p>
+          <p>MVR: 90101480036671000 | USD: 90101480036672000</p>
+        </div>
+
         {/* Footer */}
         <div className="text-xs text-gray-700 mb-2">
           <p>All rates in MVR. Delivery: {bid?.deliveryDays || 35} Days. Validity: {bid?.quotationValidity || 60} days.</p>
@@ -490,7 +506,7 @@ const BidQuotation = ({ bid, onClose }) => {
           <style>{`
             @media print {
               @page {
-                size: A4;
+                size: A4 portrait;
                 margin: 10mm;
               }
               body {
