@@ -188,30 +188,16 @@ const BidQuotation = ({ bid, onClose }) => {
           </div>
 
           {/* Quotation Details */}
-          <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-            <div>
-              <p className="flex items-center gap-2">
-                <span className="font-semibold">Quotation No.:</span> 
-                {generateQuotationNo()}-ITEM{idx + 1}
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="font-semibold">Date:</span> 
-                {new Date().toLocaleDateString('en-GB')}
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="font-semibold">Client:</span> 
-                {bid?.authority || bid?.title || 'N/A'}
-              </p>
-              {bid?.tenderNo && (
-                <p className="flex items-center gap-2">
-                  <span className="font-semibold">iulaan no:</span> 
-                  {bid.tenderNo}
-                </p>
-              )}
+          <div className="flex justify-between items-start mb-3 text-sm">
+            <div className="space-y-1">
+              <p><span className="font-semibold">Quotation No.:</span> {generateQuotationNo()}-ITEM{idx + 1}</p>
+              <p><span className="font-semibold">Date:</span> {new Date().toLocaleDateString('en-GB')}</p>
+              <p><span className="font-semibold">Client:</span> {bid?.authority || bid?.title || 'N/A'}</p>
+              {bid?.tenderNo && <p><span className="font-semibold">Iulaan No:</span> {bid.tenderNo}</p>}
             </div>
             <div className="text-right">
-              <div className="inline-block border-2 border-gray-800 px-3 py-1">
-                <span className="font-bold text-lg">ITEM-{idx + 1} of {items.length}</span>
+              <div className="border-2 border-gray-800 px-3 py-1">
+                <span className="font-bold">ITEM {idx + 1} of {items.length}</span>
               </div>
               <div className="text-xs text-gray-500 mt-1">{item.name || 'N/A'}</div>
             </div>
@@ -264,8 +250,8 @@ const BidQuotation = ({ bid, onClose }) => {
           <p className="font-semibold">Bank Account Information:</p>
           <div className="space-y-1">
             <p className="font-medium text-gray-800">Bank of Maldives (BML)</p>
-            <p>Account: 7770000188096 (WADIAH BUSINESS CURRENT)</p>
-            <p>Account: 7770000188098 (WADIAH BUSINESS CURRENT)</p>
+            <p>Account Name: Business Watch Pvt Ltd</p>
+            <p>MVR: 7770000188096 | USD: 7770000188098</p>
           </div>
           <div className="space-y-1 mt-1">
             <p className="font-medium text-gray-800">Maldives Islamic Bank (MIB)</p>
@@ -350,43 +336,27 @@ const BidQuotation = ({ bid, onClose }) => {
         </div>
 
         {/* Quotation Details */}
-        <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
-          <div>
-            <p className="flex items-center gap-2">
-              <span className="font-semibold">Quotation No.:</span> 
-              {generateQuotationNo()}
-            </p>
-            <p className="flex items-center gap-2">
-              <span className="font-semibold">Date:</span> 
-              {new Date().toLocaleDateString('en-GB')}
-            </p>
-            <p className="flex items-center gap-2">
-              <span className="font-semibold">Client:</span> 
-              {bid?.authority || bid?.title || 'N/A'}
-            </p>
-            {bid?.tenderNo && (
-              <p className="flex items-center gap-2">
-                <span className="font-semibold">iulaan no:</span> 
-                {bid.tenderNo}
-              </p>
-            )}
+        <div className="flex justify-between items-start mb-3 text-sm">
+          <div className="space-y-1">
+            <p><span className="font-semibold">Quotation No.:</span> {generateQuotationNo()}</p>
+            <p><span className="font-semibold">Date:</span> {new Date().toLocaleDateString('en-GB')}</p>
+            <p><span className="font-semibold">Client:</span> {bid?.authority || bid?.title || 'N/A'}</p>
+            {bid?.tenderNo && <p><span className="font-semibold">Iulaan No:</span> {bid.tenderNo}</p>}
           </div>
-          <div className="text-right">
-            <div className="inline-block border-2 border-gray-800 px-3 py-1">
-              <span className="font-bold text-lg">ALL ITEMS</span>
-            </div>
+          <div className="border-2 border-gray-800 px-4 py-2">
+            <span className="font-bold text-lg">ALL ITEMS</span>
           </div>
         </div>
 
         {/* Items Table */}
-        <table className="w-full border-collapse border border-gray-800 mb-2 text-xs">
+        <table className="w-full border-collapse border border-gray-800 mb-3 text-xs">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-800 px-1 py-1 w-10">#</th>
-              <th className="border border-gray-800 px-1 py-1">Item</th>
-              <th className="border border-gray-800 px-1 py-1 w-14">Qty</th>
-              <th className="border border-gray-800 px-1 py-1 w-20">Rate</th>
-              <th className="border border-gray-800 px-1 py-1 w-24">Amount</th>
+              <th className="border border-gray-800 px-2 py-1.5 text-center w-8">#</th>
+              <th className="border border-gray-800 px-2 py-1.5 text-left">Item Description</th>
+              <th className="border border-gray-800 px-2 py-1.5 text-center w-12">Qty</th>
+              <th className="border border-gray-800 px-2 py-1.5 text-right w-20">Rate (MVR)</th>
+              <th className="border border-gray-800 px-2 py-1.5 text-right w-24">Amount (MVR)</th>
             </tr>
           </thead>
           <tbody>
@@ -397,33 +367,31 @@ const BidQuotation = ({ bid, onClose }) => {
 
               return (
                 <tr key={item.id}>
-                  <td className="border border-gray-800 px-1 py-0.5 text-center text-xs">{index + 1}</td>
-                  <td className="border border-gray-800 px-1 py-0.5 text-xs">
-                    <div className="font-medium text-xs">{item.name || 'ITEM-' + (index + 1)}</div>
-                  </td>
-                  <td className="border border-gray-800 px-1 py-0.5 text-center text-xs">{qty}</td>
-                  <td className="border border-gray-800 px-1 py-0.5 text-right text-xs">{bidPrice.toFixed(2)}</td>
-                  <td className="border border-gray-800 px-1 py-0.5 text-right text-xs">{itemTotal.toLocaleString()}.00</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center">{index + 1}</td>
+                  <td className="border border-gray-800 px-2 py-1">{item.name || 'ITEM-' + (index + 1)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center">{qty}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right">{bidPrice.toFixed(2)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right">{itemTotal.toLocaleString()}.00</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan="4" className="border border-gray-800 px-1 py-1 text-right font-semibold text-xs">Sub total</td>
-              <td className="border border-gray-800 px-1 py-1 text-right text-xs">{subTotal.toLocaleString()}.00</td>
+              <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold">Sub Total</td>
+              <td className="border border-gray-800 px-2 py-1 text-right">{subTotal.toLocaleString()}.00</td>
             </tr>
             {showTax && (
               <tr>
-                <td colSpan="4" className="border border-gray-800 px-1 py-1 text-right font-semibold text-xs">GST {gstRate}%</td>
-                <td className="border border-gray-800 px-1 py-1 text-right text-xs">{taxAmount.toLocaleString()}.00</td>
+                <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold">GST ({gstRate}%)</td>
+                <td className="border border-gray-800 px-2 py-1 text-right">{taxAmount.toLocaleString()}.00</td>
               </tr>
             )}
-            <tr>
-              <td colSpan="4" className="border border-gray-800 px-1 py-1 text-left text-xs">
-                <span className="font-semibold">Total:</span> {numberToWords(total)}
+            <tr className="bg-gray-50">
+              <td colSpan="4" className="border border-gray-800 px-2 py-1.5">
+                <span className="font-semibold">Total in Words:</span> {numberToWords(total)}
               </td>
-              <td className="border border-gray-800 px-1 py-1 text-right font-bold text-xs">{total.toLocaleString()}.00</td>
+              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base">{total.toLocaleString()}.00</td>
             </tr>
           </tfoot>
         </table>
@@ -433,8 +401,8 @@ const BidQuotation = ({ bid, onClose }) => {
           <p className="font-semibold mb-1">Bank Account Information:</p>
           <div className="space-y-0.5 mb-1">
             <p className="font-medium text-gray-800">Bank of Maldives (BML)</p>
-            <p>Account: 7770000188096 (WADIAH BUSINESS CURRENT)</p>
-            <p>Account: 7770000188098 (WADIAH BUSINESS CURRENT)</p>
+            <p>Account Name: Business Watch Pvt Ltd</p>
+            <p>MVR: 7770000188096 | USD: 7770000188098</p>
           </div>
           <div className="space-y-0.5">
             <p className="font-medium text-gray-800">Maldives Islamic Bank (MIB)</p>
