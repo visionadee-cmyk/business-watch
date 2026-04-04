@@ -492,6 +492,14 @@ const BidQuotation = ({ bid, onClose }) => {
             </button>
 
             <button
+              onClick={handlePrint}
+              className="btn-secondary flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white border-green-600"
+            >
+              <Download className="w-4 h-4" />
+              Download PDF
+            </button>
+
+            <button
               onClick={onClose}
               className="btn-secondary flex items-center gap-2"
             >
