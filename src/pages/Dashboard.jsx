@@ -39,7 +39,8 @@ import {
   orderBy,
   limit,
   where,
-  Timestamp 
+  Timestamp,
+  onSnapshot
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
@@ -72,7 +73,10 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     
-    // Refresh data every 30 seconds
+    // Set up real-time listeners for Recent Activity
+    const unsubscribers = setupRealtimeListeners();
+    
+    // Refresh full dashboard data every 30 seconds
     const interval = setInterval(fetchDashboardData, 30000);
     
     // Refresh when window regains focus
@@ -82,8 +86,66 @@ const Dashboard = () => {
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
+      // Clean up real-time listeners
+      unsubscribers.forEach(unsub => unsub());
     };
   }, []);
+
+  const setupRealtimeListeners = () => {
+    const unsubscribers = [];
+    
+    // Real-time listener for bids (most recent 10)
+    const bidsQuery = query(collection(db, 'bids'), orderBy('createdAt', 'desc'), limit(10));
+    const unsubBids = onSnapshot(bidsQuery, (snapshot) => {
+      const bids = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateRecentActivity('bid', bids);
+    });
+    unsubscribers.push(unsubBids);
+    
+    // Real-time listener for tenders (most recent 10)
+    const tendersQuery = query(collection(db, 'tenders'), orderBy('createdAt', 'desc'), limit(10));
+    const unsubTenders = onSnapshot(tendersQuery, (snapshot) => {
+      const tenders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateRecentActivity('tender', tenders);
+    });
+    unsubscribers.push(unsubTenders);
+    
+    // Real-time listener for deliveries (most recent 10)
+    const deliveriesQuery = query(collection(db, 'deliveries'), orderBy('createdAt', 'desc'), limit(10));
+    const unsubDeliveries = onSnapshot(deliveriesQuery, (snapshot) => {
+      const deliveries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateRecentActivity('delivery', deliveries);
+    });
+    unsubscribers.push(unsubDeliveries);
+    
+    // Real-time listener for purchase orders (most recent 10)
+    const poQuery = query(collection(db, 'purchaseOrders'), orderBy('createdAt', 'desc'), limit(10));
+    const unsubPO = onSnapshot(poQuery, (snapshot) => {
+      const pos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateRecentActivity('purchaseOrder', pos);
+    });
+    unsubscribers.push(unsubPO);
+    
+    return unsubscribers;
+  };
+
+  const updateRecentActivity = (type, items) => {
+    setRecentActivity(prev => {
+      // Create a map of existing items to avoid duplicates
+      const existingMap = new Map(prev.map(item => [`${item.type}-${item.data.id}`, item]));
+      
+      // Add new items
+      items.forEach(item => {
+        const key = `${type}-${item.id}`;
+        existingMap.set(key, { type, data: item, date: item.createdAt || item.updatedAt || new Date() });
+      });
+      
+      // Convert back to array, sort by date, and take top 20
+      return Array.from(existingMap.values())
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 20);
+    });
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -310,7 +372,6 @@ const Dashboard = () => {
 
   const statCards = [
     { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue' },
-    { title: 'Active Won Tenders', value: stats.activeWonTenders, icon: Trophy, color: 'green' },
     { title: 'Won Tenders', value: stats.wonTenders, icon: CheckCircle, color: 'green' },
     { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple' },
     { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green' },

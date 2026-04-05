@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Upload, FileText, Search, Trash2, 
   Building2, FileCheck, Briefcase, Landmark, File, X,
-  ChevronDown, Eye, FolderOpen, Download
+  ChevronDown, Eye, FolderOpen, Download, Pencil
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,6 +12,7 @@ import {
   getDocs, 
   addDoc, 
   deleteDoc, 
+  updateDoc,
   doc,
   orderBy,
   serverTimestamp 
@@ -34,9 +35,16 @@ const Documents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadForm, setUploadForm] = useState({
+    name: '',
+    type: 'registration',
+    description: ''
+  });
+  const [editForm, setEditForm] = useState({
+    id: '',
     name: '',
     type: 'registration',
     description: ''
@@ -124,6 +132,34 @@ const Documents = () => {
       await fetchDocuments();
     } catch (error) {
       console.error('Error deleting document:', error);
+    }
+  };
+
+  const openEditModal = (document) => {
+    setEditForm({
+      id: document.id,
+      name: document.name,
+      type: document.type,
+      description: document.description || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateDoc(doc(db, 'documents', editForm.id), {
+        name: editForm.name,
+        type: editForm.type,
+        description: editForm.description,
+        updatedAt: serverTimestamp()
+      });
+      await fetchDocuments();
+      setShowEditModal(false);
+      setEditForm({ id: '', name: '', type: 'registration', description: '' });
+    } catch (error) {
+      console.error('Error updating document:', error);
+      alert('Failed to update document. Please try again.');
     }
   };
 
@@ -287,6 +323,12 @@ const Documents = () => {
                       <Eye className="w-4 h-4" />
                       View
                     </button>
+                    <button
+                      onClick={() => openEditModal(doc)}
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 text-sm font-medium transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
                     <a
                       href={doc.url}
                       download={doc.name}
@@ -398,6 +440,75 @@ const Documents = () => {
                   className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Edit Document</h2>
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEdit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                <select
+                  value={editForm.type}
+                  onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
+                  className="input w-full"
+                  required
+                >
+                  {documentTypes.map(type => (
+                    <option key={type.id} value={type.id}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Document Name</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  placeholder="e.g., Company Registration 2025"
+                  className="input w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  placeholder="Add any notes about this document..."
+                  rows={3}
+                  className="input w-full resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700"
+                >
+                  Save Changes
                 </button>
               </div>
             </form>
