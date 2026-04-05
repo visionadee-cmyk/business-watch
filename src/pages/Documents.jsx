@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { FileText, Trash2, X, FolderOpen, File, Image } from 'lucide-react';
+import { 
+  Upload, FileText, Search, Trash2, 
+  Building2, FileCheck, Briefcase, Landmark, File, X,
+  ChevronDown, Eye, FolderOpen, Download
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -14,22 +18,31 @@ import {
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
+const documentTypes = [
+  { id: 'registration', label: 'Company Registration', icon: Building2, color: 'blue' },
+  { id: 'gst', label: 'GST Certificate', icon: FileCheck, color: 'green' },
+  { id: 'experience', label: 'Experience Letters', icon: Briefcase, color: 'purple' },
+  { id: 'bank', label: 'Bank Statement', icon: Landmark, color: 'orange' },
+  { id: 'profile', label: 'Company Profile', icon: FileText, color: 'indigo' },
+  { id: 'other', label: 'Others', icon: File, color: 'gray' }
+];
+
 const Documents = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('All');
+  const [selectedType, setSelectedType] = useState('all');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadForm, setUploadForm] = useState({
     name: '',
-    category: 'Tender',
+    type: 'registration',
     description: ''
   });
-  
-  const { isAdmin } = useAuth();
 
-  const categories = ['Tender', 'Bid', 'Invoice', 'Delivery', 'Contract', 'Other'];
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchDocuments();
@@ -64,26 +77,40 @@ const Documents = () => {
 
     setUploading(true);
     try {
-      // Store document metadata only (no file storage)
-      const docData = {
-        name: uploadForm.name || selectedFile.name,
-        originalName: selectedFile.name,
-        category: uploadForm.category,
-        description: uploadForm.description,
-        fileType: selectedFile.type,
-        fileSize: selectedFile.size,
-        createdAt: serverTimestamp()
-      };
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('upload_preset', 'business_watch');
 
-      await addDoc(collection(db, 'documents'), docData);
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/dr9nhz1hs/upload`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
 
-      // Reset form
-      setSelectedFile(null);
-      setUploadForm({ name: '', category: 'Tender', description: '' });
-      fetchDocuments();
+      const data = await response.json();
+
+      if (data.secure_url) {
+        await addDoc(collection(db, 'documents'), {
+          name: uploadForm.name || selectedFile.name,
+          type: uploadForm.type,
+          description: uploadForm.description,
+          url: data.secure_url,
+          publicId: data.public_id,
+          format: data.format,
+          size: data.bytes,
+          createdAt: serverTimestamp()
+        });
+
+        await fetchDocuments();
+        setShowUploadModal(false);
+        setSelectedFile(null);
+        setUploadForm({ name: '', type: 'registration', description: '' });
+      }
     } catch (error) {
-      console.error('Error saving document:', error);
-      alert('Error saving document. Please try again.');
+      console.error('Error uploading document:', error);
+      alert('Failed to upload document. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -93,200 +120,322 @@ const Documents = () => {
     if (!window.confirm('Are you sure you want to delete this document?')) return;
 
     try {
-      // Delete from Firestore only (no storage to delete)
       await deleteDoc(doc(db, 'documents', document.id));
-      fetchDocuments();
+      await fetchDocuments();
     } catch (error) {
       console.error('Error deleting document:', error);
-      alert('Error deleting document. Please try again.');
-    }
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getFileIcon = (fileType) => {
-    if (fileType?.startsWith('image/')) {
-      return <Image className="w-10 h-10 text-purple-500" />;
-    } else if (fileType?.includes('pdf')) {
-      return <FileText className="w-10 h-10 text-red-500" />;
-    } else if (fileType?.includes('word') || fileType?.includes('document')) {
-      return <FileText className="w-10 h-10 text-blue-500" />;
-    } else if (fileType?.includes('excel') || fileType?.includes('sheet')) {
-      return <FileText className="w-10 h-10 text-green-500" />;
-    } else {
-      return <File className="w-10 h-10 text-gray-500" />;
     }
   };
 
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'All' || doc.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesType = selectedType === 'all' || doc.type === selectedType;
+    return matchesSearch && matchesType;
   });
+
+  const getDocumentType = (typeId) => documentTypes.find(t => t.id === typeId) || documentTypes[5];
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return '0 Bytes';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <img 
-          src="/illustrations/Folder-amico.svg" 
-          alt="Documents" 
-          className="w-16 h-16 object-contain"
-          onError={(e) => { e.target.style.display='none'; }}
-        />
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Document Management</h1>
-          <p className="text-gray-500 mt-1">Upload, store, and manage all your documents</p>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <FileText className="w-8 h-8 text-blue-600" />
+            Documents & Certificates
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Manage company registration, GST certificates, and other important documents
+          </p>
         </div>
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="btn-primary flex items-center gap-2 px-6 py-3"
+        >
+          <Upload className="w-5 h-5" />
+          Upload Document
+        </button>
       </div>
 
-      {/* Upload Section */}
-      <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <FileText className="w-5 h-5" />
-          Add Document Reference
-        </h2>
-        <form onSubmit={handleUpload} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <label className="label">Document Name</label>
-              <input
-                type="text"
-                value={uploadForm.name}
-                onChange={(e) => setUploadForm({...uploadForm, name: e.target.value})}
-                className="input"
-                placeholder="Enter document name"
-              />
-            </div>
-            <div>
-              <label className="label">Category</label>
-              <select
-                value={uploadForm.category}
-                onChange={(e) => setUploadForm({...uploadForm, category: e.target.value})}
-                className="input"
-              >
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="label">Description</label>
-            <input
-              type="text"
-              value={uploadForm.description}
-              onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})}
-              className="input"
-              placeholder="Brief description of the document"
-            />
-          </div>
-
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
-              <input
-                type="file"
-                onChange={handleFileSelect}
-                className="hidden"
-                id="document-upload"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-              />
-              <label
-                htmlFor="document-upload"
-                className="btn-secondary cursor-pointer inline-flex w-full justify-center"
-              >
-                <FolderOpen className="w-4 h-4 mr-2" />
-                {selectedFile ? selectedFile.name : 'Choose File'}
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={uploading || !selectedFile}
-              className="btn-primary disabled:opacity-50"
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        {documentTypes.map(type => {
+          const count = documents.filter(d => d.type === type.id).length;
+          const Icon = type.icon;
+          return (
+            <div
+              key={type.id}
+              onClick={() => setSelectedType(selectedType === type.id ? 'all' : type.id)}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedType === type.id 
+                  ? `border-${type.color}-500 bg-${type.color}-50` 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
             >
-              {uploading ? 'Saving...' : 'Save Document'}
-            </button>
-          </div>
-        </form>
+              <div className={`w-10 h-10 rounded-lg bg-${type.color}-100 flex items-center justify-center mb-2`}>
+                <Icon className={`w-5 h-5 text-${type.color}-600`} />
+              </div>
+              <p className="font-semibold text-gray-900 text-sm">{count}</p>
+              <p className="text-xs text-gray-600">{type.label}</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Filters */}
       <div className="card">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[300px]">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
             <div className="relative">
-              <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input pl-10"
+                className="input pl-10 w-full"
               />
             </div>
           </div>
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="input"
-          >
-            <option value="All">All Categories</option>
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="input appearance-none pr-10"
+            >
+              <option value="all">All Types</option>
+              {documentTypes.map(type => (
+                <option key={type.id} value={type.id}>{type.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+          </div>
         </div>
       </div>
 
       {/* Documents List */}
       <div className="card">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          </div>
-        ) : filteredDocuments.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <FolderOpen className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>No documents found</p>
+        {filteredDocuments.length === 0 ? (
+          <div className="p-12 text-center">
+            <FolderOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No documents found</p>
+            <p className="text-gray-400 text-sm">
+              {searchTerm || selectedType !== 'all' 
+                ? 'Try adjusting your search or filters' 
+                : 'Upload your first document to get started'}
+            </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {filteredDocuments.map((document) => (
-              <div key={document.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex-shrink-0">
-                  {getFileIcon(document.fileType)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-gray-900 truncate">
-                    {document.name}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredDocuments.map(doc => {
+              const type = getDocumentType(doc.type);
+              const Icon = type.icon;
+              
+              return (
+                <div
+                  key={doc.id}
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-lg bg-${type.color}-100 flex items-center justify-center`}>
+                      <Icon className={`w-6 h-6 text-${type.color}-600`} />
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${type.color}-100 text-${type.color}-700`}>
+                      {type.label}
+                    </span>
+                  </div>
+                  
+                  <h3 className="font-semibold text-gray-900 mb-1 truncate" title={doc.name}>
+                    {doc.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {document.category} • {formatFileSize(document.fileSize || 0)}
-                    {document.createdAt?.toDate ? ` • ${format(new Date(document.createdAt.toDate()), 'MMM d, yyyy')}` : document.createdAt ? ` • ${format(new Date(document.createdAt), 'MMM d, yyyy')}` : ''}
-                  </p>
-                  {document.description && (
-                    <p className="text-xs text-gray-600 mt-1 truncate">{document.description}</p>
+                  {doc.description && (
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{doc.description}</p>
                   )}
-                </div>
-                <div className="flex gap-2">
-                  {isAdmin() && (
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <span>{formatFileSize(doc.size)}</span>
+                    <span>{doc.format?.toUpperCase()}</span>
+                  </div>
+
+                  {doc.createdAt && (
+                    <p className="text-xs text-gray-400 mb-3">
+                      {format(new Date(doc.createdAt.toDate()), 'MMM d, yyyy')}
+                    </p>
+                  )}
+
+                  <div className="flex gap-2">
                     <button
-                      onClick={() => handleDelete(document)}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
-                      title="Delete"
+                      onClick={() => setPreviewDoc(doc)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Eye className="w-4 h-4" />
+                      View
                     </button>
-                  )}
+                    <a
+                      href={doc.url}
+                      download={doc.name}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                    </a>
+                    {isAdmin() && (
+                      <button
+                        onClick={() => handleDelete(doc)}
+                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Upload Document</h2>
+              <button onClick={() => setShowUploadModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Document Type</label>
+                <select
+                  value={uploadForm.type}
+                  onChange={(e) => setUploadForm({ ...uploadForm, type: e.target.value })}
+                  className="input w-full"
+                  required
+                >
+                  {documentTypes.map(type => (
+                    <option key={type.id} value={type.id}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Document Name</label>
+                <input
+                  type="text"
+                  value={uploadForm.name}
+                  onChange={(e) => setUploadForm({ ...uploadForm, name: e.target.value })}
+                  placeholder="e.g., Company Registration 2025"
+                  className="input w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+                <textarea
+                  value={uploadForm.description}
+                  onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
+                  placeholder="Add any notes about this document..."
+                  rows={3}
+                  className="input w-full resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors">
+                  <input
+                    type="file"
+                    onChange={handleFileSelect}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+                    className="hidden"
+                    id="file-upload"
+                    required
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-600">
+                      {selectedFile ? selectedFile.name : 'Click to select a file'}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PDF, Word, Images up to 10MB
+                    </p>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(false)}
+                  className="flex-1 py-3 border border-gray-200 rounded-xl font-medium hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={uploading || !selectedFile}
+                  className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{previewDoc.name}</h2>
+                <p className="text-sm text-gray-500">{getDocumentType(previewDoc.type).label}</p>
+              </div>
+              <button onClick={() => setPreviewDoc(null)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 h-[70vh]">
+              {previewDoc.format === 'pdf' ? (
+                <iframe
+                  src={previewDoc.url}
+                  className="w-full h-full rounded-lg"
+                  title={previewDoc.name}
+                />
+              ) : (
+                <img
+                  src={previewDoc.url}
+                  alt={previewDoc.name}
+                  className="max-w-full max-h-full object-contain mx-auto"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
