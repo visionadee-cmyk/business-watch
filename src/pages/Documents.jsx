@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { 
   Upload, FileText, Search, Trash2, 
   Building2, FileCheck, Briefcase, Landmark, File, X,
-  ChevronDown, Eye, FolderOpen, Download, Pencil
+  ChevronDown, Eye, FolderOpen, Download, Pencil,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { 
   collection, 
   query, 
@@ -18,6 +22,9 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
+
+// Set up PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const documentTypes = [
   { id: 'registration', label: 'Company Registration', icon: Building2, color: 'blue' },
@@ -49,6 +56,9 @@ const Documents = () => {
     type: 'registration',
     description: ''
   });
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfError, setPdfError] = useState(null);
 
   const { isAdmin } = useAuth();
 
@@ -205,6 +215,28 @@ const Documents = () => {
       console.error('Error parsing timestamp:', e);
     }
     return null;
+  };
+
+  // PDF Viewer handlers
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+    setPageNumber(1);
+    setPdfError(null);
+  };
+
+  const onDocumentLoadError = (error) => {
+    console.error('Error loading PDF:', error);
+    setPdfError(error.message);
+  };
+
+  const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
+  const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages || 1));
+
+  const closePreview = () => {
+    setPreviewDoc(null);
+    setPageNumber(1);
+    setNumPages(null);
+    setPdfError(null);
   };
 
   if (loading) {
@@ -557,48 +589,89 @@ const Documents = () => {
       {/* Preview Modal */}
       {previewDoc && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex justify-between items-center p-4 border-b">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">{previewDoc.name}</h2>
                 <p className="text-sm text-gray-500">{getDocumentType(previewDoc.type).label}</p>
               </div>
-              <button onClick={() => setPreviewDoc(null)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href={previewDoc.url}
+                  download={previewDoc.name}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Download"
+                >
+                  <Download className="w-5 h-5" />
+                </a>
+                <button onClick={closePreview} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
-            <div className="p-4 h-[70vh]">
+            <div className="flex-1 overflow-auto p-4 bg-gray-100">
               {previewDoc.format === 'pdf' ? (
-                <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg">
-                  <FileText className="w-24 h-24 text-red-500 mb-6" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{previewDoc.name}</h3>
-                  <p className="text-gray-500 mb-2">{getDocumentType(previewDoc.type).label}</p>
-                  <p className="text-sm text-gray-400 mb-6">{formatFileSize(previewDoc.size)} • PDF Document</p>
-                  <div className="flex gap-4">
+                pdfError ? (
+                  <div className="flex flex-col items-center justify-center h-full bg-white rounded-lg p-8">
+                    <FileText className="w-16 h-16 text-red-500 mb-4" />
+                    <p className="text-gray-600 mb-4">Failed to load PDF</p>
                     <a
                       href={previewDoc.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-primary flex items-center gap-2"
+                      className="btn-primary"
                     >
-                      <Eye className="w-5 h-5" />
-                      Open PDF
-                    </a>
-                    <a
-                      href={previewDoc.url}
-                      download={previewDoc.name}
-                      className="btn-secondary flex items-center gap-2"
-                    >
-                      <Download className="w-5 h-5" />
-                      Download
+                      Open in New Tab
                     </a>
                   </div>
-                </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <Document
+                      file={previewDoc.url.replace('/image/upload/', '/raw/upload/')}
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      onLoadError={onDocumentLoadError}
+                      loading={
+                        <div className="flex items-center justify-center h-96">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        </div>
+                      }
+                    >
+                      <Page
+                        pageNumber={pageNumber}
+                        renderTextLayer={true}
+                        renderAnnotationLayer={true}
+                        className="shadow-lg"
+                        width={800}
+                      />
+                    </Document>
+                    {numPages > 1 && (
+                      <div className="flex items-center gap-4 mt-4 bg-white px-4 py-2 rounded-lg shadow">
+                        <button
+                          onClick={goToPrevPage}
+                          disabled={pageNumber <= 1}
+                          className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <span className="text-sm font-medium">
+                          Page {pageNumber} of {numPages}
+                        </span>
+                        <button
+                          onClick={goToNextPage}
+                          disabled={pageNumber >= numPages}
+                          className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
               ) : (
                 <img
                   src={previewDoc.url}
                   alt={previewDoc.name}
-                  className="max-w-full max-h-full object-contain mx-auto"
+                  className="max-w-full max-h-full object-contain mx-auto shadow-lg rounded-lg"
                 />
               )}
             </div>
