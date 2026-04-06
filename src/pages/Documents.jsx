@@ -187,6 +187,25 @@ const Documents = () => {
     return url;
   };
 
+  // Helper to safely format Firestore timestamps
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return null;
+    try {
+      // If it's a Firestore Timestamp with toDate method
+      if (timestamp.toDate) {
+        return timestamp.toDate();
+      }
+      // If it's already a Date or can be parsed
+      const date = new Date(timestamp);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    } catch (e) {
+      console.error('Error parsing timestamp:', e);
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -320,7 +339,7 @@ const Documents = () => {
 
                   {doc.createdAt && (
                     <p className="text-xs text-gray-400 mb-3">
-                      {format(new Date(doc.createdAt.toDate()), 'MMM d, yyyy')}
+                      {formatTimestamp(doc.createdAt) && format(formatTimestamp(doc.createdAt), 'MMM d, yyyy')}
                     </p>
                   )}
 
