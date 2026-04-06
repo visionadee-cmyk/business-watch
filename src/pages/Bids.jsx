@@ -837,7 +837,10 @@ const Bids = ({ initialFilter }) => {
 
       {/* Stats - Compact on mobile */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4">
-        <div className="card bg-blue-50 border-blue-200 p-2 sm:p-4">
+        <div 
+          className="card bg-blue-50 border-blue-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('All'); setFilterResult('All'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <FileText className="w-5 h-5 sm:w-8 sm:h-8 text-blue-600" />
             <div>
@@ -846,7 +849,10 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-green-50 border-green-200 p-2 sm:p-4">
+        <div 
+          className="card bg-green-50 border-green-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('Open'); setFilterResult('All'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-green-600" />
             <div>
@@ -857,7 +863,10 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-yellow-50 border-yellow-200 p-2 sm:p-4">
+        <div 
+          className="card bg-yellow-50 border-yellow-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('All'); setFilterResult('Won'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <DollarSign className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-600" />
             <div>
@@ -868,7 +877,10 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-red-50 border-red-200 p-2 sm:p-4">
+        <div 
+          className="card bg-red-50 border-red-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('All'); setFilterResult('Lost'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <XCircle className="w-5 h-5 sm:w-8 sm:h-8 text-red-600" />
             <div>
@@ -879,7 +891,10 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-purple-50 border-purple-200 p-2 sm:p-4">
+        <div 
+          className="card bg-purple-50 border-purple-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('All'); setFilterResult('Pending'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-purple-600" />
             <div>
@@ -890,7 +905,10 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-orange-50 border-orange-200 p-2 sm:p-4 col-span-2 sm:col-span-1">
+        <div 
+          className="card bg-orange-50 border-orange-200 p-2 sm:p-4 col-span-2 sm:col-span-1 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => { setFilterStatus('Missed Registered'); setFilterResult('All'); }}
+        >
           <div className="flex items-center gap-2 sm:gap-3">
             <Calendar className="w-5 h-5 sm:w-8 sm:h-8 text-orange-600" />
             <div>

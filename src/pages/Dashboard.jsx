@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   FileText, 
   DollarSign, 
@@ -45,6 +46,7 @@ import {
 import { db } from '../services/firebase';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     activeTenders: 0,
     submittedBids: 0,
@@ -371,12 +373,12 @@ const Dashboard = () => {
   };
 
   const statCards = [
-    { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue' },
-    { title: 'Won Tenders', value: stats.wonTenders, icon: CheckCircle, color: 'green' },
-    { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple' },
-    { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green' },
-    { title: 'Total Cost', value: `MVR ${(stats.totalExpenses || 0).toLocaleString()}`, icon: TrendingDown, color: 'red' },
-    { title: 'Net Profit', value: `MVR ${(stats.netProfit || 0).toLocaleString()}`, icon: Wallet, color: 'teal' }
+    { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue', path: '/tenders' },
+    { title: 'Won Tenders', value: stats.wonTenders, icon: CheckCircle, color: 'green', path: '/bids?filter=won' },
+    { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple', path: '/bids' },
+    { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green', path: '/accounts' },
+    { title: 'Total Cost', value: `MVR ${(stats.totalExpenses || 0).toLocaleString()}`, icon: TrendingDown, color: 'red', path: '/expenses' },
+    { title: 'Net Profit', value: `MVR ${(stats.netProfit || 0).toLocaleString()}`, icon: Wallet, color: 'teal', path: '/budget' }
   ];
 
   const getActivityIcon = (type) => {
@@ -431,7 +433,11 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {statCards.map((stat, index) => (
-          <div key={index} className="card p-6">
+          <div 
+            key={index} 
+            className="card p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => stat.path && navigate(stat.path)}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">{stat.title}</p>
