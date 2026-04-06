@@ -2,14 +2,10 @@ import { useState, useEffect } from 'react';
 import { 
   Upload, FileText, Search, Trash2, 
   Building2, FileCheck, Briefcase, Landmark, File, X,
-  ChevronDown, Eye, FolderOpen, Download, Pencil,
-  ChevronLeft, ChevronRight
+  ChevronDown, Eye, FolderOpen, Download, Pencil
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { 
   collection, 
   query, 
@@ -22,9 +18,6 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
-
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const documentTypes = [
   { id: 'registration', label: 'Company Registration', icon: Building2, color: 'blue' },
@@ -44,8 +37,6 @@ const Documents = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [previewDoc, setPreviewDoc] = useState(null);
-  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
-  const [fetchingPdf, setFetchingPdf] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadForm, setUploadForm] = useState({
     name: '',
@@ -58,9 +49,6 @@ const Documents = () => {
     type: 'registration',
     description: ''
   });
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pdfError, setPdfError] = useState(null);
 
   const { isAdmin } = useAuth();
 
@@ -222,54 +210,9 @@ const Documents = () => {
     return null;
   };
 
-  // PDF Viewer handlers
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-    setPageNumber(1);
-    setPdfError(null);
-  };
-
-  const onDocumentLoadError = (error) => {
-    console.error('Error loading PDF:', error);
-    setPdfError(error.message);
-  };
-
-  const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
-  const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages || 1));
-
   const closePreview = () => {
-    if (pdfBlobUrl) {
-      URL.revokeObjectURL(pdfBlobUrl);
-      setPdfBlobUrl(null);
-    }
     setPreviewDoc(null);
-    setPageNumber(1);
-    setNumPages(null);
-    setPdfError(null);
-    setFetchingPdf(false);
   };
-
-  // Fetch PDF as blob when preview opens
-  useEffect(() => {
-    if (previewDoc?.format === 'pdf' && !pdfBlobUrl) {
-      const fetchPdf = async () => {
-        setFetchingPdf(true);
-        try {
-          const response = await fetch(getCloudinaryViewUrl(previewDoc.url));
-          if (!response.ok) throw new Error('Failed to fetch PDF');
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          setPdfBlobUrl(url);
-        } catch (err) {
-          console.error('Error fetching PDF:', err);
-          setPdfError(err.message);
-        } finally {
-          setFetchingPdf(false);
-        }
-      };
-      fetchPdf();
-    }
-  }, [previewDoc, pdfBlobUrl]);
 
   if (loading) {
     return (
