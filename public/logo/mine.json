@@ -1,0 +1,81 @@
+ git add README.md CHANGELOG.md src/pages/Dashboard.jsx
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+>> - Update CHANGELOG.md with v1.5.0 release notes for Capital feature
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+>> - Update CHANGELOG.md with v1.5.0 release notes for Capital feature
+>> - Fix Dashboard Monthly Revenue chPS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+>> - Update CHANGELOG.md with v1.5.0 release notes for Capital feature
+>> - Fix Dashboard Monthly Revenue chart to use submissionDeadline (due date)
+>>   instead of submittedAt (logged date)
+>> 
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 199 insertions(+), 12 deletions(-)
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git push origin main
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.Delta compression using up to 4 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (6/6), 2.81 KiB | 1.40 MiB/s, done.
+Total 6 (delta 5), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To https://github.com/bussinesswatch/Business-Watch.git
+   7a6422d..e8b43b6  main -> main
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git add README.md CHANGELOG.md src/pages/Dashboard.jsx
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+>> - Update CHANGELOG.md with v1.5.0 release notes for Capital feature
+>> - Fix Dashboard Monthly Revenue chart to use submissionDeadline (due date)
+>>   instead of submittedAt (logged date)
+>> 
+>> Refs: Capital enhancement and chart accuracy improvements"
+e submissionDeadline (due date)\x0a  instead of submittedAt (logged date)\x0a\x0aRefs: Capital enhancement and chart accuracy improvements";203b8a9c-5539-4e0f-8895-2378119746f3[main 81e8d2c] docs: Update documentation and fix chart date logic
+ Committer: Mohamed Maushaz <maushaz@madihaa.com.mv>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+Writing objects: 100% (6/6), 2.81 KiB | 1.40 MiB/s, done.
+Total 6 (delta 5), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To https://github.com/bussinesswatch/Business-Watch.git
+   7a6422d..e8b43b6  main -> main
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git add README.md CHANGELOG.md src/pages/Dashboard.jsx
+PS C:\Users\maushaz.MADIHAA\Desktop\Rettey\bussiness_watch\business-watch> git commit -m "docs: Update documentation and fix chart date logic
+>> 
+>> - Update README.md with Capital Tracking feature details
+>> - Update CHANGELOG.md with v1.5.0 release notes for Capital feature
+>> - Fix Dashboard Monthly Revenue chart to use submissionDeadline (due date)
+>>   instead of submittedAt (logged date)

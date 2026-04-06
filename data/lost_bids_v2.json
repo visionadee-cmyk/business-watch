@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "total_tenders": 3,
+    "last_updated": "2026-04-01T06:07:15.323Z"
+  },
+  "tenders": [
+    {
+      "id": "383803",
+      "requirements": {
+        "fenders": 50
+      },
+      "title": "Test 50 fenders"
+    },
+    {
+      "id": "383540",
+      "requirements": {
+        "monitors": 44,
+        "laptops": 1
+      },
+      "title": "Test 44 monitors 1 laptop"
+    }
+  ]
+}

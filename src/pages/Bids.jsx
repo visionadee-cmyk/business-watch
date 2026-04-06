@@ -18,6 +18,7 @@ import {
 import { db } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
 import BidQuotation from '../components/BidQuotation';
+import OpenBidsReport from '../components/OpenBidsReport';
 
 const Bids = ({ initialFilter }) => {
   const [bids, setBids] = useState([]);
@@ -34,6 +35,7 @@ const Bids = ({ initialFilter }) => {
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
   const [showQuotation, setShowQuotation] = useState(false);
   const [quotationBid, setQuotationBid] = useState(null);
+  const [showOpenBidsReport, setShowOpenBidsReport] = useState(false);
   
   // User-defined cost types persisted in localStorage
   const [userDefinedCostTypes, setUserDefinedCostTypes] = useState(() => {
@@ -831,6 +833,15 @@ const Bids = ({ initialFilter }) => {
             <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="hidden sm:inline">Create</span>
             <span className="sm:hidden">Add</span>
+          </button>
+          
+          <button 
+            onClick={() => setShowOpenBidsReport(true)} 
+            className="btn-secondary flex items-center gap-1 sm:gap-2 text-sm bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
+          >
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Open Bids Report</span>
+            <span className="sm:hidden">Report</span>
           </button>
         </div>
       </div>
@@ -2278,6 +2289,12 @@ const Bids = ({ initialFilter }) => {
             setShowQuotation(false);
             setQuotationBid(null);
           }} 
+        />
+      )}
+      {showOpenBidsReport && (
+        <OpenBidsReport 
+          bids={bids} 
+          onClose={() => setShowOpenBidsReport(false)} 
         />
       )}
     </div>
