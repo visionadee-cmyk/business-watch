@@ -193,7 +193,7 @@ const Documents = () => {
 
   const getCloudinaryViewUrl = (url) => {
     if (!url) return '';
-    // Use /raw/ delivery type for PDFs to avoid image processing
+    // Convert to /raw/ for direct PDF access
     return url.replace('/image/upload/', '/raw/upload/');
   };
 
@@ -635,74 +635,19 @@ const Documents = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-auto p-4 bg-gray-100">
+            <div className="flex-1 overflow-hidden bg-gray-100">
               {previewDoc.format === 'pdf' ? (
-                pdfError ? (
-                  <div className="flex flex-col items-center justify-center h-full bg-white rounded-lg p-8">
-                    <FileText className="w-16 h-16 text-red-500 mb-4" />
-                    <p className="text-gray-600 mb-4">Failed to load PDF</p>
-                    <a
-                      href={previewDoc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary"
-                    >
-                      Open in New Tab
-                    </a>
-                  </div>
-                ) : fetchingPdf || !pdfBlobUrl ? (
-                  <div className="flex flex-col items-center justify-center h-full bg-white rounded-lg p-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                    <p className="text-gray-600">Loading PDF...</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <Document
-                      file={pdfBlobUrl}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      onLoadError={onDocumentLoadError}
-                      loading={
-                        <div className="flex items-center justify-center h-96">
-                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                        </div>
-                      }
-                    >
-                      <Page
-                        pageNumber={pageNumber}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                        className="shadow-lg"
-                        width={800}
-                      />
-                    </Document>
-                    {numPages > 1 && (
-                      <div className="flex items-center gap-4 mt-4 bg-white px-4 py-2 rounded-lg shadow">
-                        <button
-                          onClick={goToPrevPage}
-                          disabled={pageNumber <= 1}
-                          className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <span className="text-sm font-medium">
-                          Page {pageNumber} of {numPages}
-                        </span>
-                        <button
-                          onClick={goToNextPage}
-                          disabled={pageNumber >= numPages}
-                          className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )
+                <iframe
+                  src={getCloudinaryViewUrl(previewDoc.url)}
+                  className="w-full h-full border-0"
+                  title={previewDoc.name}
+                  type="application/pdf"
+                />
               ) : (
                 <img
                   src={previewDoc.url}
                   alt={previewDoc.name}
-                  className="max-w-full max-h-full object-contain mx-auto shadow-lg rounded-lg"
+                  className="max-w-full max-h-full object-contain mx-auto p-4"
                 />
               )}
             </div>
