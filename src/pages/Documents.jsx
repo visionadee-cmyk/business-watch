@@ -182,7 +182,8 @@ const Documents = () => {
   const getCloudinaryViewUrl = (url, format) => {
     if (!url) return '';
     if (format === 'pdf') {
-      return url.replace('/upload/', '/raw/');
+      // Use Google Docs viewer for reliable PDF embedding
+      return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
     }
     return url;
   };
