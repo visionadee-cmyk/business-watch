@@ -197,6 +197,12 @@ const Documents = () => {
     return url.replace('/image/upload/', '/raw/upload/fl_inline/');
   };
 
+  const getPdfThumbnailUrl = (url) => {
+    if (!url) return '';
+    // Convert PDF URL to JPG thumbnail of first page
+    return url.replace('/image/upload/', '/image/upload/pg_1/w_800,h_1000,c_fit/').replace('.pdf', '.jpg');
+  };
+
   // Helper to safely format Firestore timestamps
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return null;
@@ -635,14 +641,32 @@ const Documents = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-hidden bg-gray-100">
+            <div className="flex-1 overflow-auto p-4 bg-gray-100 flex items-center justify-center">
               {previewDoc.format === 'pdf' ? (
-                <iframe
-                  src={getCloudinaryViewUrl(previewDoc.url)}
-                  className="w-full h-full border-0"
-                  title={previewDoc.name}
-                  type="application/pdf"
-                />
+                <div className="flex flex-col items-center max-w-full">
+                  <img
+                    src={getPdfThumbnailUrl(previewDoc.url)}
+                    alt={previewDoc.name}
+                    className="max-w-full max-h-[70vh] object-contain shadow-lg rounded-lg bg-white"
+                    onError={(e) => {
+                      // Fallback if thumbnail fails
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="hidden flex-col items-center justify-center p-8">
+                    <FileText className="w-24 h-24 text-red-500 mb-4" />
+                    <p className="text-gray-600 mb-4">PDF preview not available</p>
+                    <a
+                      href={previewDoc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                    >
+                      Download PDF
+                    </a>
+                  </div>
+                </div>
               ) : (
                 <img
                   src={previewDoc.url}
