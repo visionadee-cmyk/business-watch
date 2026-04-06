@@ -182,8 +182,8 @@ const Documents = () => {
   const getCloudinaryViewUrl = (url, format) => {
     if (!url) return '';
     if (format === 'pdf') {
-      // Use Google Docs viewer for reliable PDF embedding
-      return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
+      // Use Mozilla PDF.js viewer for reliable embedding
+      return `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url.replace('/image/upload/', '/raw/upload/'))}`;
     }
     return url;
   };
@@ -569,11 +569,31 @@ const Documents = () => {
             </div>
             <div className="p-4 h-[70vh]">
               {previewDoc.format === 'pdf' ? (
-                <iframe
-                  src={getCloudinaryViewUrl(previewDoc.url, previewDoc.format)}
-                  className="w-full h-full rounded-lg"
-                  title={previewDoc.name}
-                />
+                <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg">
+                  <FileText className="w-24 h-24 text-red-500 mb-6" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{previewDoc.name}</h3>
+                  <p className="text-gray-500 mb-2">{getDocumentType(previewDoc.type).label}</p>
+                  <p className="text-sm text-gray-400 mb-6">{formatFileSize(previewDoc.size)} • PDF Document</p>
+                  <div className="flex gap-4">
+                    <a
+                      href={previewDoc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary flex items-center gap-2"
+                    >
+                      <Eye className="w-5 h-5" />
+                      Open PDF
+                    </a>
+                    <a
+                      href={previewDoc.url}
+                      download={previewDoc.name}
+                      className="btn-secondary flex items-center gap-2"
+                    >
+                      <Download className="w-5 h-5" />
+                      Download
+                    </a>
+                  </div>
+                </div>
               ) : (
                 <img
                   src={previewDoc.url}
