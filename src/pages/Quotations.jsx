@@ -438,10 +438,10 @@ const Quotations = () => {
                 {/* Table Headers */}
                 <div className="grid grid-cols-12 gap-2 mb-1 px-1">
                   <div className="col-span-3 text-xs font-semibold text-gray-600">Name</div>
-                  <div className="col-span-4 text-xs font-semibold text-gray-600">Specification</div>
+                  <div className="col-span-3 text-xs font-semibold text-gray-600">Specification</div>
                   <div className="col-span-1 text-xs font-semibold text-gray-600">Unit</div>
                   <div className="col-span-2 text-xs font-semibold text-gray-600 text-center">Qty</div>
-                  <div className="col-span-1 text-xs font-semibold text-gray-600 text-right">Price</div>
+                  <div className="col-span-2 text-xs font-semibold text-gray-600 text-right">Price</div>
                   <div className="col-span-1"></div>
                 </div>
                 <div className="space-y-2">
@@ -456,7 +456,7 @@ const Quotations = () => {
                           className="input text-sm"
                         />
                       </div>
-                      <div className="col-span-4">
+                      <div className="col-span-3">
                         <input
                           type="text"
                           placeholder="Specification/description"
@@ -483,7 +483,7 @@ const Quotations = () => {
                           className="input text-sm text-center"
                         />
                       </div>
-                      <div className="col-span-1">
+                      <div className="col-span-2">
                         <input
                           type="number"
                           placeholder="Price"
@@ -518,15 +518,15 @@ const Quotations = () => {
               <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">MVR {formData.subTotal.toLocaleString()}</span>
+                  <span className="font-medium">MVR {formData.subTotal.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax (6%):</span>
-                  <span className="font-medium">MVR {formData.tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                  <span className="font-medium">MVR {formData.tax.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span className="text-green-700">MVR {formData.total.toLocaleString()}</span>
+                  <span className="text-green-700">MVR {formData.total.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
                 </div>
               </div>
 
