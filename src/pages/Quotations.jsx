@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { collection, query, getDocs, where, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { FileText, Plus, Search, Edit2, Trash2, DollarSign, CheckCircle, X, Link as LinkIcon } from 'lucide-react';
+import { FileText, Plus, Search, Edit2, Trash2, DollarSign, CheckCircle, X, Link as LinkIcon, Printer, Download } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const Quotations = () => {
   const [quotations, setQuotations] = useState([]);
@@ -11,6 +13,7 @@ const Quotations = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingQuote, setEditingQuote] = useState(null);
   const [linkedBidId, setLinkedBidId] = useState(null);
+  const [showQuotationPreview, setShowQuotationPreview] = useState(false);
 
   const [formData, setFormData] = useState({
     quoteNumber: '',
@@ -76,7 +79,7 @@ const Quotations = () => {
   const addItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { item: '', description: '', qty: 1, unitPrice: 0, total: 0 }]
+      items: [...formData.items, { item: '', description: '', unit: 'nos', qty: 1, unitPrice: 0, total: 0 }]
     });
   };
 
@@ -424,13 +427,22 @@ const Quotations = () => {
               {/* Items */}
               <div>
                 <label className="block text-sm font-medium mb-2">Items</label>
+                {/* Table Headers */}
+                <div className="grid grid-cols-12 gap-2 mb-1 px-1">
+                  <div className="col-span-3 text-xs font-semibold text-gray-600">Name</div>
+                  <div className="col-span-4 text-xs font-semibold text-gray-600">Specification</div>
+                  <div className="col-span-1 text-xs font-semibold text-gray-600">Unit</div>
+                  <div className="col-span-2 text-xs font-semibold text-gray-600 text-center">Qty</div>
+                  <div className="col-span-1 text-xs font-semibold text-gray-600 text-right">Price</div>
+                  <div className="col-span-1"></div>
+                </div>
                 <div className="space-y-2">
                   {formData.items.map((item, index) => (
                     <div key={index} className="grid grid-cols-12 gap-2 items-end">
                       <div className="col-span-3">
                         <input
                           type="text"
-                          placeholder="Item"
+                          placeholder="Item name"
                           value={item.item}
                           onChange={(e) => updateItem(index, 'item', e.target.value)}
                           className="input text-sm"
@@ -439,9 +451,18 @@ const Quotations = () => {
                       <div className="col-span-4">
                         <input
                           type="text"
-                          placeholder="Description"
+                          placeholder="Specification/description"
                           value={item.description}
                           onChange={(e) => updateItem(index, 'description', e.target.value)}
+                          className="input text-sm"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <input
+                          type="text"
+                          placeholder="Unit"
+                          value={item.unit || 'nos'}
+                          onChange={(e) => updateItem(index, 'unit', e.target.value)}
                           className="input text-sm"
                         />
                       </div>
@@ -451,16 +472,16 @@ const Quotations = () => {
                           placeholder="Qty"
                           value={item.qty}
                           onChange={(e) => updateItem(index, 'qty', parseInt(e.target.value) || 0)}
-                          className="input text-sm"
+                          className="input text-sm text-center"
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <input
                           type="number"
                           placeholder="Price"
                           value={item.unitPrice}
                           onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                          className="input text-sm"
+                          className="input text-sm text-right"
                         />
                       </div>
                       <div className="col-span-1">
@@ -493,7 +514,7 @@ const Quotations = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax (6%):</span>
-                  <span className="font-medium">MVR {formData.tax.toLocaleString()}</span>
+                  <span className="font-medium">MVR {formData.tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
@@ -517,6 +538,14 @@ const Quotations = () => {
                   {editingQuote ? 'Update Quotation' : 'Create Quotation'}
                 </button>
                 <button 
+                  type="button"
+                  onClick={() => setShowQuotationPreview(true)}
+                  className="btn-secondary flex items-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print
+                </button>
+                <button 
                   type="button" 
                   onClick={() => setShowModal(false)}
                   className="btn-secondary px-6"
@@ -528,6 +557,226 @@ const Quotations = () => {
           </div>
         </div>
       )}
+
+      {/* Quotation Preview Modal */}
+      {showQuotationPreview && (
+        <QuotationPreview 
+          quotation={formData}
+          editingQuote={editingQuote}
+          onClose={() => setShowQuotationPreview(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Quotation Preview Component
+const QuotationPreview = ({ quotation, editingQuote, onClose }) => {
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const quotationRef = useRef(null);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!quotationRef.current) return;
+    setIsGeneratingPDF(true);
+    try {
+      const canvas = await html2canvas(quotationRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#fff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      let imgY = 10;
+      const scaledHeight = imgHeight * ratio;
+      
+      if (scaledHeight > pdfHeight - 20) {
+        let heightLeft = scaledHeight;
+        let position = 0;
+        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        heightLeft -= (pdfHeight - 20);
+        while (heightLeft > 0) {
+          position = heightLeft - scaledHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, imgHeight * ratio);
+          heightLeft -= (pdfHeight - 20);
+        }
+      } else {
+        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      }
+      
+      const date = new Date().toISOString().split('T')[0];
+      pdf.save(`Quotation_${quotation.quoteNumber || 'Draft'}_${date}.pdf`);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try using the Print button instead.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+          <h2 className="text-lg font-bold">Quotation Preview</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrint}
+              className="btn-secondary flex items-center gap-2 text-sm"
+            >
+              <Printer className="w-4 h-4" />
+              Print
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+              className="btn-primary flex items-center gap-2 text-sm"
+            >
+              {isGeneratingPDF ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Download PDF
+                </>
+              )}
+            </button>
+            <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Quotation Content */}
+        <div className="flex-1 overflow-y-auto p-8 bg-gray-100">
+          <div ref={quotationRef} className="bg-white p-8 shadow-lg max-w-3xl mx-auto print-container">
+            {/* Company Letterhead */}
+            <div className="text-center border-b-2 border-gray-300 pb-4 mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">RETTEY GENERAL TRADING</h1>
+              <p className="text-sm text-gray-600">M. Thoddoo, Kaafu Atoll, Maldives</p>
+              <p className="text-sm text-gray-600">Phone: +960 123-4567 | Email: info@rettey.com</p>
+            </div>
+
+            {/* Quotation Header */}
+            <div className="flex justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-800">QUOTATION</h2>
+                <p className="text-sm text-gray-600">Quote #: {quotation.quoteNumber || 'Draft'}</p>
+                <p className="text-sm text-gray-600">Date: {new Date().toLocaleDateString()}</p>
+                {quotation.validUntil && (
+                  <p className="text-sm text-gray-600">Valid Until: {quotation.validUntil}</p>
+                )}
+              </div>
+              <div className="text-right">
+                <p className="font-semibold">To:</p>
+                <p className="text-gray-800">{quotation.clientName || 'Client'}</p>
+              </div>
+            </div>
+
+            {/* Description */}
+            {quotation.description && (
+              <div className="mb-4">
+                <p className="text-gray-700 font-medium">{quotation.description}</p>
+              </div>
+            )}
+
+            {/* Items Table */}
+            <table className="w-full mb-6 border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b-2 border-gray-300">
+                  <th className="text-left py-2 px-2 text-sm font-semibold">No.</th>
+                  <th className="text-left py-2 px-2 text-sm font-semibold">Item</th>
+                  <th className="text-left py-2 px-2 text-sm font-semibold">Specification</th>
+                  <th className="text-center py-2 px-2 text-sm font-semibold">Unit</th>
+                  <th className="text-center py-2 px-2 text-sm font-semibold">Qty</th>
+                  <th className="text-right py-2 px-2 text-sm font-semibold">Unit Price</th>
+                  <th className="text-right py-2 px-2 text-sm font-semibold">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quotation.items.map((item, index) => (
+                  <tr key={index} className="border-b border-gray-200">
+                    <td className="py-2 px-2 text-sm">{index + 1}</td>
+                    <td className="py-2 px-2 text-sm">{item.item}</td>
+                    <td className="py-2 px-2 text-sm">{item.description}</td>
+                    <td className="py-2 px-2 text-sm text-center">{item.unit || 'nos'}</td>
+                    <td className="py-2 px-2 text-sm text-center">{item.qty}</td>
+                    <td className="py-2 px-2 text-sm text-right">MVR {item.unitPrice?.toLocaleString()}</td>
+                    <td className="py-2 px-2 text-sm text-right font-medium">MVR {(item.qty * item.unitPrice)?.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Totals */}
+            <div className="border-t-2 border-gray-300 pt-4">
+              <div className="flex justify-end">
+                <div className="w-64 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Subtotal:</span>
+                    <span>MVR {quotation.subTotal?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Tax (6%):</span>
+                    <span>MVR {quotation.tax?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold border-t border-gray-300 pt-2">
+                    <span>Total:</span>
+                    <span className="text-green-700">MVR {quotation.total?.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Terms */}
+            {quotation.terms && (
+              <div className="mt-8 pt-4 border-t border-gray-200">
+                <h3 className="font-semibold mb-2">Terms & Conditions:</h3>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">{quotation.terms}</p>
+              </div>
+            )}
+
+            {/* Signature Area */}
+            <div className="mt-12 pt-8">
+              <div className="flex justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Prepared by:</p>
+                  <div className="mt-8 border-t border-gray-400 w-48"></div>
+                  <p className="text-sm font-medium mt-1">Authorized Signature</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Accepted by:</p>
+                  <div className="mt-8 border-t border-gray-400 w-48"></div>
+                  <p className="text-sm font-medium mt-1">Client Signature</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @media print {
+          .print-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
