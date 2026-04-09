@@ -362,31 +362,31 @@ const BidQuotation = ({ bid, onClose }) => {
 
               return (
                 <tr key={item.id}>
-                  <td className="border border-gray-800 px-2 py-1 text-center">{index + 1}</td>
-                  <td className="border border-gray-800 px-2 py-1">{item.name || 'ITEM-' + (index + 1)}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-center">{qty}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right">{bidPrice.toFixed(2)}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right">{itemTotal.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center align-middle">{index + 1}</td>
+                  <td className="border border-gray-800 px-2 py-1 align-middle">{item.name || 'ITEM-' + (index + 1)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center align-middle">{qty}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{bidPrice.toFixed(2)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{itemTotal.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold">Sub Total</td>
-              <td className="border border-gray-800 px-2 py-1 text-right">{subTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">Sub Total</td>
+              <td className="border border-gray-800 px-2 py-1 text-right align-middle">{subTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             </tr>
             {showTax && (
               <tr>
-                <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold">GST ({gstRate}%)</td>
-                <td className="border border-gray-800 px-2 py-1 text-right">{taxAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">GST ({gstRate}%)</td>
+                <td className="border border-gray-800 px-2 py-1 text-right align-middle">{taxAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               </tr>
             )}
             <tr className="bg-gray-50">
-              <td colSpan="4" className="border border-gray-800 px-2 py-1.5">
+              <td colSpan="4" className="border border-gray-800 px-2 py-1.5 align-middle">
                 <span className="font-semibold">Total in Words:</span> {numberToWords(total)}
               </td>
-              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base">{total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base align-middle">{total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             </tr>
           </tfoot>
         </table>
