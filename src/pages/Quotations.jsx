@@ -65,11 +65,19 @@ const Quotations = () => {
     const subTotal = items.reduce((sum, item) => sum + (item.qty * item.unitPrice), 0);
     const tax = subTotal * 0.06; // 6% tax
     const total = subTotal + tax;
-    return { subTotal, tax, total };
+    return { 
+      subTotal: Math.round(subTotal * 100) / 100, 
+      tax: Math.round(tax * 100) / 100, 
+      total: Math.round(total * 100) / 100 
+    };
   };
 
   const updateItem = (index, field, value) => {
     const newItems = [...formData.items];
+    // Round unitPrice to 2 decimal places
+    if (field === 'unitPrice') {
+      value = Math.round(value * 100) / 100;
+    }
     newItems[index][field] = value;
     newItems[index].total = newItems[index].qty * newItems[index].unitPrice;
     const totals = calculateTotals(newItems);

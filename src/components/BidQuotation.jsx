@@ -56,14 +56,15 @@ const BidQuotation = ({ bid, onClose }) => {
       if (n < 1000000000) return convert(Math.floor(n / 1000000)) + ' million' + (n % 1000000 !== 0 ? ' ' + convert(n % 1000000) : '');
       return convert(Math.floor(n / 1000000000)) + ' billion' + (n % 1000000000 !== 0 ? ' ' + convert(n % 1000000000) : '');
     };
-
     const wholePart = Math.round(num);
+    
     let result = convert(wholePart);
     result = result.charAt(0).toUpperCase() + result.slice(1);
+    
     return result + ' only';
   };
 
-  // Calculate totals
+  // Calculate totals (rounded to whole numbers)
   const calculateTotals = () => {
     const items = bid?.items || [];
     let subTotal = 0;
@@ -75,7 +76,7 @@ const BidQuotation = ({ bid, onClose }) => {
     });
     
     const taxAmount = showTax ? (subTotal * gstRate / 100) : 0;
-    const total = subTotal + taxAmount;
+    const total = Math.round(subTotal + taxAmount);
     
     return { subTotal, taxAmount, total };
   };
