@@ -458,6 +458,217 @@ export default function BidCompiler() {
           <p className="text-sm font-semibold mt-8 text-right">Page 2 of 23</p>
         </div>
 
+        {/* Page 3 - Company Registration Certificate */}
+        <div className="page-break-after">
+          <div className="text-center mb-8">
+            <div className="border-4 border-gray-800 p-8 inline-block">
+              <h1 className="text-2xl font-bold mb-4">Certificate of Registration</h1>
+              <p className="text-lg">Ministry of Economic Development & Trade</p>
+              <p className="text-sm">Male' Republic Of Maldives</p>
+            </div>
+          </div>
+          <div className="text-center space-y-4 text-sm">
+            <p>I HEREBY certify that <strong>BUSINESS WATCH PRIVATE LIMITED</strong> is on this day registered</p>
+            <p>under the Act no. 7/2023 and given under my hand and seal, at Male', Republic of Maldives</p>
+            <p>this <strong>{sections.page3_companyReg.fields.find(f => f.name === 'regDate')?.value}</strong></p>
+            <p className="mt-8 text-lg font-bold">No: {sections.page3_companyReg.fields.find(f => f.name === 'regNo')?.value}</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 3 of 23</p>
+        </div>
+
+        {/* Page 4 - Past Completed Bids */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Past Completed Projects / Performance History</h2>
+          <table className="w-full border-collapse border border-gray-800 text-sm mb-4">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-800 px-3 py-2">#</th>
+                <th className="border border-gray-800 px-3 py-2">Client</th>
+                <th className="border border-gray-800 px-3 py-2">Project Description</th>
+                <th className="border border-gray-800 px-3 py-2">Year</th>
+                <th className="border border-gray-800 px-3 py-2">Value (MVR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">1</td>
+                <td className="border border-gray-800 px-3 py-2">Ministry of Education</td>
+                <td className="border border-gray-800 px-3 py-2">Office Furniture Supply</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2025</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">387,810.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">2</td>
+                <td className="border border-gray-800 px-3 py-2">State Electric Company</td>
+                <td className="border border-gray-800 px-3 py-2">IT Equipment</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2024</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">76,500.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">3</td>
+                <td className="border border-gray-800 px-3 py-2">Male City Council</td>
+                <td className="border border-gray-800 px-3 py-2">Office Supplies</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2024</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">68,500.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">4</td>
+                <td className="border border-gray-800 px-3 py-2">IGMH</td>
+                <td className="border border-gray-800 px-3 py-2">Medical Equipment</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2024</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">149,900.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">5</td>
+                <td className="border border-gray-800 px-3 py-2">Customs Department</td>
+                <td className="border border-gray-800 px-3 py-2">Security Systems</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2023</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">87,200.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">6</td>
+                <td className="border border-gray-800 px-3 py-2">Others</td>
+                <td className="border border-gray-800 px-3 py-2">Various Supplies</td>
+                <td className="border border-gray-800 px-3 py-2 text-center">2025</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">330,100.00</td>
+              </tr>
+              <tr className="bg-gray-100 font-bold">
+                <td className="border border-gray-800 px-3 py-2 text-right" colSpan="4">TOTAL VALUE OF COMPLETED PROJECTS</td>
+                <td className="border border-gray-800 px-3 py-2 text-right">{sections.page4_pastBids.fields.find(f => f.name === 'totalValue')?.value}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-sm font-semibold mt-8 text-right">Page 4 of 23</p>
+        </div>
+
+        {/* Page 5 - GST Registration Certificate */}
+        <div className="page-break-after">
+          <div className="text-center mb-8">
+            <p className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+            <div className="w-20 h-20 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-xs text-gray-500">MALDIVES INLAND REVENUE AUTHORITY</span>
+            </div>
+            <h1 className="text-xl font-bold mb-2">GST Registration Certificate</h1>
+            <p className="text-sm text-gray-600">ގުޅިފައިވާ ސަރުކާރުގެ ވެރިކަން ކުރާ ރާއްޖެ</p>
+          </div>
+          <div className="text-center space-y-4 text-sm">
+            <p>This is to certify that the undermentioned business activity is registered under the<br/>Goods and Services Tax Act (Law Number 10/2011).</p>
+            <div className="border-2 border-gray-800 p-4 my-6 inline-block">
+              <p className="font-bold">Business Watch Private Limited</p>
+              <p>TIN: {sections.page5_gst.fields.find(f => f.name === 'gstTin')?.value}</p>
+              <p>{sections.page5_gst.fields.find(f => f.name === 'gstDate')?.value}</p>
+              <p>Taxable Activity Number: {sections.page5_gst.fields.find(f => f.name === 'taxableActivity')?.value}</p>
+            </div>
+            <p>Commissioner General of Taxation</p>
+            <p>Maldives Inland Revenue Authority</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 5 of 23</p>
+        </div>
+
+        {/* Page 6 - SME Registration */}
+        <div className="page-break-after">
+          <div className="text-center mb-6">
+            <div className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+            <p className="text-sm">MINISTRY OF ECONOMIC DEVELOPMENT & TRADE</p>
+            <p className="text-xs">MALÉ REPUBLIC OF MALDIVES</p>
+            <p className="text-sm mt-2">{sections.page6_sme.fields.find(f => f.name === 'smeNo')?.value}</p>
+          </div>
+          <h1 className="text-2xl font-bold text-center mb-8 underline">SME Registration</h1>
+          <table className="w-full max-w-md mx-auto text-sm mb-8">
+            <tbody>
+              <tr>
+                <td className="py-2 font-semibold">Registered To:</td>
+                <td className="py-2">BUSINESS WATCH PVT LTD ({sections.page3_companyReg.fields.find(f => f.name === 'regNo')?.value})</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">Registered Address:</td>
+                <td className="py-2">{sections.page6_sme.fields.find(f => f.name === 'smeAddress')?.value}</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">Business Category:</td>
+                <td className="py-2">{sections.page6_sme.fields.find(f => f.name === 'businessCategory')?.value}</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">Business Ranking:</td>
+                <td className="py-2">{sections.page6_sme.fields.find(f => f.name === 'businessRanking')?.value}</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-semibold">Registration Date:</td>
+                <td className="py-2">{sections.page6_sme.fields.find(f => f.name === 'smeRegDate')?.value}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-center text-gray-500 mt-8">
+            This is an electronic document generated by the office of the Registrar of Companies, Ministry of Economic Development & Trade.
+          </p>
+          <p className="text-sm font-semibold mt-4 text-right">Page 6 of 23</p>
+        </div>
+
+        {/* Page 7 - Tax Clearance Report */}
+        <div className="page-break-after">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-xs text-center">MIRA</span>
+            </div>
+            <h1 className="text-xl font-bold">TAX CLEARANCE REPORT</h1>
+            <p className="text-sm">MALDIVES INLAND REVENUE AUTHORITY</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+            <div>
+              <p><strong>Reference Number:</strong> {sections.page7_taxClearance.fields.find(f => f.name === 'refNumber')?.value}</p>
+              <p><strong>Date of Issue:</strong> {sections.page7_taxClearance.fields.find(f => f.name === 'dateOfIssue')?.value}</p>
+            </div>
+            <div>
+              <p><strong>Taxpayer Identification No:</strong> {sections.page7_taxClearance.fields.find(f => f.name === 'taxpayerId')?.value}</p>
+            </div>
+          </div>
+          <div className="border-2 border-gray-800 p-4 mb-4">
+            <p className="text-sm font-semibold mb-2">Status of dues:</p>
+            <p className="text-sm">☑ {sections.page7_taxClearance.fields.find(f => f.name === 'taxStatus')?.value}</p>
+          </div>
+          <p className="text-sm mt-4">
+            Below are the details of the taxes and fees that has been checked for the purpose of this clearance:
+          </p>
+          <table className="w-full border-collapse border border-gray-400 text-xs mt-2">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 px-2 py-1">#</th>
+                <th className="border border-gray-400 px-2 py-1">Description</th>
+                <th className="border border-gray-400 px-2 py-1">#</th>
+                <th className="border border-gray-400 px-2 py-1">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td className="border px-2 py-1">1</td><td className="border px-2 py-1">Income Tax</td><td className="border px-2 py-1">13</td><td className="border px-2 py-1">Guest House Registration Fee</td></tr>
+              <tr><td className="border px-2 py-1">2</td><td className="border px-2 py-1">Goods & Services Tax</td><td className="border px-2 py-1">14</td><td className="border px-2 py-1">Dive School Registration Fee</td></tr>
+              <tr><td className="border px-2 py-1">3</td><td className="border px-2 py-1">Green Tax</td><td className="border px-2 py-1">15</td><td className="border px-2 py-1">Tourism related Bank Mortgage Registration Fee</td></tr>
+              <tr><td className="border px-2 py-1">4</td><td className="border px-2 py-1">Airport Tax & Fee</td><td className="border px-2 py-1">16</td><td className="border px-2 py-1">Tourism related other Registration and License Fee</td></tr>
+            </tbody>
+          </table>
+          <p className="text-sm font-semibold mt-8 text-right">Page 7 of 23</p>
+        </div>
+
+        {/* Page 8 - Other Documents */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Supporting Documents</h2>
+          <div className="space-y-4">
+            <div className="border border-gray-300 p-4">
+              <h3 className="font-semibold mb-2">1. Council Certificate</h3>
+              <p className="text-sm text-gray-600">Faadhippolhu Hinnavaru Council Certificate of Good Standing</p>
+              <p className="text-sm mt-2">Certificate No: (OTH/P)325/PRN/V2025/16</p>
+            </div>
+            <div className="border border-gray-300 p-4">
+              <h3 className="font-semibold mb-2">2. Nafthaa Certificate</h3>
+              <p className="text-sm text-gray-600">National Certification for business compliance</p>
+            </div>
+            <div className="border border-gray-300 p-4">
+              <h3 className="font-semibold mb-2">3. Additional Supporting Documents</h3>
+              <p className="text-sm text-gray-600">As per tender requirements</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 8 of 23</p>
+        </div>
+
         {/* Letter of Transmittal */}
         <div className="page-break-after mt-8">
           <h2 className="text-xl font-bold mb-4 border-b pb-2">Letter of Transmittal</h2>
