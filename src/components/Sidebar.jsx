@@ -31,7 +31,8 @@ import {
   History,
   Search,
   MessageCircle,
-  Wallet
+  Wallet,
+  FileStack
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
@@ -98,6 +99,7 @@ const Sidebar = () => {
     { path: '/collaboration', icon: MessageSquare, label: 'Collaboration' },
     { path: '/milestones', icon: Flag, label: 'Milestones' },
     { path: '/bid-comparison', icon: Scale, label: 'Bid Comparison' },
+    { path: '/bid-compiler', icon: FileStack, label: 'Bid Compiler' },
     { path: '/risk-assessment', icon: AlertTriangle, label: 'Risk Assessment' },
     { path: '/kpi', icon: Target, label: 'KPI Dashboard' },
     { path: '/notifications', icon: Bell, label: 'Notifications' },

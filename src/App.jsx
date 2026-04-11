@@ -36,6 +36,7 @@ import AuditLog from './pages/AuditLog';
 import AdvancedSearch from './pages/AdvancedSearch';
 import Chat from './pages/Chat';
 import StaffExpense from './pages/StaffExpense';
+import BidCompiler from './pages/BidCompiler';
 
 import { useAuth } from './contexts/AuthContext';
 
@@ -284,6 +285,14 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <BidComparison />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/bid-compiler" element={
+        <ProtectedRoute>
+          <Layout>
+            <BidCompiler />
           </Layout>
         </ProtectedRoute>
       } />
