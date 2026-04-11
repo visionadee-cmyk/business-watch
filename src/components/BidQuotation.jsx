@@ -359,14 +359,23 @@ const BidQuotation = ({ bid, onClose }) => {
               const qty = parseFloat(item.quantity) || 0;
               const bidPrice = parseFloat(item.bidPrice) || 0;
               const itemTotal = qty * bidPrice;
+              
+              // Format number: show decimals only if they exist
+              const formatAmount = (num) => {
+                const rounded = Math.round(num * 100) / 100;
+                return rounded.toLocaleString(undefined, {
+                  minimumFractionDigits: rounded % 1 === 0 ? 0 : 2,
+                  maximumFractionDigits: 2
+                });
+              };
 
               return (
                 <tr key={item.id}>
                   <td className="border border-gray-800 px-2 py-1 text-center align-middle">{index + 1}</td>
                   <td className="border border-gray-800 px-2 py-1 align-middle">{item.name || 'ITEM-' + (index + 1)}</td>
                   <td className="border border-gray-800 px-2 py-1 text-center align-middle">{qty}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{bidPrice.toFixed(2)}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{itemTotal.toLocaleString(undefined, {maximumFractionDigits: 2})}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(bidPrice)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(itemTotal)}</td>
                 </tr>
               );
             })}
@@ -374,19 +383,19 @@ const BidQuotation = ({ bid, onClose }) => {
           <tfoot>
             <tr>
               <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">Sub Total</td>
-              <td className="border border-gray-800 px-2 py-1 text-right align-middle">{subTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(subTotal)}</td>
             </tr>
             {showTax && (
               <tr>
                 <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">GST ({gstRate}%)</td>
-                <td className="border border-gray-800 px-2 py-1 text-right align-middle">{taxAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(taxAmount)}</td>
               </tr>
             )}
             <tr className="bg-gray-50">
               <td colSpan="4" className="border border-gray-800 px-2 py-1.5 align-middle">
                 <span className="font-semibold">Total in Words:</span> {numberToWords(total)}
               </td>
-              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base align-middle">{total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base align-middle">{formatAmount(total)}</td>
             </tr>
           </tfoot>
         </table>
