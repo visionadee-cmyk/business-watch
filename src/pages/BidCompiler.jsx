@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   FileText, 
   Printer, 
@@ -301,14 +302,71 @@ const defaultBidSections = {
 };
 
 export default function BidCompiler() {
-  const [sections, setSections] = useState(defaultBidSections);
+  const location = useLocation();
+  const selectedBid = location.state?.selectedBid;
+  
+  const [sections, setSections] = useState(() => {
+    // If a bid was selected from Bids page, pre-populate with its data
+    if (selectedBid) {
+      return populateSectionsWithBidData(defaultBidSections, selectedBid);
+    }
+    return defaultBidSections;
+  });
+  
   const [activeSection, setActiveSection] = useState('page1_declaration');
   const [showPreview, setShowPreview] = useState(false);
   const [savedBids, setSavedBids] = useState([]);
-  const [currentBidName, setCurrentBidName] = useState('');
+  const [currentBidName, setCurrentBidName] = useState(() => selectedBid?.title || '');
   const [expandedSections, setExpandedSections] = useState(Object.keys(defaultBidSections));
   const [uploadedFiles, setUploadedFiles] = useState({});
   const printRef = useRef();
+
+  // Helper function to populate sections with bid data
+  function populateSectionsWithBidData(defaultSections, bid) {
+    const populated = JSON.parse(JSON.stringify(defaultSections)); // Deep copy
+    
+    // Update Cover Page
+    if (populated.cover) {
+      populated.cover.fields = populated.cover.fields.map(field => {
+        switch(field.name) {
+          case 'tenderNo': return { ...field, value: bid.tenderRef || bid.procurementRef || '' };
+          case 'tenderTitle': return { ...field, value: bid.title || '' };
+          case 'bidDate': return { ...field, value: bid.bidDate || new Date().toISOString().split('T')[0] };
+          case 'submissionDate': return { ...field, value: bid.submissionDeadline || '' };
+          default: return field;
+        }
+      });
+    }
+    
+    // Update Page 2 - Quotation
+    if (populated.page2_quotation) {
+      populated.page2_quotation.fields = populated.page2_quotation.fields.map(field => {
+        switch(field.name) {
+          case 'quotationNo': return { ...field, value: bid.quotationNo || `BW/${new Date().getFullYear()}/${String(bid.id || Date.now()).slice(-3)}` };
+          case 'quotationDate': return { ...field, value: bid.bidDate || new Date().toISOString().split('T')[0] };
+          case 'procurementRef': return { ...field, value: bid.tenderRef || bid.procurementRef || '' };
+          case 'items': return { ...field, value: bid.items || bid.description || 'As per tender requirements' };
+          case 'subTotal': return { ...field, value: bid.bidAmount ? (bid.bidAmount / 1.08).toFixed(2) : '' };
+          case 'gst': return { ...field, value: bid.bidAmount ? (bid.bidAmount * 0.08).toFixed(2) : '' };
+          case 'grandTotal': return { ...field, value: bid.bidAmount ? bid.bidAmount.toFixed(2) : '' };
+          case 'validity': return { ...field, value: bid.validityDays || '90' };
+          default: return field;
+        }
+      });
+    }
+    
+    // Update Letter of Transmittal
+    if (populated.letter) {
+      populated.letter.fields = populated.letter.fields.map(field => {
+        if (field.name === 'subject') {
+          return { ...field, value: `Submission of Tender for ${bid.title || ''}` };
+        }
+        return field;
+      });
+    }
+    
+    return populated;
+  }
 
   const updateField = (sectionKey, fieldName, value) => {
     setSections(prev => ({

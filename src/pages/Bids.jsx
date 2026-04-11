@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download, FileStack } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -1121,6 +1121,16 @@ const Bids = ({ initialFilter }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      navigate('/bid-compiler', { state: { selectedBid: bid } });
+                    }}
+                    className="p-2 bg-white rounded-full shadow-sm hover:bg-green-50 text-gray-600 hover:text-green-600"
+                    title="Bid Compile"
+                  >
+                    <FileStack className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleEdit(bid);
                     }}
                     className="p-2 bg-white rounded-full shadow-sm hover:bg-blue-50 text-gray-600 hover:text-blue-600"
@@ -1205,6 +1215,13 @@ const Bids = ({ initialFilter }) => {
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex justify-center gap-1">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); navigate('/bid-compiler', { state: { selectedBid: bid } }); }}
+                          className="p-1 text-gray-400 hover:text-green-600"
+                          title="Bid Compile"
+                        >
+                          <FileStack className="w-4 h-4" />
+                        </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleEdit(bid); }}
                           className="p-1 text-gray-400 hover:text-blue-600"
