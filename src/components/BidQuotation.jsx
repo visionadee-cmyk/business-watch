@@ -84,6 +84,17 @@ const BidQuotation = ({ bid, onClose }) => {
   const { subTotal, taxAmount, total } = calculateTotals();
   const items = bid?.items || [];
 
+  // Format number: show decimals only if they exist (e.g., 8,500 not 8,500.00)
+  const formatAmount = (num) => {
+    if (!num && num !== 0) return '';
+    const rounded = Math.round(num * 100) / 100;
+    const hasDecimals = (rounded % 1) !== 0;
+    return rounded.toLocaleString(undefined, {
+      minimumFractionDigits: hasDecimals ? 2 : 0,
+      maximumFractionDigits: 2
+    });
+  };
+
   const handlePrint = () => {
     document.body.classList.add('printing-quotation');
     setTimeout(() => {
@@ -359,43 +370,34 @@ const BidQuotation = ({ bid, onClose }) => {
               const qty = parseFloat(item.quantity) || 0;
               const bidPrice = parseFloat(item.bidPrice) || 0;
               const itemTotal = qty * bidPrice;
-              
-              // Format number: show decimals only if they exist
-              const formatAmount = (num) => {
-                const rounded = Math.round(num * 100) / 100;
-                return rounded.toLocaleString(undefined, {
-                  minimumFractionDigits: rounded % 1 === 0 ? 0 : 2,
-                  maximumFractionDigits: 2
-                });
-              };
 
               return (
-                <tr key={item.id}>
-                  <td className="border border-gray-800 px-2 py-1 text-center align-middle">{index + 1}</td>
-                  <td className="border border-gray-800 px-2 py-1 align-middle">{item.name || 'ITEM-' + (index + 1)}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-center align-middle">{qty}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(bidPrice)}</td>
-                  <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(itemTotal)}</td>
+                <tr key={item.id} style={{ verticalAlign: 'middle' }}>
+                  <td className="border border-gray-800 px-2 py-1 text-center" style={{ verticalAlign: 'middle' }}>{index + 1}</td>
+                  <td className="border border-gray-800 px-2 py-1" style={{ verticalAlign: 'middle' }}>{item.name || 'ITEM-' + (index + 1)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center" style={{ verticalAlign: 'middle' }}>{qty}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right" style={{ verticalAlign: 'middle' }}>{formatAmount(bidPrice)}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right" style={{ verticalAlign: 'middle' }}>{formatAmount(itemTotal)}</td>
                 </tr>
               );
             })}
           </tbody>
           <tfoot>
-            <tr>
-              <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">Sub Total</td>
-              <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(subTotal)}</td>
+            <tr style={{ verticalAlign: 'middle' }}>
+              <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold" style={{ verticalAlign: 'middle' }}>Sub Total</td>
+              <td className="border border-gray-800 px-2 py-1 text-right" style={{ verticalAlign: 'middle' }}>{formatAmount(subTotal)}</td>
             </tr>
             {showTax && (
-              <tr>
-                <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold align-middle">GST ({gstRate}%)</td>
-                <td className="border border-gray-800 px-2 py-1 text-right align-middle">{formatAmount(taxAmount)}</td>
+              <tr style={{ verticalAlign: 'middle' }}>
+                <td colSpan="4" className="border border-gray-800 px-2 py-1 text-right font-semibold" style={{ verticalAlign: 'middle' }}>GST ({gstRate}%)</td>
+                <td className="border border-gray-800 px-2 py-1 text-right" style={{ verticalAlign: 'middle' }}>{formatAmount(taxAmount)}</td>
               </tr>
             )}
-            <tr className="bg-gray-50">
-              <td colSpan="4" className="border border-gray-800 px-2 py-1.5 align-middle">
+            <tr className="bg-gray-50" style={{ verticalAlign: 'middle' }}>
+              <td colSpan="4" className="border border-gray-800 px-2 py-1.5" style={{ verticalAlign: 'middle' }}>
                 <span className="font-semibold">Total in Words:</span> {numberToWords(total)}
               </td>
-              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base align-middle">{formatAmount(total)}</td>
+              <td className="border border-gray-800 px-2 py-1.5 text-right font-bold text-base" style={{ verticalAlign: 'middle' }}>{formatAmount(total)}</td>
             </tr>
           </tfoot>
         </table>
