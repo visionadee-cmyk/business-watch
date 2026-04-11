@@ -286,13 +286,18 @@ export default function BidCompiler() {
         // Extract items from bid data
         items = [];
         if (bid.items && Array.isArray(bid.items)) {
-          items = bid.items.map((item, index) => ({
-            id: index + 1,
-            description: item.name || item.description || item.item || 'Item',
-            qty: item.qty || item.quantity || item.orderedQty || 1,
-            rate: item.rate || item.price || item.costPrice || item.unitPrice || 0,
-            amount: item.amount || item.total || (item.qty || 1) * (item.rate || 0) || 0
-          }));
+          items = bid.items.map((item, index) => {
+            const qty = Number(item.quantity || item.qty || item.orderedQty || 1);
+            const rate = Number(item.bidPrice || item.rate || item.price || item.unitPrice || 0);
+            const amount = Number(item.totalWithTax || item.amount || item.total || (qty * rate) || 0);
+            return {
+              id: index + 1,
+              description: item.name || item.itemName || item.description || item.item || 'Item',
+              qty: qty,
+              rate: rate,
+              amount: amount
+            };
+          });
         }
         
         // If no items found but we have bidAmount, create a single summary item
@@ -301,8 +306,8 @@ export default function BidCompiler() {
             id: 1,
             description: bid.description || bid.scopeOfWork || bid.deliverables || 'As per tender requirements',
             qty: 1,
-            rate: bid.bidAmount,
-            amount: bid.bidAmount
+            rate: Number(bid.bidAmount),
+            amount: Number(bid.bidAmount)
           }];
         }
       }
