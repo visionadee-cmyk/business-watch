@@ -16,8 +16,90 @@ import {
   X
 } from 'lucide-react';
 
-// Default bid sections based on typical PSM bid format
+// Default bid sections based on typical PSM bid format - 23 pages
 const defaultBidSections = {
+  page1_declaration: {
+    title: 'Page 1 - Declaration of Ethical Conduct',
+    fields: [
+      { name: 'authorizedSignature', label: 'Authorized Signature', value: '', type: 'text' },
+      { name: 'signatoryName', label: 'Name and Title of Signatory', value: 'Aboobakuru Qasim', type: 'text' },
+      { name: 'bidderName', label: 'Name of Bidder', value: 'Business Watch Pvt. Ltd (C00062025)', type: 'text' },
+      { name: 'bidderAddress', label: 'Address', value: 'Gulfaamge, Lh.hinnavaru, Maldives', type: 'textarea' },
+      { name: 'phoneNumber', label: 'Phone Number', value: '7786629, 9829050', type: 'text' },
+      { name: 'emailAddress', label: 'Fax Number/Email', value: 'businesswatchmv@gmail.com', type: 'text' },
+    ]
+  },
+  page2_quotation: {
+    title: 'Page 2 - Bid Quotation',
+    fields: [
+      { name: 'quotationNo', label: 'Quotation No', value: 'BW/2026/026', type: 'text' },
+      { name: 'quotationDate', label: 'Date', value: '', type: 'date' },
+      { name: 'client', label: 'Client', value: 'Public Service Media (PSM)', type: 'text' },
+      { name: 'procurementRef', label: 'Procurement Ref', value: '(PROC-05-26) BIT/2026/20', type: 'text' },
+      { name: 'items', label: 'Items Description', value: 'Transmitter and related equipment', type: 'textarea' },
+      { name: 'subTotal', label: 'Sub Total (MVR)', value: '68500.00', type: 'text' },
+      { name: 'gst', label: 'GST 8%', value: '5480.00', type: 'text' },
+      { name: 'grandTotal', label: 'Grand Total', value: '73980.00', type: 'text' },
+      { name: 'validity', label: 'Validity (days)', value: '90', type: 'number' },
+    ]
+  },
+  page3_companyReg: {
+    title: 'Page 3 - Company Registration Certificate',
+    fields: [
+      { name: 'companyRegCert', label: 'Company Registration Certificate', value: null, type: 'file' },
+      { name: 'regNo', label: 'Registration No', value: 'C0006/2025', type: 'text' },
+      { name: 'regDate', label: 'Registration Date', value: '8th day of January 2025', type: 'text' },
+    ]
+  },
+  page4_pastBids: {
+    title: 'Page 4 - Past Completed Bids',
+    fields: [
+      { name: 'pastProject1', label: 'Project 1', value: 'Ministry of Education - Office Furniture Supply (2025)', type: 'text' },
+      { name: 'pastProject2', label: 'Project 2', value: 'State Electric Company - IT Equipment (2024)', type: 'text' },
+      { name: 'pastProject3', label: 'Project 3', value: 'Male City Council - Office Supplies (2024)', type: 'text' },
+      { name: 'pastProject4', label: 'Project 4', value: 'IGMH - Medical Equipment (2024)', type: 'text' },
+      { name: 'pastProject5', label: 'Project 5', value: 'Customs Department - Security Systems (2023)', type: 'text' },
+      { name: 'totalValue', label: 'Total Value of Completed Projects', value: '1,099,510.00', type: 'text' },
+    ]
+  },
+  page5_gst: {
+    title: 'Page 5 - GST Registration Certificate',
+    fields: [
+      { name: 'gstCert', label: 'GST Registration Certificate', value: null, type: 'file' },
+      { name: 'gstTin', label: 'TIN', value: '1169863GST501', type: 'text' },
+      { name: 'gstDate', label: 'Registration Date', value: '25 August 2025', type: 'text' },
+      { name: 'taxableActivity', label: 'Taxable Activity Number', value: '001', type: 'text' },
+    ]
+  },
+  page6_sme: {
+    title: 'Page 6 - SME Registration',
+    fields: [
+      { name: 'smeCert', label: 'SME Registration Certificate', value: null, type: 'file' },
+      { name: 'smeNo', label: 'SME Number', value: 'SME00543025', type: 'text' },
+      { name: 'smeAddress', label: 'Registered Address', value: 'Gulfaamge, 07010, Lh. Himavaru, Maldives', type: 'textarea' },
+      { name: 'businessCategory', label: 'Business Category', value: 'Trading', type: 'text' },
+      { name: 'businessRanking', label: 'Business Ranking', value: 'Micro', type: 'text' },
+      { name: 'smeRegDate', label: 'Registration Date', value: '19th January 2025', type: 'text' },
+    ]
+  },
+  page7_taxClearance: {
+    title: 'Page 7 - Tax Clearance Report',
+    fields: [
+      { name: 'taxClearanceCert', label: 'Tax Clearance Certificate', value: null, type: 'file' },
+      { name: 'refNumber', label: 'Reference Number', value: '1169863/TC/DCS/2026/02', type: 'text' },
+      { name: 'dateOfIssue', label: 'Date of Issue', value: '04/01/2026', type: 'text' },
+      { name: 'taxpayerId', label: 'Taxpayer Identification No', value: '1169863', type: 'text' },
+      { name: 'taxStatus', label: 'Status of Dues', value: 'The Taxpayer has no tax related dues', type: 'text' },
+    ]
+  },
+  page8_others: {
+    title: 'Page 8 - Other Documents',
+    fields: [
+      { name: 'otherDoc1', label: 'Document 1 (Council Certificate)', value: null, type: 'file' },
+      { name: 'otherDoc2', label: 'Document 2 (Nafthaa Certificate)', value: null, type: 'file' },
+      { name: 'otherDoc3', label: 'Document 3', value: null, type: 'file' },
+    ]
+  },
   cover: {
     title: 'Cover Page',
     fields: [
@@ -102,11 +184,12 @@ const defaultBidSections = {
 
 export default function BidCompiler() {
   const [sections, setSections] = useState(defaultBidSections);
-  const [activeSection, setActiveSection] = useState('cover');
+  const [activeSection, setActiveSection] = useState('page1_declaration');
   const [showPreview, setShowPreview] = useState(false);
   const [savedBids, setSavedBids] = useState([]);
   const [currentBidName, setCurrentBidName] = useState('');
   const [expandedSections, setExpandedSections] = useState(Object.keys(defaultBidSections));
+  const [uploadedFiles, setUploadedFiles] = useState({});
   const printRef = useRef();
 
   const updateField = (sectionKey, fieldName, value) => {
@@ -162,15 +245,53 @@ export default function BidCompiler() {
     window.print();
   };
 
+  const handleFileUpload = (sectionKey, fieldName, file) => {
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setUploadedFiles(prev => ({
+        ...prev,
+        [`${sectionKey}_${fieldName}`]: { file, url: fileUrl, name: file.name }
+      }));
+      updateField(sectionKey, fieldName, file.name);
+    }
+  };
+
   const renderField = (sectionKey, field) => {
     const baseClass = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm";
+    const fileKey = `${sectionKey}_${field.name}`;
+    const uploadedFile = uploadedFiles[fileKey];
     
     switch (field.type) {
+      case 'file':
+        return (
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={(e) => handleFileUpload(sectionKey, field.name, e.target.files[0])}
+              className="hidden"
+              id={`file-${fileKey}`}
+            />
+            <label
+              htmlFor={`file-${fileKey}`}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-100 border border-blue-200 w-fit"
+            >
+              <FolderOpen size={18} />
+              <span>{uploadedFile ? 'Change File' : 'Upload Certificate'}</span>
+            </label>
+            {uploadedFile && (
+              <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded">
+                <CheckCircle size={16} />
+                <span className="truncate">{uploadedFile.name}</span>
+              </div>
+            )}
+          </div>
+        );
       case 'textarea':
         return (
           <textarea
             className={`${baseClass} min-h-[100px]`}
-            value={field.value}
+            value={field.value || ''}
             onChange={(e) => updateField(sectionKey, field.name, e.target.value)}
             placeholder={field.label}
           />
@@ -180,7 +301,7 @@ export default function BidCompiler() {
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
-              checked={field.value}
+              checked={field.value || false}
               onChange={(e) => updateField(sectionKey, field.name, e.target.checked)}
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
@@ -192,7 +313,7 @@ export default function BidCompiler() {
           <input
             type="number"
             className={baseClass}
-            value={field.value}
+            value={field.value || ''}
             onChange={(e) => updateField(sectionKey, field.name, e.target.value)}
             placeholder={field.label}
           />
@@ -200,9 +321,9 @@ export default function BidCompiler() {
       default:
         return (
           <input
-            type={field.type}
+            type={field.type || 'text'}
             className={baseClass}
-            value={field.value}
+            value={field.value || ''}
             onChange={(e) => updateField(sectionKey, field.name, e.target.value)}
             placeholder={field.label}
           />
@@ -213,28 +334,128 @@ export default function BidCompiler() {
   const renderPreview = () => {
     return (
       <div className="bg-white p-8 max-w-4xl mx-auto print:p-0" ref={printRef}>
-        {/* Cover Page */}
+        {/* Page 1 - Declaration of Ethical Conduct */}
         <div className="page-break-after">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-4">{sections.cover.fields.find(f => f.name === 'companyName')?.value}</h1>
-            <p className="text-sm text-gray-600">{sections.cover.fields.find(f => f.name === 'address')?.value}</p>
-            <p className="text-sm text-gray-600">Phone: {sections.cover.fields.find(f => f.name === 'phone')?.value}</p>
-            <p className="text-sm text-gray-600">Email: {sections.cover.fields.find(f => f.name === 'email')?.value}</p>
-            <p className="text-sm text-gray-600">TIN: {sections.cover.fields.find(f => f.name === 'tin')?.value}</p>
+          <h1 className="text-xl font-bold text-center mb-6 underline">Declaration of Ethical Conduct and Fraud and Corruption</h1>
+          <p className="text-sm mb-4">We the undersigned confirm in the preparation of our Bid that:</p>
+          <ol className="text-sm list-decimal list-inside space-y-2 mb-6">
+            <li>Neither we, nor any of our employees, associates, agents, shareholders, consultants, partners or their relatives or associates have any relationship that could be regarded as a conflict of interest as set out in the Bidding Documents.</li>
+            <li>Should we become aware of the potential for such a conflict, will report it immediately to the Procuring Entity.</li>
+            <li>That neither we, nor any of our employees, associates, agents, shareholders, partners, consultants or their relatives or associates have entered into corrupt, fraudulent, coercive or collusive practices in respect of our bid or proposal.</li>
+            <li>We understand our obligation to allow the Procuring Entity to inspect all records relating to the preparation of our bid and any contract that may result from such, irrespective of if we are awarded a contract or not.</li>
+            <li>That no payments in connection with this procurement exercise have been made by us or our associates, agents, shareholders, partners or their relatives or associates to any of the staff, associates, consultants, employees or relatives of such who are involved with the procurement process on behalf of the Procuring Entity, Client or Employer.</li>
+          </ol>
+          
+          <table className="w-full border-collapse border border-gray-800 text-sm mb-8">
+            <tbody>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 w-12 text-center">1</td>
+                <td className="border border-gray-800 px-3 py-2">Authorized Signature:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'authorizedSignature')?.value || '_________________'}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">2</td>
+                <td className="border border-gray-800 px-3 py-2">Name and Title of Signatory:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'signatoryName')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">3</td>
+                <td className="border border-gray-800 px-3 py-2">Name of Bidder:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'bidderName')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">4</td>
+                <td className="border border-gray-800 px-3 py-2">Address:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'bidderAddress')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">5</td>
+                <td className="border border-gray-800 px-3 py-2">Phone Number:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'phoneNumber')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-3 py-2 text-center">6</td>
+                <td className="border border-gray-800 px-3 py-2">Fax Number/Email:</td>
+                <td className="border border-gray-800 px-3 py-2">{sections.page1_declaration.fields.find(f => f.name === 'emailAddress')?.value}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-sm font-semibold mt-8">Page 1 of 23</p>
+        </div>
+
+        {/* Page 2 - Bid Quotation */}
+        <div className="page-break-after">
+          <div className="text-center mb-4">
+            <p className="text-xs text-gray-500 mb-1">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+            <h1 className="text-2xl font-bold">Business Watch <span className="text-lg font-normal">Private Limited</span></h1>
+            <p className="text-sm">Reg No: C00062025 | TIN: 1169863GST501</p>
+            <p className="text-sm">Address: Gulfaamge, Lh.Hinnavaru</p>
+            <p className="text-sm">Contact: (960)7786629, (960) 9829050, email: businesswatchmv@gmail.com</p>
           </div>
           
-          <div className="border-2 border-black p-6 mb-8">
-            <h2 className="text-2xl font-bold text-center mb-4">TENDER SUBMISSION</h2>
-            <div className="text-center">
-              <p className="text-lg font-semibold">Tender No: {sections.cover.fields.find(f => f.name === 'tenderNo')?.value}</p>
-              <p className="text-lg">{sections.cover.fields.find(f => f.name === 'tenderTitle')?.value}</p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-sm"><strong>Quotation No:</strong> {sections.page2_quotation.fields.find(f => f.name === 'quotationNo')?.value}</p>
+              <p className="text-sm"><strong>Date:</strong> {sections.page2_quotation.fields.find(f => f.name === 'quotationDate')?.value}</p>
+              <p className="text-sm"><strong>Client:</strong> {sections.page2_quotation.fields.find(f => f.name === 'client')?.value}</p>
+              <p className="text-sm"><strong>Procurement Ref:</strong> {sections.page2_quotation.fields.find(f => f.name === 'procurementRef')?.value}</p>
+            </div>
+            <div className="text-right">
+              <h2 className="text-xl font-bold">QUOTATION</h2>
+              <p className="text-sm">Vendor No: 514110</p>
             </div>
           </div>
-          
-          <div className="mt-12">
-            <p className="text-sm">Submitted by: <strong>{sections.cover.fields.find(f => f.name === 'contactPerson')?.value}</strong></p>
-            <p className="text-sm">Date: {sections.cover.fields.find(f => f.name === 'submissionDate')?.value}</p>
+
+          <table className="w-full border-collapse border border-gray-800 text-sm mb-4">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-800 px-2 py-1">#</th>
+                <th className="border border-gray-800 px-2 py-1">Item, model no</th>
+                <th className="border border-gray-800 px-2 py-1">Qty</th>
+                <th className="border border-gray-800 px-2 py-1">Rate</th>
+                <th className="border border-gray-800 px-2 py-1">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-800 px-2 py-1 text-center">1</td>
+                <td className="border border-gray-800 px-2 py-1">
+                  <strong>TRANSMITTER</strong><br/>
+                  OFFERED BRAND AND MODEL:<br/>
+                  Brand: FMUSER, Model: FU618F-300W<br/>
+                  OR<br/>
+                  Brand: ZHC, Model: ZHC618F-300W<br/><br/>
+                  Specs are attached<br/>
+                  Warranty: 01 year
+                </td>
+                <td className="border border-gray-800 px-2 py-1 text-center">1</td>
+                <td className="border border-gray-800 px-2 py-1 text-right">68500.00</td>
+                <td className="border border-gray-800 px-2 py-1 text-right">68,500.00</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Sub total</strong></td>
+                <td className="border border-gray-800 px-2 py-1 text-right">{sections.page2_quotation.fields.find(f => f.name === 'subTotal')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>GST 8%</strong></td>
+                <td className="border border-gray-800 px-2 py-1 text-right">{sections.page2_quotation.fields.find(f => f.name === 'gst')?.value}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Total:</strong> Seventy-three thousand nine hundred eighty only</td>
+                <td className="border border-gray-800 px-2 py-1 text-right font-bold">{sections.page2_quotation.fields.find(f => f.name === 'grandTotal')?.value}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p className="text-sm mb-1">All rates and amounts are in MVR.</p>
+          <p className="text-sm mb-1"><strong>Delivery:</strong> 01 days</p>
+          <p className="text-sm mb-4">Quotation / bid Validity: {sections.page2_quotation.fields.find(f => f.name === 'validity')?.value} days from bid opening.</p>
+
+          <div className="mt-8">
+            <p className="text-sm font-semibold mb-4">Authorised Signatory</p>
+            <p className="text-sm">Aboobakuru Qasim<br/>Managing Director</p>
           </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 2 of 23</p>
         </div>
 
         {/* Letter of Transmittal */}
