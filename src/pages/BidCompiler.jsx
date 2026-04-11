@@ -333,6 +333,31 @@ export default function BidCompiler() {
   const [selectedOpenBid, setSelectedOpenBid] = useState(selectedBid || null);
   const printRef = useRef();
 
+  // Helper function to convert Firebase timestamp to yyyy-MM-dd string
+  function formatDate(dateValue) {
+    if (!dateValue) return '';
+    
+    // Handle Firebase timestamp object {seconds, nanoseconds}
+    if (typeof dateValue === 'object' && dateValue.seconds !== undefined) {
+      const date = new Date(dateValue.seconds * 1000);
+      return date.toISOString().split('T')[0];
+    }
+    
+    // Handle string dates
+    if (typeof dateValue === 'string') {
+      // If already in yyyy-MM-dd format, return as is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+      
+      // Try to parse and format
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    }
+    
+    return '';
+  }
+
   // Helper function to populate sections with bid data
   function populateSectionsWithBidData(defaultSections, bid) {
     const populated = JSON.parse(JSON.stringify(defaultSections)); // Deep copy
@@ -343,8 +368,8 @@ export default function BidCompiler() {
         switch(field.name) {
           case 'tenderNo': return { ...field, value: bid.tenderRef || bid.procurementRef || bid.tenderNumber || bid.reference || '' };
           case 'tenderTitle': return { ...field, value: bid.title || bid.tenderTitle || '' };
-          case 'bidDate': return { ...field, value: bid.bidDate || bid.createdAt || new Date().toISOString().split('T')[0] };
-          case 'submissionDate': return { ...field, value: bid.submissionDeadline || bid.deadline || bid.closingDate || '' };
+          case 'bidDate': return { ...field, value: formatDate(bid.bidDate) || formatDate(bid.createdAt) || new Date().toISOString().split('T')[0] };
+          case 'submissionDate': return { ...field, value: formatDate(bid.submissionDeadline) || formatDate(bid.deadline) || formatDate(bid.closingDate) || '' };
           case 'contactPerson': return { ...field, value: bid.contactPerson || bid.representative || '' };
           case 'phone': return { ...field, value: bid.contactPhone || bid.phone || '(960) 7786629' };
           case 'email': return { ...field, value: bid.contactEmail || bid.email || 'businesswatchmv@gmail.com' };
@@ -362,7 +387,7 @@ export default function BidCompiler() {
       populated.page2_quotation.fields = populated.page2_quotation.fields.map(field => {
         switch(field.name) {
           case 'quotationNo': return { ...field, value: bid.quotationNo || bid.quoteNumber || `BW/${new Date().getFullYear()}/${String(bid.id || Date.now()).slice(-4)}` };
-          case 'quotationDate': return { ...field, value: bid.bidDate || bid.quotationDate || bid.createdAt || new Date().toISOString().split('T')[0] };
+          case 'quotationDate': return { ...field, value: formatDate(bid.bidDate) || formatDate(bid.quotationDate) || formatDate(bid.createdAt) || new Date().toISOString().split('T')[0] };
           case 'procurementRef': return { ...field, value: bid.tenderRef || bid.procurementRef || bid.tenderNumber || bid.reference || '' };
           case 'items': return { ...field, value: bid.items || bid.description || bid.scopeOfWork || bid.deliverables || 'As per tender requirements' };
           case 'subTotal': return { ...field, value: subtotal ? subtotal.toFixed(2) : '' };
