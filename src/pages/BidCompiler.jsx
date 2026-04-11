@@ -751,6 +751,263 @@ export default function BidCompiler() {
           ))}
         </div>
 
+        {/* Pages 9-23 - Common Specifications */}
+        
+        {/* Page 9 - Technical Specifications Overview */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Technical Specifications - Overview</h2>
+          <div className="space-y-4 text-sm">
+            <p><strong>Item Name:</strong> {sections.page2_quotation.fields.find(f => f.name === 'items')?.value || 'Transmitter and Related Equipment'}</p>
+            <p><strong>Brand:</strong> FMUSER or ZHC (Equivalent brands accepted)</p>
+            <p><strong>Model:</strong> FU618F-300W / ZHC618F-300W or equivalent</p>
+            <p><strong>Power Output:</strong> 300W</p>
+            <p><strong>Frequency Range:</strong> 87.5-108 MHz</p>
+            <p><strong>Operating Temperature:</strong> -10°C to +50°C</p>
+            <p><strong>Power Supply:</strong> AC 220V ±10%, 50/60Hz</p>
+            <p><strong>Cooling:</strong> Forced air cooling</p>
+            <p><strong>Audio Input:</strong> XLR balanced, RCA unbalanced</p>
+            <p><strong>Harmonic Suppression:</strong> ≥60dB</p>
+            <p><strong>Spurious Suppression:</strong> ≥70dB</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 9 of 23</p>
+        </div>
+
+        {/* Page 10 - Detailed Specifications */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Detailed Technical Specifications</h2>
+          <h3 className="font-bold mb-3">RF Specifications:</h3>
+          <table className="w-full border-collapse border border-gray-800 text-sm mb-4">
+            <tbody>
+              <tr><td className="border border-gray-800 px-2 py-1 w-1/3">RF Output Power</td><td className="border border-gray-800 px-2 py-1">300W (adjustable 0-300W)</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Frequency Range</td><td className="border border-gray-800 px-2 py-1">87.5-108 MHz</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Frequency Stability</td><td className="border border-gray-800 px-2 py-1">±10Hz</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Harmonic Suppression</td><td className="border border-gray-800 px-2 py-1">≥60dB</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Spurious Suppression</td><td className="border border-gray-800 px-2 py-1">≥70dB</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">VSWR</td><td className="border border-gray-800 px-2 py-1"><1.5:1</td></tr>
+            </tbody>
+          </table>
+          <h3 className="font-bold mb-3">Audio Specifications:</h3>
+          <table className="w-full border-collapse border border-gray-800 text-sm">
+            <tbody>
+              <tr><td className="border border-gray-800 px-2 py-1 w-1/3">Audio Input Level</td><td className="border border-gray-800 px-2 py-1">-15dBm to +15dBm</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Frequency Response</td><td className="border border-gray-800 px-2 py-1">30Hz-15KHz (±1dB)</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Left/Right Channel Separation</td><td className="border border-gray-800 px-2 py-1">≥50dB</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Stereo S/N Ratio</td><td className="border border-gray-800 px-2 py-1">≥70dB</td></tr>
+              <tr><td className="border border-gray-800 px-2 py-1">Audio Distortion</td><td className="border border-gray-800 px-2 py-1"><0.3%</td></tr>
+            </tbody>
+          </table>
+          <p className="text-sm font-semibold mt-8 text-right">Page 10 of 23</p>
+        </div>
+
+        {/* Page 11 - Warranty & Support */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Warranty & Technical Support</h2>
+          <div className="space-y-4 text-sm">
+            <h3 className="font-bold">Warranty Terms:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>Manufacturer warranty: 12 months from date of installation</li>
+              <li>On-site service available within 48 hours of complaint</li>
+              <li>Replacement parts provided free of charge during warranty period</li>
+              <li>Extended warranty available at additional cost</li>
+            </ul>
+            <h3 className="font-bold mt-4">Technical Support:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>24/7 phone support available</li>
+              <li>Remote diagnostic capability</li>
+              <li>On-site technician deployment within 24 hours</li>
+              <li>Training provided to operators</li>
+              <li>Maintenance manual and documentation provided</li>
+            </ul>
+            <h3 className="font-bold mt-4">Service Centers:</h3>
+            <p>Authorized service centers available in Maldives and neighboring countries.</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 11 of 23</p>
+        </div>
+
+        {/* Page 12 - Delivery & Installation */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Delivery & Installation</h2>
+          <div className="space-y-4 text-sm">
+            <h3 className="font-bold">Delivery Terms:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>Delivery timeframe: Within 30-45 days from Purchase Order</li>
+              <li>Delivery location: As specified by client</li>
+              <li>Packaging: Export standard wooden crate packaging</li>
+              <li>Transportation: Air freight or sea freight as required</li>
+              <li>Insurance: All risks insurance during transit</li>
+            </ul>
+            <h3 className="font-bold mt-4">Installation Services:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>Installation and commissioning included in price</li>
+              <li>Technical engineer will supervise installation</li>
+              <li>System testing and alignment included</li>
+              <li>Integration with existing infrastructure</li>
+              <li>Full system documentation provided</li>
+            </ul>
+            <h3 className="font-bold mt-4">Acceptance Testing:</h3>
+            <p>Joint acceptance testing will be conducted with client representative. System must meet all specified parameters before final acceptance.</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 12 of 23</p>
+        </div>
+
+        {/* Page 13 - Terms & Conditions */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Terms & Conditions</h2>
+          <div className="space-y-4 text-sm">
+            <h3 className="font-bold">1. Payment Terms:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>Payment due within 30 days of delivery and acceptance</li>
+              <li>Payment to be made to Bank of Maldives account</li>
+              <li>Late payment subject to 1.5% monthly service charge</li>
+            </ul>
+            <h3 className="font-bold mt-4">2. Validity:</h3>
+            <p>This quotation is valid for 90 days from the date of bid opening.</p>
+            <h3 className="font-bold mt-4">3. Taxes & Duties:</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4">
+              <li>Prices quoted are exclusive of GST</li>
+              <li>GST will be charged at prevailing rate (currently 8%)</li>
+              <li>Import duties, if any, to be borne by client</li>
+            </ul>
+            <h3 className="font-bold mt-4">4. Cancellation:</h3>
+            <p>Orders once placed cannot be cancelled without written agreement. Cancellation charges may apply.</p>
+            <h3 className="font-bold mt-4">5. Force Majeure:</h3>
+            <p>Neither party shall be liable for delays due to circumstances beyond reasonable control.</p>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 13 of 23</p>
+        </div>
+
+        {/* Pages 14-22 - User Defined Specification Sections (Placeholder) */}
+        
+        {/* Page 14 - User Spec 1 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 1</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add client-specific requirements here]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Click Edit to add custom specifications</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 14 of 23</p>
+        </div>
+
+        {/* Page 15 - User Spec 2 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 2</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add compliance details here]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Click Edit to add compliance information</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 15 of 23</p>
+        </div>
+
+        {/* Page 16 - User Spec 3 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 3</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add product brochures/catalogs]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Upload product documentation</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 16 of 23</p>
+        </div>
+
+        {/* Page 17 - User Spec 4 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 4</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add manufacturer authorization]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Add manufacturer details</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 17 of 23</p>
+        </div>
+
+        {/* Page 18 - User Spec 5 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 5</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add test reports/certificates]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Upload test reports</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 18 of 23</p>
+        </div>
+
+        {/* Page 19 - User Spec 6 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 6</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add drawings/diagrams]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Upload technical drawings</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 19 of 23</p>
+        </div>
+
+        {/* Page 20 - User Spec 7 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 7</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add maintenance schedule]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Add maintenance information</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 20 of 23</p>
+        </div>
+
+        {/* Page 21 - User Spec 8 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 8</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add spare parts list]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Add spare parts information</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 21 of 23</p>
+        </div>
+
+        {/* Page 22 - User Spec 9 */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 9</h2>
+          <div className="space-y-4 text-sm">
+            <p className="text-gray-600 italic">[Editable section - Add references/testimonials]</p>
+            <div className="border border-gray-300 p-4 min-h-[300px]">
+              <p className="text-gray-400 text-center mt-20">Add client references</p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 22 of 23</p>
+        </div>
+
+        {/* Page 23 - Final Submission Page */}
+        <div className="page-break-after">
+          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Final Submission & Authorization</h2>
+          <div className="space-y-4 text-sm">
+            <p>We hereby confirm that all information provided in this bid document is true and accurate to the best of our knowledge.</p>
+            <p>We understand that any false information may result in disqualification and/or blacklisting from future tenders.</p>
+            
+            <div className="mt-8 border-t border-gray-300 pt-4">
+              <p className="font-bold">Authorized Signatory:</p>
+              <p className="mt-4">Signature: _________________________</p>
+              <p className="mt-2">Name: {sections.page1_declaration.fields.find(f => f.name === 'signatoryName')?.value}</p>
+              <p>Date: _________________________</p>
+              <p className="mt-2">Company Stamp:</p>
+              <div className="w-32 h-32 border border-gray-400 mt-2 flex items-center justify-center">
+                <span className="text-xs text-gray-400">[Company Seal]</span>
+              </div>
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-8 text-right">Page 23 of 23</p>
+          <p className="text-sm text-center mt-4 text-gray-500">- End of Bid Document -</p>
+        </div>
+
         {/* Declaration */}
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-4 border-b pb-2">Declaration</h2>
