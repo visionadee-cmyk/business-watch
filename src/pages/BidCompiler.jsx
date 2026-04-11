@@ -494,9 +494,22 @@ export default function BidCompiler() {
 
       {/* Print Styles */}
       <style>{`
+        /* Preview mode - show pages with visual separation */
+        .page-break-after {
+          page-break-after: always;
+          break-after: page;
+          border-bottom: 2px dashed #ccc;
+          padding-bottom: 2rem;
+          margin-bottom: 2rem;
+        }
+        
         @media print {
           .page-break-after {
             page-break-after: always;
+            break-after: page;
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
           }
           body * {
             visibility: hidden;
