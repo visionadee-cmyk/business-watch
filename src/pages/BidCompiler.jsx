@@ -331,6 +331,10 @@ export default function BidCompiler() {
   const [openBids, setOpenBids] = useState([]);
   const [loadingOpenBids, setLoadingOpenBids] = useState(false);
   const [selectedOpenBid, setSelectedOpenBid] = useState(selectedBid || null);
+  const [documents, setDocuments] = useState([]);
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [selectedDocuments, setSelectedDocuments] = useState({});
+  const [previewDocument, setPreviewDocument] = useState(null);
   const printRef = useRef();
 
   // Helper function to convert Firebase timestamp to yyyy-MM-dd string
@@ -452,10 +456,64 @@ export default function BidCompiler() {
     }
   };
 
-  // Load open bids on mount
+  // Fetch documents from Firebase
+  const fetchDocuments = async () => {
+    setLoadingDocuments(true);
+    try {
+      const q = query(collection(db, 'documents'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setDocuments(docs);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  // Load open bids and documents on mount
   useEffect(() => {
     fetchOpenBids();
+    fetchDocuments();
   }, []);
+
+  // Get documents by type for dropdown
+  const getDocumentsByType = (type) => {
+    return documents.filter(doc => doc.type === type);
+  };
+
+  // Handle document selection
+  const handleSelectDocument = (sectionKey, fieldName, document) => {
+    setSelectedDocuments(prev => ({
+      ...prev,
+      [`${sectionKey}_${fieldName}`]: document
+    }));
+    updateField(sectionKey, fieldName, document.name);
+  };
+
+  // Get document type mapping for pages
+  const getDocumentTypeForPage = (sectionKey) => {
+    const mapping = {
+      page3_companyReg: 'registration',
+      page5_gst: 'gst',
+      page6_sme: 'registration',
+      page7_taxClearance: 'bank',
+      page8_others: 'other'
+    };
+    return mapping[sectionKey] || 'other';
+  };
+
+  // Helper to get Cloudinary view URL for PDFs
+  const getCloudinaryViewUrl = (url) => {
+    if (!url) return '';
+    return url.replace('/image/upload/', '/raw/upload/fl_inline/');
+  };
+
+  // Helper to get PDF thumbnail URL
+  const getPdfThumbnailUrl = (url) => {
+    if (!url) return '';
+    return url.replace('/image/upload/', '/image/upload/pg_1/w_800,h_1000,c_fit/').replace('.pdf', '.jpg');
+  };
 
   // Handle selecting an open bid
   const handleSelectOpenBid = (bid) => {
@@ -536,8 +594,60 @@ export default function BidCompiler() {
     
     switch (field.type) {
       case 'file':
+        const docType = getDocumentTypeForPage(sectionKey);
+        const availableDocs = getDocumentsByType(docType);
+        const selectedDoc = selectedDocuments[fileKey];
+        
         return (
-          <div className="space-y-2">
+          <div className="space-y-3">
+            {/* Document Selection Dropdown */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">Select from Documents</label>
+              <select
+                value={selectedDoc?.id || ''}
+                onChange={(e) => {
+                  const doc = availableDocs.find(d => d.id === e.target.value);
+                  if (doc) handleSelectDocument(sectionKey, field.name, doc);
+                }}
+                disabled={loadingDocuments}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value="">
+                  {loadingDocuments ? 'Loading documents...' : `Select ${docType} document...`}
+                </option>
+                {availableDocs.map(doc => (
+                  <option key={doc.id} value={doc.id}>
+                    {doc.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Selected Document Preview */}
+            {selectedDoc && (
+              <div className="flex items-center gap-2 text-sm bg-green-50 px-3 py-2 rounded border border-green-200">
+                <CheckCircle size={16} className="text-green-600" />
+                <span className="flex-1 truncate text-green-800">{selectedDoc.name}</span>
+                <button
+                  onClick={() => setPreviewDocument(selectedDoc)}
+                  className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                  title="View Document"
+                >
+                  <Eye size={16} />
+                </button>
+              </div>
+            )}
+            
+            {/* Or Upload New */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-2 bg-white text-xs text-gray-500">OR</span>
+              </div>
+            </div>
+            
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -550,7 +660,7 @@ export default function BidCompiler() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-100 border border-blue-200 w-fit"
             >
               <FolderOpen size={18} />
-              <span>{uploadedFile ? 'Change File' : 'Upload Certificate'}</span>
+              <span>{uploadedFile ? 'Change File' : 'Upload New'}</span>
             </label>
             {uploadedFile && (
               <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded">
@@ -1485,6 +1595,68 @@ export default function BidCompiler() {
           )}
         </div>
       </div>
+
+      {/* Document Preview Modal */}
+      {previewDocument && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="font-semibold text-lg truncate pr-4">{previewDocument.name}</h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href={previewDocument.url}
+                  download={previewDocument.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                  title="Download"
+                >
+                  <Download size={20} />
+                </a>
+                <button
+                  onClick={() => setPreviewDocument(null)}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-4 bg-gray-100 flex items-center justify-center">
+              {previewDocument.format === 'pdf' ? (
+                <div className="flex flex-col items-center max-w-full">
+                  <img
+                    src={getPdfThumbnailUrl(previewDocument.url)}
+                    alt={previewDocument.name}
+                    className="max-w-full max-h-[70vh] object-contain shadow-lg rounded-lg bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="hidden flex-col items-center">
+                    <FileText className="w-24 h-24 text-red-500 mb-4" />
+                    <p className="text-gray-600 mb-4">PDF preview not available</p>
+                    <a
+                      href={previewDocument.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Open PDF
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={previewDocument.url}
+                  alt={previewDocument.name}
+                  className="max-w-full max-h-full object-contain mx-auto p-4 bg-white rounded-lg shadow-lg"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Print Styles */}
       <style>{`
