@@ -171,6 +171,124 @@ const defaultBidSections = {
       { name: 'certifications', label: 'Product Certifications', value: 'ISO certified products where applicable', type: 'textarea' },
     ]
   },
+  page9_specsOverview: {
+    title: 'Page 9 - Technical Specs Overview',
+    fields: [
+      { name: 'itemName', label: 'Item Name', value: 'Transmitter and Related Equipment', type: 'text' },
+      { name: 'brand', label: 'Brand', value: 'FMUSER or ZHC', type: 'text' },
+      { name: 'model', label: 'Model', value: 'FU618F-300W / ZHC618F-300W', type: 'text' },
+      { name: 'powerOutput', label: 'Power Output', value: '300W', type: 'text' },
+      { name: 'frequencyRange', label: 'Frequency Range', value: '87.5-108 MHz', type: 'text' },
+    ]
+  },
+  page10_detailedSpecs: {
+    title: 'Page 10 - Detailed Specifications',
+    fields: [
+      { name: 'rfOutputPower', label: 'RF Output Power', value: '300W (adjustable 0-300W)', type: 'text' },
+      { name: 'frequencyStability', label: 'Frequency Stability', value: '±10Hz', type: 'text' },
+      { name: 'harmonicSuppression', label: 'Harmonic Suppression', value: '≥60dB', type: 'text' },
+      { name: 'spuriousSuppression', label: 'Spurious Suppression', value: '≥70dB', type: 'text' },
+      { name: 'audioInputLevel', label: 'Audio Input Level', value: '-15dBm to +15dBm', type: 'text' },
+    ]
+  },
+  page11_warranty: {
+    title: 'Page 11 - Warranty & Support',
+    fields: [
+      { name: 'warrantyTerms', label: 'Warranty Terms', value: '12 months from date of installation', type: 'textarea' },
+      { name: 'serviceResponse', label: 'Service Response Time', value: '48 hours', type: 'text' },
+      { name: 'supportPhone', label: 'Support Phone', value: '7786629', type: 'text' },
+      { name: 'training', label: 'Training Provided', value: 'Yes', type: 'text' },
+    ]
+  },
+  page12_delivery: {
+    title: 'Page 12 - Delivery & Installation',
+    fields: [
+      { name: 'deliveryTimeframe', label: 'Delivery Timeframe', value: 'Within 30-45 days from PO', type: 'text' },
+      { name: 'deliveryLocation', label: 'Delivery Location', value: 'As specified by client', type: 'text' },
+      { name: 'installation', label: 'Installation Included', value: 'Yes', type: 'text' },
+      { name: 'acceptanceTesting', label: 'Acceptance Testing', value: 'Joint testing with client', type: 'textarea' },
+    ]
+  },
+  page13_terms: {
+    title: 'Page 13 - Terms & Conditions',
+    fields: [
+      { name: 'paymentTerms', label: 'Payment Terms', value: 'Payment due within 30 days of delivery', type: 'textarea' },
+      { name: 'validity', label: 'Validity', value: '90 days from bid opening', type: 'text' },
+      { name: 'taxes', label: 'Taxes & Duties', value: 'GST 8% extra', type: 'text' },
+      { name: 'cancellation', label: 'Cancellation Policy', value: 'Written agreement required', type: 'textarea' },
+    ]
+  },
+  page14_userSpec1: {
+    title: 'Page 14 - Additional Specs 1',
+    fields: [
+      { name: 'customContent1', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload1', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page15_userSpec2: {
+    title: 'Page 15 - Additional Specs 2',
+    fields: [
+      { name: 'customContent2', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload2', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page16_userSpec3: {
+    title: 'Page 16 - Additional Specs 3',
+    fields: [
+      { name: 'customContent3', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload3', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page17_userSpec4: {
+    title: 'Page 17 - Additional Specs 4',
+    fields: [
+      { name: 'customContent4', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload4', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page18_userSpec5: {
+    title: 'Page 18 - Additional Specs 5',
+    fields: [
+      { name: 'customContent5', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload5', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page19_userSpec6: {
+    title: 'Page 19 - Additional Specs 6',
+    fields: [
+      { name: 'customContent6', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload6', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page20_userSpec7: {
+    title: 'Page 20 - Additional Specs 7',
+    fields: [
+      { name: 'customContent7', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload7', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page21_userSpec8: {
+    title: 'Page 21 - Additional Specs 8',
+    fields: [
+      { name: 'customContent8', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload8', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page22_userSpec9: {
+    title: 'Page 22 - Additional Specs 9',
+    fields: [
+      { name: 'customContent9', label: 'Custom Content', value: '', type: 'textarea' },
+      { name: 'docUpload9', label: 'Upload Document', value: null, type: 'file' },
+    ]
+  },
+  page23_final: {
+    title: 'Page 23 - Final Submission',
+    fields: [
+      { name: 'authorization', label: 'Authorization Statement', value: 'We hereby confirm that all information provided is true and accurate.', type: 'textarea' },
+      { name: 'finalSignatory', label: 'Signatory Name', value: 'Aboobakuru Qasim', type: 'text' },
+      { name: 'finalDate', label: 'Date', value: '', type: 'date' },
+    ]
+  },
   declaration: {
     title: 'Declaration',
     fields: [
