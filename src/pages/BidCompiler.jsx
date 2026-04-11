@@ -46,11 +46,19 @@ const defaultBidSections = {
       { name: 'quotationDate', label: 'Date', value: '', type: 'date' },
       { name: 'client', label: 'Client', value: 'Public Service Media (PSM)', type: 'text' },
       { name: 'procurementRef', label: 'Procurement Ref', value: '(PROC-05-26) BIT/2026/20', type: 'text' },
-      { name: 'items', label: 'Items Description', value: 'Transmitter and related equipment', type: 'textarea' },
       { name: 'subTotal', label: 'Sub Total (MVR)', value: '68500.00', type: 'text' },
       { name: 'gst', label: 'GST 8%', value: '5480.00', type: 'text' },
       { name: 'grandTotal', label: 'Grand Total', value: '73980.00', type: 'text' },
       { name: 'validity', label: 'Validity (days)', value: '90', type: 'number' },
+      { name: 'deliveryTime', label: 'Delivery Time', value: '30-45 days', type: 'text' },
+      { name: 'paymentTerms', label: 'Payment Terms', value: 'As per tender terms', type: 'text' },
+    ],
+    items: [
+      { id: 1, description: 'Office table (Executive)', qty: 1, rate: 8500, amount: 8500 },
+      { id: 2, description: 'Sofa (couch) chair (3pcs/set)', qty: 2, rate: 14500, amount: 29000 },
+      { id: 3, description: 'Office Table (executive)', qty: 3, rate: 18500, amount: 55500 },
+      { id: 4, description: 'High Back Chair (executive Chair)', qty: 7, rate: 3800, amount: 26600 },
+      { id: 5, description: 'Conference Table Color:White', qty: 1, rate: 12500, amount: 12500 },
     ]
   },
   page3_companyReg: {
@@ -393,7 +401,6 @@ export default function BidCompiler() {
           case 'quotationNo': return { ...field, value: bid.quotationNo || bid.quoteNumber || `BW/${new Date().getFullYear()}/${String(bid.id || Date.now()).slice(-4)}` };
           case 'quotationDate': return { ...field, value: formatDate(bid.bidDate) || formatDate(bid.quotationDate) || formatDate(bid.createdAt) || new Date().toISOString().split('T')[0] };
           case 'procurementRef': return { ...field, value: bid.tenderRef || bid.procurementRef || bid.tenderNumber || bid.reference || '' };
-          case 'items': return { ...field, value: bid.items || bid.description || bid.scopeOfWork || bid.deliverables || 'As per tender requirements' };
           case 'subTotal': return { ...field, value: subtotal ? subtotal.toFixed(2) : '' };
           case 'gst': return { ...field, value: gst ? gst.toFixed(2) : '' };
           case 'grandTotal': return { ...field, value: grandTotal ? grandTotal.toFixed(2) : '' };
@@ -404,6 +411,34 @@ export default function BidCompiler() {
           default: return field;
         }
       });
+      
+      // Extract items from bid data
+      let items = [];
+      if (bid.items && Array.isArray(bid.items)) {
+        items = bid.items.map((item, index) => ({
+          id: index + 1,
+          description: item.name || item.description || item.item || 'Item',
+          qty: item.qty || item.quantity || item.orderedQty || 1,
+          rate: item.rate || item.price || item.costPrice || item.unitPrice || 0,
+          amount: item.amount || item.total || (item.qty || item.quantity || 1) * (item.rate || item.price || 0) || 0
+        }));
+      }
+      
+      // If no items found but we have bidAmount, create a single summary item
+      if (items.length === 0 && bid.bidAmount) {
+        items = [{
+          id: 1,
+          description: bid.description || bid.scopeOfWork || bid.deliverables || 'As per tender requirements',
+          qty: 1,
+          rate: bid.bidAmount,
+          amount: bid.bidAmount
+        }];
+      }
+      
+      // Update the items array
+      if (items.length > 0) {
+        populated.page2_quotation.items = items;
+      }
     }
     
     // Update Letter of Transmittal
@@ -793,51 +828,50 @@ export default function BidCompiler() {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-800 px-2 py-1">#</th>
-                <th className="border border-gray-800 px-2 py-1">Item, model no</th>
+                <th className="border border-gray-800 px-2 py-1">Item Description</th>
                 <th className="border border-gray-800 px-2 py-1">Qty</th>
-                <th className="border border-gray-800 px-2 py-1">Rate</th>
-                <th className="border border-gray-800 px-2 py-1">Amount</th>
+                <th className="border border-gray-800 px-2 py-1">Rate (MVR)</th>
+                <th className="border border-gray-800 px-2 py-1">Amount (MVR)</th>
               </tr>
             </thead>
             <tbody>
+              {(sections.page2_quotation.items || []).map((item, index) => (
+                <tr key={item.id || index}>
+                  <td className="border border-gray-800 px-2 py-1 text-center">{index + 1}</td>
+                  <td className="border border-gray-800 px-2 py-1">{item.description}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-center">{item.qty}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right">{Number(item.rate).toLocaleString('en-MV', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                  <td className="border border-gray-800 px-2 py-1 text-right">{Number(item.amount).toLocaleString('en-MV', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                </tr>
+              ))}
               <tr>
-                <td className="border border-gray-800 px-2 py-1 text-center">1</td>
-                <td className="border border-gray-800 px-2 py-1">
-                  <strong>TRANSMITTER</strong><br/>
-                  OFFERED BRAND AND MODEL:<br/>
-                  Brand: FMUSER, Model: FU618F-300W<br/>
-                  OR<br/>
-                  Brand: ZHC, Model: ZHC618F-300W<br/><br/>
-                  Specs are attached<br/>
-                  Warranty: 01 year
-                </td>
-                <td className="border border-gray-800 px-2 py-1 text-center">1</td>
-                <td className="border border-gray-800 px-2 py-1 text-right">68500.00</td>
-                <td className="border border-gray-800 px-2 py-1 text-right">68,500.00</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Sub total</strong></td>
-                <td className="border border-gray-800 px-2 py-1 text-right">{sections.page2_quotation.fields.find(f => f.name === 'subTotal')?.value}</td>
+                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Sub Total</strong></td>
+                <td className="border border-gray-800 px-2 py-1 text-right">{Number(sections.page2_quotation.fields.find(f => f.name === 'subTotal')?.value || 0).toLocaleString('en-MV', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               </tr>
               <tr>
                 <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>GST 8%</strong></td>
-                <td className="border border-gray-800 px-2 py-1 text-right">{sections.page2_quotation.fields.find(f => f.name === 'gst')?.value}</td>
+                <td className="border border-gray-800 px-2 py-1 text-right">{Number(sections.page2_quotation.fields.find(f => f.name === 'gst')?.value || 0).toLocaleString('en-MV', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               </tr>
               <tr>
-                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Total:</strong> Seventy-three thousand nine hundred eighty only</td>
-                <td className="border border-gray-800 px-2 py-1 text-right font-bold">{sections.page2_quotation.fields.find(f => f.name === 'grandTotal')?.value}</td>
+                <td className="border border-gray-800 px-2 py-1 text-right" colSpan="4"><strong>Total:</strong></td>
+                <td className="border border-gray-800 px-2 py-1 text-right font-bold">{Number(sections.page2_quotation.fields.find(f => f.name === 'grandTotal')?.value || 0).toLocaleString('en-MV', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
               </tr>
             </tbody>
           </table>
 
-          <p className="text-sm mb-1">All rates and amounts are in MVR.</p>
-          <p className="text-sm mb-1"><strong>Delivery:</strong> 01 days</p>
-          <p className="text-sm mb-4">Quotation / bid Validity: {sections.page2_quotation.fields.find(f => f.name === 'validity')?.value} days from bid opening.</p>
-
-          <div className="mt-8">
-            <p className="text-sm font-semibold mb-4">Authorised Signatory</p>
-            <p className="text-sm">Aboobakuru Qasim<br/>Managing Director</p>
+          <div className="flex justify-between items-end">
+            <div className="text-sm">
+              <p className="mb-1">All rates and amounts are in MVR.</p>
+              <p className="mb-1"><strong>Delivery:</strong> {sections.page2_quotation.fields.find(f => f.name === 'deliveryTime')?.value}</p>
+              <p className="mb-4">Validity: {sections.page2_quotation.fields.find(f => f.name === 'validity')?.value} days from bid opening.</p>
+              <p className="text-xs text-gray-600">Payment Terms: {sections.page2_quotation.fields.find(f => f.name === 'paymentTerms')?.value}</p>
+            </div>
+            <div className="text-right text-sm">
+              <p className="font-semibold mb-4">Authorised Signatory</p>
+              <p>Aboobakuru Qasim<br/>Managing Director</p>
+            </div>
           </div>
+
           <p className="text-sm font-semibold mt-8 text-right">Page 2 of 23</p>
         </div>
 
