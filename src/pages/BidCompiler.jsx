@@ -1416,7 +1416,7 @@ export default function BidCompiler() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto">
           {showPreview ? (
-            <div className="p-8">
+            <div className="p-8 print-content" ref={printRef}>
               {renderPreview()}
             </div>
           ) : (
@@ -1552,17 +1552,22 @@ export default function BidCompiler() {
             padding-bottom: 0;
             margin-bottom: 0;
           }
-          body * {
-            visibility: hidden;
+          /* Hide UI elements */
+          nav, header, aside, .no-print, button, .sidebar, .accordion {
+            display: none !important;
           }
-          .print\:p-0, .print\:p-0 * {
-            visibility: visible;
+          /* Show print content */
+          .print-content, .print-content * {
+            visibility: visible !important;
+            display: block !important;
           }
-          .print\:p-0 {
+          .print-content {
             position: absolute;
             left: 0;
             top: 0;
             width: 100%;
+            padding: 0;
+            margin: 0;
           }
         }
       `}</style>
