@@ -740,547 +740,325 @@ export default function BidCompiler() {
                   <td className="py-2 font-semibold">Submission Date:</td>
                   <td className="py-2">{sections.page1_cover?.fields?.find(f => f.name === 'submissionDate')?.value || '_________________'}</td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 1 of 12</p>
-        </div>
-
-        {/* Page 2 - Documents Checklist */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6">DOCUMENTS CHECKLIST</h2>
-          <p className="text-sm mb-4">Please verify all required documents are attached:</p>
-          <table className="w-full border-collapse border border-gray-800 text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-800 px-3 py-2 text-left">#</th>
-                <th className="border border-gray-800 px-3 py-2 text-left">Document Required</th>
-                <th className="border border-gray-800 px-3 py-2 text-center">Attached</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">1</td>
-                <td className="border border-gray-800 px-3 py-2">Tender Fee Receipt</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'tenderFee')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">2</td>
-                <td className="border border-gray-800 px-3 py-2">Bid Security</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'bidSecurity')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">3</td>
-                <td className="border border-gray-800 px-3 py-2">Company Profile/Certificate</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'companyProfile')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">4</td>
-                <td className="border border-gray-800 px-3 py-2">TIN Certificate</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'tinCert')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">5</td>
-                <td className="border border-gray-800 px-3 py-2">GST Certificate</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'gstCert')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">6</td>
-                <td className="border border-gray-800 px-3 py-2">Bank Reference</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'bankRef')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">7</td>
-                <td className="border border-gray-800 px-3 py-2">Past Performance Certificates</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'pastPerformance')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">8</td>
-                <td className="border border-gray-800 px-3 py-2">Technical Specifications</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'technicalSpecs')?.value ? '✓' : '☐'}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-800 px-3 py-2">9</td>
-                <td className="border border-gray-800 px-3 py-2">Price Schedule</td>
-                <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'priceSchedule')?.value ? '✓' : '☐'}</td>
-              </tr>
             </tbody>
           </table>
-          <p className="text-sm font-semibold mt-8 text-right">Page 2 of 12</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 1 of 12</p>
+      </div>
 
-        {/* Page 3 - Company Registration Certificate */}
-        <div className="page-break-after">
-          <div className="text-center mb-8">
-            <div className="border-4 border-gray-800 p-8 inline-block">
-              <h1 className="text-2xl font-bold mb-4">Certificate of Registration</h1>
-              <p className="text-lg">Ministry of Economic Development & Trade</p>
-              <p className="text-sm">Male' Republic Of Maldives</p>
-            </div>
-          </div>
-          <div className="text-center space-y-4 text-sm">
-            <p>I HEREBY certify that <strong>BUSINESS WATCH PRIVATE LIMITED</strong> is on this day registered</p>
-            <p>under the Act no. 7/2023 and given under my hand and seal, at Male', Republic of Maldives</p>
-            <p>this <strong>{sections.page3_companyReg?.fields?.find(f => f.name === 'regDate')?.value}</strong></p>
-            <p className="mt-8 text-lg font-bold">No: {sections.page3_companyReg?.fields?.find(f => f.name === 'regNo')?.value}</p>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 3 of 12</p>
-        </div>
+      {/* Page 2 - Documents Checklist */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6">DOCUMENTS CHECKLIST</h2>
+        <p className="text-sm mb-4">Please verify all required documents are attached:</p>
+        <table className="w-full border-collapse border border-gray-800 text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-800 px-3 py-2 text-left">#</th>
+              <th className="border border-gray-800 px-3 py-2 text-left">Document Required</th>
+              <th className="border border-gray-800 px-3 py-2 text-center">Attached</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">1</td>
+              <td className="border border-gray-800 px-3 py-2">Tender Fee Receipt</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'tenderFee')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">2</td>
+              <td className="border border-gray-800 px-3 py-2">Bid Security</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'bidSecurity')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">3</td>
+              <td className="border border-gray-800 px-3 py-2">Company Profile/Certificate</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'companyProfile')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">4</td>
+              <td className="border border-gray-800 px-3 py-2">TIN Certificate</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'tinCert')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">5</td>
+              <td className="border border-gray-800 px-3 py-2">GST Certificate</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'gstCert')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">6</td>
+              <td className="border border-gray-800 px-3 py-2">Bank Reference</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'bankRef')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">7</td>
+              <td className="border border-gray-800 px-3 py-2">Past Performance Certificates</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'pastPerformance')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">8</td>
+              <td className="border border-gray-800 px-3 py-2">Technical Specifications</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'technicalSpecs')?.value ? '✓' : '☐'}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-800 px-3 py-2">9</td>
+              <td className="border border-gray-800 px-3 py-2">Price Schedule</td>
+              <td className="border border-gray-800 px-3 py-2 text-center">{sections.page2_checklist?.fields?.find(f => f.name === 'priceSchedule')?.value ? '✓' : '☐'}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="text-sm font-semibold mt-8 text-right">Page 2 of 12</p>
+      </div>
 
-        {/* Page 5 - Quotation */}
-        <div className="page-break-after">
-          <BidQuotationPage
-            bid={{
-              vendorNumber: '514110',
-              quotationNo: sections.page5_quotation?.fields?.find(f => f.name === 'quotationNo')?.value,
-              quotationDate: sections.page5_quotation?.fields?.find(f => f.name === 'quotationDate')?.value,
-              authority: sections.page5_quotation?.fields?.find(f => f.name === 'client')?.value,
-              title: sections.page5_quotation?.fields?.find(f => f.name === 'client')?.value,
-              tenderNo: sections.page5_quotation?.fields?.find(f => f.name === 'procurementRef')?.value,
-              deliveryDays: parseInt(String(sections.page5_quotation?.fields?.find(f => f.name === 'deliveryTime')?.value || '').match(/\d+/)?.[0] || '', 10) || undefined,
-              quotationValidity: parseInt(String(sections.page5_quotation?.fields?.find(f => f.name === 'validity')?.value || ''), 10) || undefined,
-              items: (sections.page5_quotation?.items || []).map((it, idx) => ({
-                id: it.id || idx,
-                name: it.description,
-                quantity: it.qty,
-                bidPrice: it.rate
-              }))
-            }}
-            showTax={true}
-            gstRate={8}
-            selectedSignatory={0}
-          />
-        </div>
-
-        {/* Page 7 - GST Registration */}
-        <div className="page-break-after">
-          <div className="text-center mb-8">
-            <p className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-            <div className="w-20 h-20 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-xs text-gray-500">MALDIVES INLAND REVENUE AUTHORITY</span>
-            </div>
-            <h1 className="text-xl font-bold mb-2">GST Registration Certificate</h1>
-            <p className="text-sm text-gray-600">ގުޅިފައިވާ ސަރުކާރުގެ ވެރިކަން ކުރާ ރާއްޖެ</p>
-          </div>
-          <div className="text-center space-y-4 text-sm">
-            <p>This is to certify that the undermentioned business activity is registered under the<br/>Goods and Services Tax Act (Law Number 10/2011).</p>
-            <div className="border-2 border-gray-800 p-4 my-6 inline-block">
-              <p className="font-bold">Business Watch Private Limited</p>
-              <p>TIN: {sections.page5_gst?.fields?.find(f => f.name === 'gstTin')?.value}</p>
-              <p>{sections.page5_gst?.fields?.find(f => f.name === 'gstDate')?.value}</p>
-              <p>Taxable Activity Number: {sections.page5_gst?.fields?.find(f => f.name === 'taxableActivity')?.value}</p>
-            </div>
-            <p>Commissioner General of Taxation</p>
-            <p>Maldives Inland Revenue Authority</p>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 7 of 12</p>
-        </div>
-
-        {/* Page 10 - SME Registration */}
-        <div className="page-break-after">
-          <div className="text-center mb-6">
-            <div className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
-            <p className="text-sm">MINISTRY OF ECONOMIC DEVELOPMENT & TRADE</p>
-            <p className="text-xs">MALÉ REPUBLIC OF MALDIVES</p>
-            <p className="text-sm mt-2">{sections.page6_sme?.fields?.find(f => f.name === 'smeNo')?.value}</p>
-          </div>
-          <h1 className="text-2xl font-bold text-center mb-8 underline">SME Registration</h1>
-          <table className="w-full max-w-md mx-auto text-sm mb-8">
-            <tbody>
-              <tr>
-                <td className="py-2 font-semibold">Registered To:</td>
-                <td className="py-2">BUSINESS WATCH PVT LTD ({sections.page3_companyReg?.fields?.find(f => f.name === 'regNo')?.value})</td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold">Registered Address:</td>
-                <td className="py-2">{sections.page6_sme?.fields?.find(f => f.name === 'smeAddress')?.value}</td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold">Business Category:</td>
-                <td className="py-2">{sections.page6_sme?.fields?.find(f => f.name === 'businessCategory')?.value}</td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold">Business Ranking:</td>
-                <td className="py-2">{sections.page6_sme?.fields?.find(f => f.name === 'businessRanking')?.value}</td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold">Registration Date:</td>
-                <td className="py-2">{sections.page6_sme?.fields?.find(f => f.name === 'smeRegDate')?.value}</td>
-              </tr>
-            </tbody>
-          </table>
-          <p className="text-xs text-center text-gray-500 mt-8">
-            This is an electronic document generated by the office of the Registrar of Companies, Ministry of Economic Development & Trade.
-          </p>
-          <p className="text-sm font-semibold mt-4 text-right">Page 6 of 12</p>
-        </div>
-
-        {/* Page 7 - Tax Clearance Report */}
-        <div className="page-break-after">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-xs text-center">MIRA</span>
-            </div>
-            <h1 className="text-xl font-bold">TAX CLEARANCE REPORT</h1>
-            <p className="text-sm">MALDIVES INLAND REVENUE AUTHORITY</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+      {/* Page 3 - Bid Submission Form */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">BID SUBMISSION FORM</h2>
+        <div className="space-y-4 text-sm">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p><strong>Reference Number:</strong> {sections.page7_taxClearance?.fields?.find(f => f.name === 'refNumber')?.value}</p>
-              <p><strong>Date of Issue:</strong> {sections.page7_taxClearance?.fields?.find(f => f.name === 'dateOfIssue')?.value}</p>
+              <p className="font-semibold">Authorized Signature:</p>
+              <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'authorizedSignature')?.value || '_________________'}</p>
             </div>
             <div>
-              <p><strong>Taxpayer Identification No:</strong> {sections.page7_taxClearance?.fields?.find(f => f.name === 'taxpayerId')?.value}</p>
+              <p className="font-semibold">Signatory Name & Title:</p>
+              <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'signatoryName')?.value || '_________________'}</p>
             </div>
           </div>
-          <div className="border-2 border-gray-800 p-4 mb-4">
-            <p className="text-sm font-semibold mb-2">Status of dues:</p>
-            <p className="text-sm">☑ {sections.page7_taxClearance?.fields?.find(f => f.name === 'taxStatus')?.value}</p>
+          <div>
+            <p className="font-semibold">Name of Bidder:</p>
+            <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'bidderName')?.value || '_________________'}</p>
           </div>
-          <p className="text-sm mt-4">
-            Below are the details of the taxes and fees that has been checked for the purpose of this clearance:
-          </p>
-          <table className="w-full border-collapse border border-gray-400 text-xs mt-2">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-400 px-2 py-1">#</th>
-                <th className="border border-gray-400 px-2 py-1">Description</th>
-                <th className="border border-gray-400 px-2 py-1">#</th>
-                <th className="border border-gray-400 px-2 py-1">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td className="border px-2 py-1">1</td><td className="border px-2 py-1">Income Tax</td><td className="border px-2 py-1">13</td><td className="border px-2 py-1">Guest House Registration Fee</td></tr>
-              <tr><td className="border px-2 py-1">2</td><td className="border px-2 py-1">Goods & Services Tax</td><td className="border px-2 py-1">14</td><td className="border px-2 py-1">Dive School Registration Fee</td></tr>
-              <tr><td className="border px-2 py-1">3</td><td className="border px-2 py-1">Green Tax</td><td className="border px-2 py-1">15</td><td className="border px-2 py-1">Tourism related Bank Mortgage Registration Fee</td></tr>
-              <tr><td className="border px-2 py-1">4</td><td className="border px-2 py-1">Airport Tax & Fee</td><td className="border px-2 py-1">16</td><td className="border px-2 py-1">Tourism related other Registration and License Fee</td></tr>
-            </tbody>
-          </table>
-          <p className="text-sm font-semibold mt-8 text-right">Page 7 of 23</p>
-        </div>
-
-        {/* Page 8 - Other Documents */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Supporting Documents</h2>
-          <div className="space-y-4">
-            <div className="border border-gray-300 p-4">
-              <h3 className="font-semibold mb-2">1. Council Certificate</h3>
-              <p className="text-sm text-gray-600">Faadhippolhu Hinnavaru Council Certificate of Good Standing</p>
-              <p className="text-sm mt-2">Certificate No: (OTH/P)325/PRN/V2025/16</p>
+          <div>
+            <p className="font-semibold">Address:</p>
+            <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'bidderAddress')?.value || '_________________'}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="font-semibold">Phone Number:</p>
+              <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'phoneNumber')?.value || '_________________'}</p>
             </div>
-            <div className="border border-gray-300 p-4">
-              <h3 className="font-semibold mb-2">2. Nafthaa Certificate</h3>
-              <p className="text-sm text-gray-600">National Certification for business compliance</p>
-            </div>
-            <div className="border border-gray-300 p-4">
-              <h3 className="font-semibold mb-2">3. Additional Supporting Documents</h3>
-              <p className="text-sm text-gray-600">As per tender requirements</p>
+            <div>
+              <p className="font-semibold">Fax/Email:</p>
+              <p className="border-b border-gray-400 py-1">{sections.page3_submission?.fields?.find(f => f.name === 'emailAddress')?.value || '_________________'}</p>
             </div>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 8 of 12</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 3 of 12</p>
+      </div>
 
-        {/* Page 2 - Document Checklist */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold mb-4 border-b pb-2">Page 2 - Document Checklist</h2>
-          <table className="w-full border-collapse border border-gray-400 text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-400 px-3 py-2 text-left">Document</th>
-                <th className="border border-gray-400 px-3 py-2 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(sections.page2_checklist?.fields || []).map(field => (
-                <tr key={field.name}>
-                  <td className="border border-gray-400 px-3 py-2">{field.label}</td>
-                  <td className="border border-gray-400 px-3 py-2 text-center">
-                    {field.value ? 
-                      <span className="text-green-600 font-semibold">✓ Included</span> : 
-                      <span className="text-red-500">Not Included</span>
-                    }
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="text-sm font-semibold mt-8 text-right">Page 2 of 12</p>
-        </div>
-
-        {/* Pages 9-23 - Common Specifications */}
-        
-        {/* Page 9 - Technical Specifications Overview */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Technical Specifications - Overview</h2>
-          <div className="space-y-4 text-sm">
-            <p><strong>Item Name:</strong> {sections.page10_experienceLetters?.fields?.find(f => f.name === 'itemName')?.value ?? 'Transmitter and Related Equipment'}</p>
-            <p><strong>Brand:</strong> FMUSER or ZHC (Equivalent brands accepted)</p>
-            <p><strong>Model:</strong> FU618F-300W / ZHC618F-300W or equivalent</p>
-            <p><strong>Power Output:</strong> 300W</p>
-            <p><strong>Frequency Range:</strong> 87.5-108 MHz</p>
-            <p><strong>Operating Temperature:</strong> -10°C to +50°C</p>
-            <p><strong>Power Supply:</strong> AC 220V ±10%, 50/60Hz</p>
-            <p><strong>Cooling:</strong> Forced air cooling</p>
-            <p><strong>Audio Input:</strong> XLR balanced, RCA unbalanced</p>
-            <p><strong>Harmonic Suppression:</strong> ≥60dB</p>
-            <p><strong>Spurious Suppression:</strong> ≥70dB</p>
+      {/* Page 4 - Company Registration Certificate */}
+      <div className="page-break-after">
+        <div className="text-center mb-8">
+          <div className="border-4 border-gray-800 p-8 inline-block">
+            <h1 className="text-2xl font-bold mb-4">Certificate of Registration</h1>
+            <p className="text-lg">Ministry of Economic Development & Trade</p>
+            <p className="text-sm">Male' Republic Of Maldives</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 9 of 23</p>
         </div>
-
-        {/* Page 10 - Detailed Specifications */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Detailed Technical Specifications</h2>
-          <h3 className="font-bold mb-3">RF Specifications:</h3>
-          <table className="w-full border-collapse border border-gray-800 text-sm mb-4">
-            <tbody>
-              <tr><td className="border border-gray-800 px-2 py-1 w-1/3">RF Output Power</td><td className="border border-gray-800 px-2 py-1">300W (adjustable 0-300W)</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Frequency Range</td><td className="border border-gray-800 px-2 py-1">87.5-108 MHz</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Frequency Stability</td><td className="border border-gray-800 px-2 py-1">±10Hz</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Harmonic Suppression</td><td className="border border-gray-800 px-2 py-1">≥60dB</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Spurious Suppression</td><td className="border border-gray-800 px-2 py-1">≥70dB</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">VSWR</td><td className="border border-gray-800 px-2 py-1">&lt;1.5:1</td></tr>
-            </tbody>
-          </table>
-          <h3 className="font-bold mb-3">Audio Specifications:</h3>
-          <table className="w-full border-collapse border border-gray-800 text-sm">
-            <tbody>
-              <tr><td className="border border-gray-800 px-2 py-1 w-1/3">Audio Input Level</td><td className="border border-gray-800 px-2 py-1">-15dBm to +15dBm</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Frequency Response</td><td className="border border-gray-800 px-2 py-1">30Hz-15KHz (±1dB)</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Left/Right Channel Separation</td><td className="border border-gray-800 px-2 py-1">≥50dB</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Stereo S/N Ratio</td><td className="border border-gray-800 px-2 py-1">≥70dB</td></tr>
-              <tr><td className="border border-gray-800 px-2 py-1">Audio Distortion</td><td className="border border-gray-800 px-2 py-1">&lt;0.3%</td></tr>
-            </tbody>
-          </table>
-          <p className="text-sm font-semibold mt-8 text-right">Page 10 of 23</p>
+        <div className="text-center space-y-4 text-sm">
+          <p>I HEREBY certify that <strong>BUSINESS WATCH PRIVATE LIMITED</strong> is on this day registered</p>
+          <p>under the Act no. 7/2023 and given under my hand and seal, at Male', Republic of Maldives</p>
+          <p>this <strong>{sections.page4_companyReg?.fields?.find(f => f.name === 'regDate')?.value}</strong></p>
+          <p className="mt-8 text-lg font-bold">No: {sections.page4_companyReg?.fields?.find(f => f.name === 'regNo')?.value}</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 4 of 12</p>
+      </div>
 
-        {/* Page 11 - Warranty & Support */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Warranty & Technical Support</h2>
-          <div className="space-y-4 text-sm">
-            <h3 className="font-bold">Warranty Terms:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Manufacturer warranty: 12 months from date of installation</li>
-              <li>On-site service available within 48 hours of complaint</li>
-              <li>Replacement parts provided free of charge during warranty period</li>
-              <li>Extended warranty available at additional cost</li>
-            </ul>
-            <h3 className="font-bold mt-4">Technical Support:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>24/7 phone support available</li>
-              <li>Remote diagnostic capability</li>
-              <li>On-site technician deployment within 24 hours</li>
-              <li>Training provided to operators</li>
-              <li>Maintenance manual and documentation provided</li>
-            </ul>
-            <h3 className="font-bold mt-4">Service Centers:</h3>
-            <p>Authorized service centers available in Maldives and neighboring countries.</p>
+      {/* Page 5 - Quotation */}
+      <div className="page-break-after">
+        <BidQuotationPage
+          bid={{
+            vendorNumber: '514110',
+            quotationNo: sections.page5_quotation?.fields?.find(f => f.name === 'quotationNo')?.value,
+            quotationDate: sections.page5_quotation?.fields?.find(f => f.name === 'quotationDate')?.value,
+            authority: sections.page5_quotation?.fields?.find(f => f.name === 'client')?.value,
+            title: sections.page5_quotation?.fields?.find(f => f.name === 'client')?.value,
+            tenderNo: sections.page5_quotation?.fields?.find(f => f.name === 'procurementRef')?.value,
+            deliveryDays: parseInt(String(sections.page5_quotation?.fields?.find(f => f.name === 'deliveryTime')?.value || '').match(/\d+/)?.[0] || '', 10) || undefined,
+            quotationValidity: parseInt(String(sections.page5_quotation?.fields?.find(f => f.name === 'validity')?.value || ''), 10) || undefined,
+            items: (sections.page5_quotation?.items || []).map((it, idx) => ({
+              id: it.id || idx,
+              name: it.description,
+              quantity: it.qty,
+              bidPrice: it.rate
+            }))
+          }}
+          showTax={true}
+          gstRate={8}
+          selectedSignatory={0}
+        />
+        <p className="text-sm font-semibold mt-4 text-right">Page 5 of 12</p>
+      </div>
+
+      {/* Page 6 - Specification */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">TECHNICAL SPECIFICATIONS</h2>
+        <div className="space-y-4 text-sm">
+          <p><strong>Item Name:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'itemName')?.value}</p>
+          <p><strong>Brand:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'brand')?.value}</p>
+          <p><strong>Model:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'model')?.value}</p>
+          <p><strong>Power Output:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'powerOutput')?.value}</p>
+          <p><strong>Frequency Range:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'frequencyRange')?.value}</p>
+          <p><strong>Warranty:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'warranty')?.value}</p>
+          <p><strong>Delivery:</strong> {sections.page6_specification?.fields?.find(f => f.name === 'deliverySpecs')?.value}</p>
+        </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 6 of 12</p>
+      </div>
+
+      {/* Page 7 - GST Registration */}
+      <div className="page-break-after">
+        <div className="text-center mb-8">
+          <p className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+          <div className="w-20 h-20 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+            <span className="text-xs text-gray-500">MALDIVES INLAND REVENUE AUTHORITY</span>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 11 of 23</p>
+          <h1 className="text-xl font-bold mb-2">GST Registration Certificate</h1>
+          <p className="text-sm text-gray-600">ގުޅިފައިވާ ސަރުކާރުގެ ވެރިކަން ކުރާ ރާއްޖެ</p>
         </div>
-
-        {/* Page 12 - Delivery & Installation */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Delivery & Installation</h2>
-          <div className="space-y-4 text-sm">
-            <h3 className="font-bold">Delivery Terms:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Delivery timeframe: Within 30-45 days from Purchase Order</li>
-              <li>Delivery location: As specified by client</li>
-              <li>Packaging: Export standard wooden crate packaging</li>
-              <li>Transportation: Air freight or sea freight as required</li>
-              <li>Insurance: All risks insurance during transit</li>
-            </ul>
-            <h3 className="font-bold mt-4">Installation Services:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Installation and commissioning included in price</li>
-              <li>Technical engineer will supervise installation</li>
-              <li>System testing and alignment included</li>
-              <li>Integration with existing infrastructure</li>
-              <li>Full system documentation provided</li>
-            </ul>
-            <h3 className="font-bold mt-4">Acceptance Testing:</h3>
-            <p>Joint acceptance testing will be conducted with client representative. System must meet all specified parameters before final acceptance.</p>
+        <div className="text-center space-y-4 text-sm">
+          <p>This is to certify that the undermentioned business activity is registered under the<br/>Goods and Services Tax Act (Law Number 10/2011).</p>
+          <div className="border-2 border-gray-800 p-4 my-6 inline-block">
+            <p className="font-bold">Business Watch Private Limited</p>
+            <p>TIN: {sections.page7_gst?.fields?.find(f => f.name === 'gstTin')?.value}</p>
+            <p>{sections.page7_gst?.fields?.find(f => f.name === 'gstDate')?.value}</p>
+            <p>Taxable Activity Number: {sections.page7_gst?.fields?.find(f => f.name === 'taxableActivity')?.value}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 12 of 23</p>
+          <p>Commissioner General of Taxation</p>
+          <p>Maldives Inland Revenue Authority</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 7 of 12</p>
+      </div>
 
-        {/* Page 13 - Terms & Conditions */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Terms & Conditions</h2>
-          <div className="space-y-4 text-sm">
-            <h3 className="font-bold">1. Payment Terms:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Payment due within 30 days of delivery and acceptance</li>
-              <li>Payment to be made to Bank of Maldives account</li>
-              <li>Late payment subject to 1.5% monthly service charge</li>
-            </ul>
-            <h3 className="font-bold mt-4">2. Validity:</h3>
-            <p>This quotation is valid for 90 days from the date of bid opening.</p>
-            <h3 className="font-bold mt-4">3. Taxes & Duties:</h3>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Prices quoted are exclusive of GST</li>
-              <li>GST will be charged at prevailing rate (currently 8%)</li>
-              <li>Import duties, if any, to be borne by client</li>
-            </ul>
-            <h3 className="font-bold mt-4">4. Cancellation:</h3>
-            <p>Orders once placed cannot be cancelled without written agreement. Cancellation charges may apply.</p>
-            <h3 className="font-bold mt-4">5. Force Majeure:</h3>
-            <p>Neither party shall be liable for delays due to circumstances beyond reasonable control.</p>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 13 of 23</p>
+      {/* Page 8 - Garaaru (Past Projects) */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">PAST PROJECTS (GARAARU)</h2>
+        <div className="space-y-4 text-sm">
+          <p><strong>Project 1:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'pastProject1')?.value}</p>
+          <p><strong>Project 2:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'pastProject2')?.value}</p>
+          <p><strong>Project 3:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'pastProject3')?.value}</p>
+          <p><strong>Project 4:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'pastProject4')?.value}</p>
+          <p><strong>Project 5:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'pastProject5')?.value}</p>
+          <p className="mt-6"><strong>Total Value of Completed Projects:</strong> {sections.page8_garaaru?.fields?.find(f => f.name === 'totalValue')?.value}</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 8 of 12</p>
+      </div>
 
-        {/* Pages 14-22 - User Defined Specification Sections (Placeholder) */}
-        
-        {/* Page 14 - User Spec 1 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 1</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add client-specific requirements here]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Click Edit to add custom specifications</p>
-            </div>
+      {/* Page 9 - Tax Clearance */}
+      <div className="page-break-after">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
+            <span className="text-xs text-center">MIRA</span>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 14 of 23</p>
+          <h1 className="text-xl font-bold">TAX CLEARANCE REPORT</h1>
+          <p className="text-sm">MALDIVES INLAND REVENUE AUTHORITY</p>
         </div>
-
-        {/* Page 15 - User Spec 2 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 2</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add compliance details here]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Click Edit to add compliance information</p>
-            </div>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 15 of 23</p>
+        <div className="space-y-4 text-sm">
+          <p><strong>Certificate No:</strong> {sections.page9_taxClearance?.fields?.find(f => f.name === 'taxClearanceNo')?.value}</p>
+          <p><strong>Issue Date:</strong> {sections.page9_taxClearance?.fields?.find(f => f.name === 'taxClearanceDate')?.value}</p>
+          <p><strong>Tax Period Covered:</strong> {sections.page9_taxClearance?.fields?.find(f => f.name === 'taxPeriod')?.value}</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 9 of 12</p>
+      </div>
 
-        {/* Page 16 - User Spec 3 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 3</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add product brochures/catalogs]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Upload product documentation</p>
-            </div>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 16 of 23</p>
+      {/* Page 10 - SME Registration */}
+      <div className="page-break-after">
+        <div className="text-center mb-6">
+          <div className="text-xs text-gray-500 mb-2">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+          <p className="text-sm">MINISTRY OF ECONOMIC DEVELOPMENT & TRADE</p>
+          <p className="text-xs">MALÉ REPUBLIC OF MALDIVES</p>
+          <p className="text-sm mt-2">{sections.page10_sme?.fields?.find(f => f.name === 'smeNo')?.value}</p>
         </div>
+        <h1 className="text-2xl font-bold text-center mb-8 underline">SME Registration</h1>
+        <table className="w-full max-w-md mx-auto text-sm mb-8">
+          <tbody>
+            <tr>
+              <td className="py-2 font-semibold">Registered To:</td>
+              <td className="py-2">BUSINESS WATCH PVT LTD ({sections.page4_companyReg?.fields?.find(f => f.name === 'regNo')?.value})</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">Registered Address:</td>
+              <td className="py-2">{sections.page10_sme?.fields?.find(f => f.name === 'smeAddress')?.value}</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">Business Category:</td>
+              <td className="py-2">{sections.page10_sme?.fields?.find(f => f.name === 'businessCategory')?.value}</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">Business Ranking:</td>
+              <td className="py-2">{sections.page10_sme?.fields?.find(f => f.name === 'businessRanking')?.value}</td>
+            </tr>
+            <tr>
+              <td className="py-2 font-semibold">Registration Date:</td>
+              <td className="py-2">{sections.page10_sme?.fields?.find(f => f.name === 'smeRegDate')?.value}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="text-xs text-center text-gray-500 mt-8">
+          This is an electronic document generated by the office of the Registrar of Companies, Ministry of Economic Development & Trade.
+        </p>
+        <p className="text-sm font-semibold mt-4 text-right">Page 10 of 12</p>
+      </div>
 
-        {/* Page 17 - User Spec 4 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 4</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add manufacturer authorization]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Add manufacturer details</p>
-            </div>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 17 of 23</p>
+      {/* Page 11 - Experience Details */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">EXPERIENCE DETAILS</h2>
+        <div className="space-y-4 text-sm">
+          <p><strong>Years in Business:</strong> {sections.page11_experienceDetails?.fields?.find(f => f.name === 'experienceYears')?.value}</p>
+          <p><strong>Total Projects Completed:</strong> {sections.page11_experienceDetails?.fields?.find(f => f.name === 'totalProjects')?.value}</p>
+          <p><strong>Major Clients:</strong></p>
+          <pre className="whitespace-pre-wrap ml-4">{sections.page11_experienceDetails?.fields?.find(f => f.name === 'majorClients')?.value}</pre>
+          <p><strong>Similar Projects Completed:</strong></p>
+          <pre className="whitespace-pre-wrap ml-4">{sections.page11_experienceDetails?.fields?.find(f => f.name === 'similarProjects')?.value}</pre>
+          <p><strong>Average Project Value:</strong> {sections.page11_experienceDetails?.fields?.find(f => f.name === 'averageProjectValue')?.value}</p>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 11 of 12</p>
+      </div>
 
-        {/* Page 18 - User Spec 5 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 5</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add test reports/certificates]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Upload test reports</p>
-            </div>
+      {/* Page 12 - Experience Letters & Final */}
+      <div className="page-break-after">
+        <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">EXPERIENCE LETTERS</h2>
+        <div className="space-y-6 text-sm">
+          <div className="border border-gray-300 p-4">
+            <p className="font-semibold">Experience Letter 1</p>
+            <p className="text-gray-600">{sections.page12_experienceLetters?.fields?.find(f => f.name === 'expLetter1')?.value ? 'Attached' : 'Not Attached'}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 18 of 23</p>
-        </div>
-
-        {/* Page 19 - User Spec 6 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 6</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add drawings/diagrams]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Upload technical drawings</p>
-            </div>
+          <div className="border border-gray-300 p-4">
+            <p className="font-semibold">Experience Letter 2</p>
+            <p className="text-gray-600">{sections.page12_experienceLetters?.fields?.find(f => f.name === 'expLetter2')?.value ? 'Attached' : 'Not Attached'}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 19 of 23</p>
-        </div>
-
-        {/* Page 20 - User Spec 7 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 7</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add maintenance schedule]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Add maintenance information</p>
-            </div>
+          <div className="border border-gray-300 p-4">
+            <p className="font-semibold">Experience Letter 3</p>
+            <p className="text-gray-600">{sections.page12_experienceLetters?.fields?.find(f => f.name === 'expLetter3')?.value ? 'Attached' : 'Not Attached'}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 20 of 23</p>
-        </div>
-
-        {/* Page 21 - User Spec 8 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 8</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add spare parts list]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Add spare parts information</p>
-            </div>
+          <div className="border border-gray-300 p-4">
+            <p className="font-semibold">Experience Letter 4</p>
+            <p className="text-gray-600">{sections.page12_experienceLetters?.fields?.find(f => f.name === 'expLetter4')?.value ? 'Attached' : 'Not Attached'}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 21 of 23</p>
-        </div>
-
-        {/* Page 22 - User Spec 9 */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Additional Specifications - Section 9</h2>
-          <div className="space-y-4 text-sm">
-            <p className="text-gray-600 italic">[Editable section - Add references/testimonials]</p>
-            <div className="border border-gray-300 p-4 min-h-[300px]">
-              <p className="text-gray-400 text-center mt-20">Add client references</p>
-            </div>
+          <div className="border border-gray-300 p-4">
+            <p className="font-semibold">Experience Letter 5</p>
+            <p className="text-gray-600">{sections.page12_experienceLetters?.fields?.find(f => f.name === 'expLetter5')?.value ? 'Attached' : 'Not Attached'}</p>
           </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 22 of 23</p>
-        </div>
-
-        {/* Page 23 - Final Submission Page */}
-        <div className="page-break-after">
-          <h2 className="text-xl font-bold text-center mb-6 border-b-2 border-gray-800 pb-2">Final Submission & Authorization</h2>
-          <div className="space-y-4 text-sm">
-            <p>We hereby confirm that all information provided in this bid document is true and accurate to the best of our knowledge.</p>
-            <p>We understand that any false information may result in disqualification and/or blacklisting from future tenders.</p>
-            
-            <div className="mt-8 border-t border-gray-300 pt-4">
-              <p className="font-bold">Authorized Signatory:</p>
-              <p className="mt-4">Signature: _________________________</p>
-              <p className="mt-2">Name: {sections.page1_declaration?.fields?.find(f => f.name === 'signatoryName')?.value}</p>
-              <p>Date: _________________________</p>
-              <p className="mt-2">Company Stamp:</p>
-              <div className="w-32 h-32 border border-gray-400 mt-2 flex items-center justify-center">
-                <span className="text-xs text-gray-400">[Company Seal]</span>
-              </div>
-            </div>
-          </div>
-          <p className="text-sm font-semibold mt-8 text-right">Page 23 of 23</p>
-          <p className="text-sm text-center mt-4 text-gray-500">- End of Bid Document -</p>
         </div>
 
         {/* Declaration */}
-        <div className="mt-8">
+        <div className="mt-12 pt-8 border-t-2 border-gray-800">
           <h2 className="text-xl font-bold mb-4 border-b pb-2">Declaration</h2>
           <div className="whitespace-pre-line text-sm mb-6">
-            {sections.page3_submission?.fields?.find(f => f.name === 'declaration')?.value || ''}
+            {sections.page3_submission?.fields?.find(f => f.name === 'declaration')?.value || 'We hereby declare that all information provided in this bid is true and accurate to the best of our knowledge.'}
           </div>
           <div className="mt-8">
-            <p><strong>Name:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarantName')?.value || ''}</p>
-            <p><strong>Designation:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarantDesignation')?.value || ''}</p>
-            <p><strong>Date:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarationDate')?.value || ''}</p>
+            <p><strong>Name:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarantName')?.value || '_________________'}</p>
+            <p><strong>Designation:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarantDesignation')?.value || '_________________'}</p>
+            <p><strong>Date:</strong> {sections.page3_submission?.fields?.find(f => f.name === 'declarationDate')?.value || '_________________'}</p>
             <p className="mt-8">_______________________</p>
             <p className="text-sm">Signature</p>
           </div>
         </div>
+        <p className="text-sm font-semibold mt-8 text-right">Page 12 of 12</p>
+        <p className="text-sm text-center mt-4 text-gray-500">- End of Bid Document -</p>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
