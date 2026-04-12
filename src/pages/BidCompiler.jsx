@@ -548,7 +548,16 @@ export default function BidCompiler() {
   };
 
   const handlePrint = () => {
-    window.print();
+    // First ensure preview is shown so content exists to print
+    if (!showPreview) {
+      setShowPreview(true);
+      // Wait for preview to render then print
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    } else {
+      window.print();
+    }
   };
 
   const handleFileUpload = (sectionKey, fieldName, file) => {
