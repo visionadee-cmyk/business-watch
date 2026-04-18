@@ -1036,17 +1036,41 @@ const Bids = ({ initialFilter }) => {
             </div>
           </div>
         </div>
-        <div className="card bg-indigo-50 border-indigo-200 p-2 sm:p-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Building2 className="w-5 h-5 sm:w-8 sm:h-8 text-indigo-600" />
-            <div>
-              <p className="text-xs sm:text-sm text-gray-600">Assigned Staff</p>
-              <p className="text-lg sm:text-2xl font-bold text-indigo-700">
-                {bids.filter(b => b.assignedStaff).length}
-              </p>
+        {/* Individual Staff Assignment Cards */}
+        {staffList.map((staff, index) => {
+          const assignedCount = bids.filter(b => b.assignedStaff === staff.id).length;
+          const colors = [
+            { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', text: 'text-indigo-700' },
+            { bg: 'bg-cyan-50', border: 'border-cyan-200', icon: 'text-cyan-600', text: 'text-cyan-700' },
+            { bg: 'bg-emerald-50', border: 'border-emerald-200', icon: 'text-emerald-600', text: 'text-emerald-700' },
+            { bg: 'bg-violet-50', border: 'border-violet-200', icon: 'text-violet-600', text: 'text-violet-700' },
+            { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'text-amber-600', text: 'text-amber-700' },
+            { bg: 'bg-pink-50', border: 'border-pink-200', icon: 'text-pink-600', text: 'text-pink-700' },
+          ];
+          const color = colors[index % colors.length];
+          return (
+            <div 
+              key={staff.id}
+              className={`card ${color.bg} ${color.border} p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow`}
+              onClick={() => { 
+                setFilterStatus('All'); 
+                setFilterResult('All');
+                // Store staff filter in a new state or use a different approach
+                setSearchTerm(staff.name);
+              }}
+            >
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Building2 className={`w-5 h-5 sm:w-8 sm:h-8 ${color.icon}`} />
+                <div>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate max-w-[100px]">{staff.name}</p>
+                  <p className={`text-lg sm:text-2xl font-bold ${color.text}`}>
+                    {assignedCount}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
 
       {/* Filters */}
