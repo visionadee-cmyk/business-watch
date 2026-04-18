@@ -171,9 +171,35 @@ const Bids = ({ initialFilter }) => {
         id: doc.id,
         ...doc.data()
       }));
+      // Merge default staff with fetched staff (avoiding duplicates)
+      const defaultIds = new Set(staffList.map(s => s.id));
+      const newStaff = staffData.filter(s => !defaultIds.has(s.id));
+      if (newStaff.length > 0) {
+        setStaffList(prev => [...prev, ...newStaff]);
+      }
       console.log('Fetched staff:', staffData);
     } catch (error) {
       console.error('Error fetching staff:', error);
+    }
+  };
+
+  const assignStaffToBid = async (bidId, staffId) => {
+    try {
+      const bidRef = doc(db, 'bids', bidId);
+      await updateDoc(bidRef, {
+        assignedStaff: staffId,
+        updatedAt: serverTimestamp()
+      });
+      // Update local state
+      setBids(prev => prev.map(bid => 
+        bid.id === bidId ? { ...bid, assignedStaff: staffId } : bid
+      ));
+      // Show success notification
+      const assignedStaffName = staffList.find(s => s.id === staffId)?.name || 'Staff';
+      alert(`Successfully assigned ${assignedStaffName} to bid!`);
+    } catch (error) {
+      console.error('Error assigning staff:', error);
+      alert('Failed to assign staff. Please try again.');
     }
   };
 
