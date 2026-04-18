@@ -1,6 +1,6 @@
 // Google Gemini AI Service for Smart Bids
 const API_KEY = 'AIzaSyA6MyrMHXP_1VY7iOOJTI25Ci9MHHfrmcA';
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 /**
  * Generate AI-powered bid analysis using Gemini
@@ -16,7 +16,6 @@ export const analyzeBidsWithAI = async (bidsData, tendersData, insights) => {
       },
       body: JSON.stringify({
         contents: [{
-          role: 'user',
           parts: [{
             text: prompt
           }]
@@ -26,7 +25,13 @@ export const analyzeBidsWithAI = async (bidsData, tendersData, insights) => {
           maxOutputTokens: 2048,
           topP: 0.95,
           topK: 40
-        }
+        },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+        ]
       })
     });
 
