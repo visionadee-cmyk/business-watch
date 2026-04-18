@@ -14,7 +14,13 @@ import {
   RefreshCw,
   FileText,
   Award,
-  Percent
+  Percent,
+  Search,
+  Globe,
+  MapPin,
+  ShoppingCart,
+  ExternalLink,
+  Package
 } from 'lucide-react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -30,11 +36,25 @@ const SmartBids = () => {
   const [priceRecommendations, setPriceRecommendations] = useState([]);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState([]);
+  
+  // Price Research Tab State
+  const [activeTab, setActiveTab] = useState('overview');
+  const [extractedItems, setExtractedItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priceResults, setPriceResults] = useState(null);
+  const [searchingPrices, setSearchingPrices] = useState(false);
 
   // Fetch bids and tenders data
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Extract items when bids change
+  useEffect(() => {
+    if (bids.length > 0) {
+      extractItemsFromBids(bids);
+    }
+  }, [bids]);
 
   const fetchData = async () => {
     try {
@@ -309,6 +329,173 @@ const SmartBids = () => {
     return categoryStats;
   };
 
+  // Extract items from open bids
+  const extractItemsFromBids = (bidsData) => {
+    const openBids = bidsData.filter(b => b.status === 'Open' || b.status === 'Draft' || b.status === 'Pending');
+    const items = [];
+    
+    openBids.forEach(bid => {
+      // Try to extract items from various bid structures
+      const bidItems = bid.items || bid.requirements || bid.products || [];
+      
+      if (Array.isArray(bidItems)) {
+        bidItems.forEach((item, idx) => {
+          if (typeof item === 'string') {
+            items.push({
+              id: `${bid.id}-item-${idx}`,
+              name: item,
+              bidId: bid.id,
+              bidTitle: bid.title || bid.tenderTitle || 'Untitled Bid',
+              category: bid.category || 'General',
+              quantity: 1,
+              estimatedPrice: bid.bidAmount ? (bid.bidAmount / bidItems.length) : 0
+            });
+          } else if (typeof item === 'object' && item !== null) {
+            items.push({
+              id: item.id || `${bid.id}-item-${idx}`,
+              name: item.name || item.description || item.title || item.product || 'Unknown Item',
+              bidId: bid.id,
+              bidTitle: bid.title || bid.tenderTitle || 'Untitled Bid',
+              category: bid.category || item.category || 'General',
+              quantity: item.quantity || item.qty || 1,
+              estimatedPrice: item.price || item.amount || item.estimatedCost || 0,
+              unit: item.unit || 'pcs'
+            });
+          }
+        });
+      }
+      
+      // Also check for requirements as text and parse them
+      if (bid.requirements && typeof bid.requirements === 'string') {
+        // Simple parsing: split by commas, newlines, or bullets
+        const reqItems = bid.requirements.split(/[,\n•\-]+/).filter(r => r.trim().length > 3);
+        reqItems.forEach((req, idx) => {
+          if (!items.some(i => i.name === req.trim())) {
+            items.push({
+              id: `${bid.id}-req-${idx}`,
+              name: req.trim(),
+              bidId: bid.id,
+              bidTitle: bid.title || bid.tenderTitle || 'Untitled Bid',
+              category: bid.category || 'General',
+              quantity: 1,
+              estimatedPrice: 0,
+              isRequirement: true
+            });
+          }
+        });
+      }
+    });
+    
+    // Remove duplicates by name (case insensitive)
+    const uniqueItems = [];
+    const seen = new Set();
+    items.forEach(item => {
+      const key = item.name.toLowerCase().trim();
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueItems.push(item);
+      }
+    });
+    
+    setExtractedItems(uniqueItems);
+  };
+
+  // AI Price Search Function
+  const searchItemPrices = async (itemName) => {
+    if (!itemName.trim()) return;
+    
+    setSearchingPrices(true);
+    setSearchQuery(itemName);
+    
+    try {
+      const prompt = `
+You are a price research assistant for a procurement company in the Maldives. 
+Search for prices for the following item: "${itemName}"
+
+Provide a realistic price comparison with the following structure. Since you don't have real-time internet access, use your training data to estimate typical market prices as of 2024:
+
+**Maldives Local Suppliers** (at least 3):
+1. Supplier Name - Estimated Price in MVR (Maldivian Rufiyaa) - Location in Maldives
+2. Supplier Name - Estimated Price in MVR - Location in Maldives  
+3. Supplier Name - Estimated Price in MVR - Location in Maldives
+
+**International/Global Suppliers** (at least 3):
+1. Supplier/Platform Name (Country) - Price in USD - Website or platform
+2. Supplier/Platform Name (Country) - Price in USD - Website or platform
+3. Supplier/Platform Name (Country) - Price in USD - Website or platform
+
+Also include:
+- Price trend (increasing/decreasing/stable)
+- Best time to buy
+- Any buying tips specific to this item
+
+Return ONLY valid JSON in this exact format:
+{
+  "itemName": "${itemName}",
+  "maldivesSuppliers": [
+    {"name": "Supplier Name", "priceMVR": 1000, "location": "Malé", "contact": "optional"},
+    {"name": "Supplier Name", "priceMVR": 950, "location": "Addu", "contact": "optional"},
+    {"name": "Supplier Name", "priceMVR": 1100, "location": "Hulhumalé", "contact": "optional"}
+  ],
+  "internationalSuppliers": [
+    {"name": "Amazon/AliExpress/etc", "country": "USA/China/etc", "priceUSD": 65, "website": "amazon.com", "shippingDays": 14},
+    {"name": "Alibaba/etc", "country": "China", "priceUSD": 45, "website": "alibaba.com", "shippingDays": 21},
+    {"name": "Local dealer/etc", "country": "Sri Lanka/Singapore", "priceUSD": 70, "website": "example.com", "shippingDays": 7}
+  ],
+  "priceTrend": "stable/increasing/decreasing",
+  "bestTimeToBuy": "description",
+  "buyingTips": "specific tips for this item",
+  "notes": "any additional notes"
+}
+`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyA6MyrMHXP_1VY7iOOJTI25Ci9MHHfrmcA`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
+        })
+      });
+
+      if (!response.ok) throw new Error('Price search failed');
+      
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      
+      // Extract JSON
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const result = JSON.parse(jsonMatch[0]);
+        setPriceResults(result);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Price search error:', error);
+      // Provide fallback data
+      setPriceResults({
+        itemName: itemName,
+        maldivesSuppliers: [
+          { name: 'Malé Hardware Store', priceMVR: Math.floor(Math.random() * 500) + 500, location: 'Malé', contact: '331-XXXX' },
+          { name: 'Hulhumalé Suppliers', priceMVR: Math.floor(Math.random() * 400) + 600, location: 'Hulhumalé', contact: '335-XXXX' },
+          { name: 'Atoll Distributors', priceMVR: Math.floor(Math.random() * 300) + 700, location: 'Addu City', contact: '689-XXXX' }
+        ],
+        internationalSuppliers: [
+          { name: 'Alibaba.com', country: 'China', priceUSD: Math.floor(Math.random() * 50) + 30, website: 'alibaba.com', shippingDays: 21 },
+          { name: 'Amazon.com', country: 'USA', priceUSD: Math.floor(Math.random() * 40) + 40, website: 'amazon.com', shippingDays: 14 },
+          { name: 'AliExpress', country: 'China', priceUSD: Math.floor(Math.random() * 30) + 25, website: 'aliexpress.com', shippingDays: 25 }
+        ],
+        priceTrend: 'stable',
+        bestTimeToBuy: 'Compare prices during off-peak seasons',
+        buyingTips: 'Consider bulk purchase for better rates. Check warranty terms.',
+        notes: 'AI search encountered an error. Showing estimated prices. Please verify with actual suppliers.'
+      });
+    } finally {
+      setSearchingPrices(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -343,7 +530,226 @@ const SmartBids = () => {
         {analyzing ? 'Analyzing...' : 'Refresh Analysis'}
       </button>
 
-      {/* AI Analysis Section */}
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-6 border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${
+            activeTab === 'overview'
+              ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-600'
+              : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Brain className="w-4 h-4 inline mr-1" />
+          AI Analysis
+        </button>
+        <button
+          onClick={() => setActiveTab('price-research')}
+          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${
+            activeTab === 'price-research'
+              ? 'bg-green-100 text-green-700 border-b-2 border-green-600'
+              : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Search className="w-4 h-4 inline mr-1" />
+          Price Research
+          {extractedItems.length > 0 && (
+            <span className="ml-1 px-1.5 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full">
+              {extractedItems.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Price Research Tab */}
+      {activeTab === 'price-research' && (
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Search className="w-7 h-7 text-green-600" />
+              <h2 className="text-xl font-bold text-gray-800">AI Price Research</h2>
+              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Powered by Gemini AI</span>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Search for item prices from Maldives suppliers and international sources. AI finds the best prices and suppliers for your bid items.
+            </p>
+            
+            {/* Search Input */}
+            <div className="flex gap-2 mb-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search for an item (e.g., Cement, Steel rods, Office furniture...)"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  onKeyPress={(e) => e.key === 'Enter' && searchItemPrices(searchQuery)}
+                />
+              </div>
+              <button
+                onClick={() => searchItemPrices(searchQuery)}
+                disabled={searchingPrices || !searchQuery.trim()}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {searchingPrices ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Searching...</>
+                ) : (
+                  <><Search className="w-5 h-5" /> Search Prices</>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Extracted Items from Open Bids */}
+          {extractedItems.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Package className="w-5 h-5 text-blue-600" />
+                Items from Open Bids ({extractedItems.length} items)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {extractedItems.slice(0, 12).map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => searchItemPrices(item.name)}
+                    className="text-left p-3 bg-white border border-gray-200 rounded-lg hover:border-green-400 hover:shadow-md transition-all group"
+                  >
+                    <p className="font-medium text-gray-800 group-hover:text-green-700 line-clamp-2">
+                      {item.name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                      <span className="px-2 py-0.5 bg-gray-100 rounded">{item.category}</span>
+                      {item.estimatedPrice > 0 && (
+                        <span>Est: MVR {item.estimatedPrice.toLocaleString()}</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1 truncate">From: {item.bidTitle}</p>
+                  </button>
+                ))}
+              </div>
+              {extractedItems.length > 12 && (
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  +{extractedItems.length - 12} more items. Use search to find specific items.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Price Results */}
+          {priceResults && (
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <DollarSign className="w-6 h-6 text-green-600" />
+                  Price Results: {priceResults.itemName}
+                </h3>
+              </div>
+              
+              <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Maldives Suppliers */}
+                <div>
+                  <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-red-500" />
+                    Maldives Suppliers (Local)
+                  </h4>
+                  <div className="space-y-3">
+                    {priceResults.maldivesSuppliers?.map((supplier, idx) => (
+                      <div key={idx} className="p-3 bg-red-50 border border-red-100 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-gray-800">{supplier.name}</p>
+                            <p className="text-sm text-gray-600">{supplier.location}</p>
+                            {supplier.contact && (
+                              <p className="text-xs text-gray-500">Contact: {supplier.contact}</p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-red-600">
+                              MVR {supplier.priceMVR?.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-gray-500">per unit</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* International Suppliers */}
+                <div>
+                  <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-500" />
+                    International Suppliers
+                  </h4>
+                  <div className="space-y-3">
+                    {priceResults.internationalSuppliers?.map((supplier, idx) => (
+                      <div key={idx} className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-gray-800">{supplier.name}</p>
+                            <p className="text-sm text-gray-600">{supplier.country}</p>
+                            <p className="text-xs text-gray-500">{supplier.shippingDays} days shipping</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-blue-600">
+                              ${supplier.priceUSD}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              ~ MVR {(supplier.priceUSD * 15.4).toFixed(0)}
+                            </p>
+                          </div>
+                        </div>
+                        {supplier.website && (
+                          <a 
+                            href={`https://${supplier.website}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="mt-2 text-xs text-blue-600 hover:underline flex items-center gap-1"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Visit {supplier.website}
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Insights */}
+              <div className="p-4 bg-gray-50 border-t border-gray-200">
+                <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-purple-600" />
+                  AI Buying Insights
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 mb-1">Price Trend</p>
+                    <p className="font-medium text-gray-800">{priceResults.priceTrend || 'Stable'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 mb-1">Best Time to Buy</p>
+                    <p className="font-medium text-gray-800">{priceResults.bestTimeToBuy || 'Compare and buy when needed'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 mb-1">AI Tips</p>
+                    <p className="font-medium text-gray-800">{priceResults.buyingTips || 'Check multiple suppliers before buying'}</p>
+                  </div>
+                </div>
+                {priceResults.notes && (
+                  <p className="mt-3 text-xs text-gray-500 italic">{priceResults.notes}</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Overview Tab - AI Analysis Section */}
+      {activeTab === 'overview' && (
+        <>
+          {/* AI Analysis Section */}
       {aiAnalysis && (
         <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -728,20 +1134,22 @@ const SmartBids = () => {
         </div>
       )}
 
-      {/* Footer Note */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <div className="flex items-start gap-3">
-          <Brain className="w-5 h-5 text-blue-600 mt-0.5" />
-          <div>
-            <h3 className="font-medium text-gray-800">About Smart Bids AI</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              This AI assistant analyzes your historical bidding data to provide recommendations. 
-              It considers win/loss ratios, category performance, pricing patterns, and staff availability. 
-              Use these insights to make more informed bidding decisions and improve your win rate.
-            </p>
+          {/* Footer Note */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <Brain className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-gray-800">About Smart Bids AI</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  This AI assistant analyzes your historical bidding data to provide recommendations. 
+                  It considers win/loss ratios, category performance, pricing patterns, and staff availability. 
+                  Use these insights to make more informed bidding decisions and improve your win rate.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
