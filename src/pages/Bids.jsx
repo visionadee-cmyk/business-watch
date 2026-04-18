@@ -41,7 +41,10 @@ const Bids = ({ initialFilter }) => {
   const [staffList, setStaffList] = useState([
     { id: 'staff-001', name: 'Abdul Rasheed Ali', email: 'abdul@businesswatch.mv', role: 'staff' },
     { id: 'staff-002', name: 'Ziyad Rashad', email: 'ziyad@businesswatch.mv', role: 'staff' },
-    { id: 'staff-003', name: 'Aboobakuru Gasim', email: 'aboobakuru@businesswatch.mv', role: 'staff' }
+    { id: 'staff-003', name: 'Aboobakuru Gasim', email: 'aboobakuru@businesswatch.mv', role: 'staff' },
+    { id: 'staff-004', name: 'Mohamed Zain', email: 'mohamed.zain@businesswatch.mv', role: 'admin', salaryAccess: 'full' },
+    { id: 'staff-005', name: 'Aishath Jumana', email: 'aishath.jumana@businesswatch.mv', role: 'admin', salaryAccess: 'full' },
+    { id: 'staff-006', name: 'Adam Imad', email: 'adam.imad@businesswatch.mv', role: 'admin', salaryAccess: 'full' }
   ]);
   
   // User-defined cost types persisted in localStorage
