@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../services/firebase';
+import { analyzeBidsWithAI, getBidRecommendation } from '../services/geminiAI';
 
 const SmartBids = () => {
   const [bids, setBids] = useState([]);
@@ -27,6 +28,8 @@ const SmartBids = () => {
   const [insights, setInsights] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [priceRecommendations, setPriceRecommendations] = useState([]);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [aiRecommendations, setAiRecommendations] = useState([]);
 
   // Fetch bids and tenders data
   useEffect(() => {
@@ -54,7 +57,7 @@ const SmartBids = () => {
       setTenders(tendersData);
 
       // Run AI analysis
-      analyzeBids(bidsData, tendersData);
+      await analyzeBids(bidsData, tendersData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -62,10 +65,29 @@ const SmartBids = () => {
     }
   };
 
-  const analyzeBids = (bidsData, tendersData) => {
+  const analyzeBids = async (bidsData, tendersData) => {
     setAnalyzing(true);
     
-    // Simulate AI processing time
+    try {
+      // 1. Get comprehensive AI analysis from Gemini
+      const aiInsights = await analyzeBidsWithAI(bidsData, tendersData, insights);
+      setAiAnalysis(aiInsights);
+
+      // 2. Get AI recommendations for open bids
+      const openBids = bidsData.filter(b => b.status === 'Open' || b.status === 'Draft');
+      const categoryStats = calculateCategoryStats(bidsData);
+      
+      const aiRecs = [];
+      for (const bid of openBids.slice(0, 5)) { // Limit to 5 to avoid rate limits
+        const rec = await getBidRecommendation(bid, bidsData, categoryStats);
+        aiRecs.push(rec);
+      }
+      setAiRecommendations(aiRecs);
+    } catch (error) {
+      console.error('AI Analysis error:', error);
+    }
+    
+    // Continue with local analysis as backup
     setTimeout(() => {
       // 1. Analyze Won vs Lost bids
       const wonBids = bidsData.filter(b => b.result === 'Won');
@@ -269,7 +291,22 @@ const SmartBids = () => {
 
       setPriceRecommendations(priceRecs);
       setAnalyzing(false);
-    }, 1500); // Simulate 1.5s AI processing
+    }, 500); // Short delay for UI smoothness
+  };
+
+  const calculateCategoryStats = (bidsData) => {
+    const categoryStats = {};
+    bidsData.forEach(bid => {
+      const cat = bid.category || 'Unknown';
+      if (!categoryStats[cat]) {
+        categoryStats[cat] = { won: 0, lost: 0, total: 0, totalAmount: 0 };
+      }
+      categoryStats[cat].total++;
+      categoryStats[cat].totalAmount += (bid.bidAmount || 0);
+      if (bid.result === 'Won') categoryStats[cat].won++;
+      if (bid.result === 'Lost') categoryStats[cat].lost++;
+    });
+    return categoryStats;
   };
 
   if (loading) {
@@ -305,6 +342,71 @@ const SmartBids = () => {
         <RefreshCw className={`w-4 h-4 ${analyzing ? 'animate-spin' : ''}`} />
         {analyzing ? 'Analyzing...' : 'Refresh Analysis'}
       </button>
+
+      {/* AI Analysis Section */}
+      {aiAnalysis && (
+        <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Brain className="w-7 h-7 text-purple-600" />
+            <h2 className="text-xl font-bold text-gray-800">Gemini AI Analysis</h2>
+            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Powered by Google Gemini</span>
+          </div>
+          
+          <p className="text-gray-700 mb-4 italic">{aiAnalysis.executiveSummary}</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <Award className="w-5 h-5 text-green-500" />
+                Key Strengths
+              </h3>
+              <ul className="space-y-1">
+                {aiAnalysis.keyStrengths?.map((strength, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    {strength}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-blue-500" />
+                Areas for Improvement
+              </h3>
+              <ul className="space-y-1">
+                {aiAnalysis.areasForImprovement?.map((area, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    {area}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          
+          {aiAnalysis.pricingInsights && (
+            <div className="mt-4 p-3 bg-white rounded-lg border border-purple-100">
+              <h3 className="font-semibold text-gray-800 mb-1 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-green-600" />
+                Pricing Insights
+              </h3>
+              <p className="text-sm text-gray-600">{aiAnalysis.pricingInsights}</p>
+            </div>
+          )}
+          
+          {aiAnalysis.competitiveAnalysis && (
+            <div className="mt-4 p-3 bg-white rounded-lg border border-purple-100">
+              <h3 className="font-semibold text-gray-800 mb-1 flex items-center gap-2">
+                <Target className="w-5 h-5 text-blue-600" />
+                Competitive Analysis
+              </h3>
+              <p className="text-sm text-gray-600">{aiAnalysis.competitiveAnalysis}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Key Insights Cards */}
       {insights && (
@@ -349,12 +451,112 @@ const SmartBids = () => {
         </div>
       )}
 
-      {/* AI Recommendations for Open Bids */}
-      {suggestions.length > 0 && (
+      {/* Gemini AI Detailed Recommendations */}
+      {aiRecommendations.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <Brain className="w-6 h-6 text-purple-600" />
+            Gemini AI Bid Recommendations
+            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">AI-Powered</span>
+          </h2>
+          <div className="space-y-4">
+            {aiRecommendations.map((rec) => (
+              <div 
+                key={rec.bidId}
+                className={`border-2 rounded-xl p-5 ${
+                  rec.recommendation === 'BID' 
+                    ? 'bg-green-50 border-green-300' 
+                    : rec.recommendation === 'SKIP'
+                    ? 'bg-red-50 border-red-300'
+                    : 'bg-amber-50 border-amber-300'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-bold text-gray-800 text-lg">{rec.bidTitle}</h3>
+                      <span className={`px-3 py-1 text-sm rounded-full font-bold ${
+                        rec.recommendation === 'BID'
+                          ? 'bg-green-600 text-white'
+                          : rec.recommendation === 'SKIP'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-amber-500 text-white'
+                      }`}>
+                        {rec.recommendation}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 mb-3">{rec.detailedReasoning}</p>
+                  </div>
+                  <div className="ml-4 text-center">
+                    <div className={`text-3xl font-bold ${
+                      rec.confidence >= 70 ? 'text-green-600' :
+                      rec.confidence >= 40 ? 'text-amber-600' : 'text-red-600'
+                    }`}>
+                      {rec.confidence}%
+                    </div>
+                    <p className="text-xs text-gray-500">AI Confidence</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-lg p-3">
+                    <h4 className="font-semibold text-gray-700 mb-2 text-sm">Key Factors</h4>
+                    <ul className="space-y-1">
+                      {rec.keyFactors?.map((factor, idx) => (
+                        <li key={idx} className="text-xs text-gray-600 flex items-start gap-1">
+                          <CheckCircle className="w-3 h-3 text-blue-500 mt-0.5 flex-shrink-0" />
+                          {factor}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-3">
+                    <h4 className="font-semibold text-gray-700 mb-2 text-sm">Pricing Assessment</h4>
+                    <p className="text-xs text-gray-600">{rec.pricingAssessment}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-3">
+                    <h4 className="font-semibold text-gray-700 mb-2 text-sm">Action Items</h4>
+                    <ul className="space-y-1">
+                      {rec.actionItems?.map((action, idx) => (
+                        <li key={idx} className="text-xs text-gray-600 flex items-start gap-1">
+                          <Target className="w-3 h-3 text-purple-500 mt-0.5 flex-shrink-0" />
+                          {action}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                
+                {(rec.risks?.length > 0 || rec.opportunities?.length > 0) && (
+                  <div className="mt-3 flex gap-4 text-sm">
+                    {rec.risks?.length > 0 && (
+                      <span className="text-red-600">
+                        <AlertCircle className="w-4 h-4 inline mr-1" />
+                        {rec.risks.length} risk(s) identified
+                      </span>
+                    )}
+                    {rec.opportunities?.length > 0 && (
+                      <span className="text-green-600">
+                        <TrendingUp className="w-4 h-4 inline mr-1" />
+                        {rec.opportunities.length} opportunity(s)
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Legacy AI Recommendations for Open Bids */}
+      {suggestions.length > 0 && (
+        <div className="mb-8 opacity-75">
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <Lightbulb className="w-6 h-6 text-yellow-500" />
-            AI Bid Recommendations
+            Local Analysis (Backup)
           </h2>
           <div className="space-y-4">
             {suggestions.map((suggestion) => (
