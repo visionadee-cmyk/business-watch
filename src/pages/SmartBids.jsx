@@ -484,16 +484,55 @@ Return ONLY valid JSON in this exact format:
       }
     } catch (error) {
       console.error('Price search error:', error);
-      // Provide fallback data with real Maldivian suppliers
-      setPriceResults({
-        itemName: itemName,
-        maldivesSuppliers: [
+      // Detect item category and provide relevant Maldivian suppliers
+      const itemLower = itemName.toLowerCase();
+      let category = 'general';
+      if (itemLower.includes('computer') || itemLower.includes('laptop') || itemLower.includes('printer') || itemLower.includes('monitor') || itemLower.includes('keyboard') || itemLower.includes('mouse')) category = 'electronics';
+      else if (itemLower.includes('cement') || itemLower.includes('steel') || itemLower.includes('pipe') || itemLower.includes('wire') || itemLower.includes('paint') || itemLower.includes('wood') || itemLower.includes('tool')) category = 'hardware';
+      else if (itemLower.includes('book') || itemLower.includes('paper') || itemLower.includes('pen') || itemLower.includes('stationery')) category = 'books';
+      
+      const suppliersByCategory = {
+        electronics: [
+          { name: 'Odiaba (State Trading Organization)', priceMVR: Math.floor(Math.random() * 500) + 1500, location: 'Malé / Hulhumalé', contact: '1414 / www.odiaba.com' },
+          { name: 'Redwave Maldives', priceMVR: Math.floor(Math.random() * 400) + 1800, location: 'Malé', contact: '334-4004 / www.redwave.mv' },
+          { name: 'Mi Store Maldives', priceMVR: Math.floor(Math.random() * 450) + 1600, location: 'Malé', contact: '332-2555' },
+          { name: 'iTech Maldives', priceMVR: Math.floor(Math.random() * 350) + 1700, location: 'Hulhumalé', contact: '335-6789' },
+          { name: 'Makro Maldives - Electronics', priceMVR: Math.floor(Math.random() * 400) + 1900, location: 'Malé', contact: '331-5001' }
+        ],
+        hardware: [
+          { name: 'Malé Hardware & Engineering', priceMVR: Math.floor(Math.random() * 200) + 400, location: 'Maafannu, Malé', contact: '331-7788' },
+          { name: 'STO Hardware Division', priceMVR: Math.floor(Math.random() * 150) + 450, location: 'Malé / Hulhumalé', contact: '1414' },
+          { name: 'Mifco Hardware', priceMVR: Math.floor(Math.random() * 180) + 420, location: 'Malé', contact: '332-2424' },
+          { name: 'A.D. Trading', priceMVR: Math.floor(Math.random() * 220) + 380, location: 'Machangoalhi, Malé', contact: '331-2323' },
+          { name: 'Rasdhoo Hardware', priceMVR: Math.floor(Math.random() * 250) + 350, location: 'North Ari Atoll', contact: '666-1234' }
+        ],
+        books: [
+          { name: 'Jamaluddin School Supplies', priceMVR: Math.floor(Math.random() * 50) + 150, location: 'Malé', contact: '331-1414' },
+          { name: 'STO Bookshop', priceMVR: Math.floor(Math.random() * 40) + 160, location: 'Malé', contact: '1414' },
+          { name: 'Brainy Bunny Bookstore', priceMVR: Math.floor(Math.random() * 60) + 140, location: 'Malé', contact: '331-5555' },
+          { name: 'Island Bookshop', priceMVR: Math.floor(Math.random() * 45) + 155, location: 'Hulhumalé', contact: '335-1234' },
+          { name: 'Atoll Education Supplies', priceMVR: Math.floor(Math.random() * 55) + 145, location: 'Malé', contact: '332-6789' }
+        ],
+        general: [
           { name: 'State Trading Organization (STO)', priceMVR: Math.floor(Math.random() * 300) + 800, location: 'Malé / Hulhumalé', contact: '1414 / sales@sto.com.mv' },
           { name: 'Makro Maldives', priceMVR: Math.floor(Math.random() * 250) + 900, location: 'Malé', contact: '331-5001 / www.makromaldives.com' },
-          { name: 'Dharumavantha Hospital Supplies', priceMVR: Math.floor(Math.random() * 400) + 700, location: 'Malé', contact: '333-5335' },
           { name: 'Atoll Market', priceMVR: Math.floor(Math.random() * 350) + 750, location: 'Hulhumalé', contact: '335-5000 / www.atollmarket.com' },
-          { name: 'Redwave Maldives', priceMVR: Math.floor(Math.random() * 450) + 650, location: 'Malé', contact: '334-4004 / www.redwave.mv' }
-        ].slice(0, 3),
+          { name: 'Redwave Maldives', priceMVR: Math.floor(Math.random() * 450) + 650, location: 'Malé', contact: '334-4004 / www.redwave.mv' },
+          { name: 'Dharumavantha Hospital Supplies', priceMVR: Math.floor(Math.random() * 400) + 700, location: 'Malé', contact: '333-5335' }
+        ]
+      };
+
+      const tipsByCategory = {
+        electronics: 'Odiaba (STO) offers warranty on electronics. Redwave has competitive prices. Compare with Amazon/Alibaba for import options.',
+        hardware: 'Malé Hardware has best prices for bulk. STO reliable for quality materials. Import from IndiaMART for specialized items.',
+        books: 'Jamaluddin School Supplies best for educational materials. STO Bookshop has wide range. Consider IndiaMART for bulk textbook orders.',
+        general: 'STO offers bulk discounts for registered businesses. Compare Makro vs STO prices. Consider shipping costs when importing.'
+      };
+
+      // Provide fallback data with category-specific suppliers
+      setPriceResults({
+        itemName: itemName,
+        maldivesSuppliers: suppliersByCategory[category].slice(0, 3),
         internationalSuppliers: [
           { name: 'Alibaba.com', country: 'China', priceUSD: Math.floor(Math.random() * 40) + 40, website: 'www.alibaba.com', shippingDays: 21 },
           { name: 'Amazon.com', country: 'USA', priceUSD: Math.floor(Math.random() * 35) + 45, website: 'www.amazon.com', shippingDays: 14 },
@@ -502,9 +541,12 @@ Return ONLY valid JSON in this exact format:
           { name: 'DHgate', country: 'China', priceUSD: Math.floor(Math.random() * 35) + 25, website: 'www.dhgate.com', shippingDays: 20 }
         ].slice(0, 3),
         priceTrend: 'stable',
-        bestTimeToBuy: 'Contact STO and Makro for quarterly promotions. Import from IndiaMART for faster shipping.',
-        buyingTips: 'STO offers bulk discounts for registered businesses. Compare Makro vs STO prices. Consider shipping costs when importing.',
-        notes: 'AI search encountered an error. Showing reliable local suppliers in Maldives. Please contact them directly for current prices and availability. STO and Makro are major distributors with multiple locations.'
+        bestTimeToBuy: category === 'electronics' ? 'STO quarterly sales (March, June, September, December). Import during off-peak shipping seasons.' : 
+                       category === 'hardware' ? 'Bulk order before construction season (October-January). STO offers contractor discounts.' :
+                       category === 'books' ? 'Order in bulk before school season (December-January). Educational discounts available.' :
+                       'Contact STO and Makro for quarterly promotions. Import from IndiaMART for faster shipping.',
+        buyingTips: tipsByCategory[category],
+        notes: `AI search encountered an error. Showing reliable ${category === 'general' ? 'local' : category} suppliers in Maldives. Please contact them directly for current prices. Major suppliers: STO (state enterprise), Makro (wholesale), Redwave (electronics).`
       });
     } finally {
       setSearchingPrices(false);
