@@ -28,6 +28,7 @@ const Bids = ({ initialFilter }) => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
   const [filterResult, setFilterResult] = useState(initialFilter || 'All');
+  const [filterAuthority, setFilterAuthority] = useState('All');
   const [showModal, setShowModal] = useState(false);
   const [editingBid, setEditingBid] = useState(null);
   const [viewingBid, setViewingBid] = useState(null);
@@ -757,13 +758,28 @@ const Bids = ({ initialFilter }) => {
   };
 
   const filteredBids = bids.filter(bid => {
+    const searchLower = searchTerm.toLowerCase().trim();
     const tenderTitle = getTenderTitle(bid.tenderId).toLowerCase();
-    const matchesSearch = tenderTitle.includes(searchTerm.toLowerCase()) || 
-                         bid.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bid.tenderTitle?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Comprehensive search across all bid fields
+    const matchesSearch = !searchLower || 
+                         tenderTitle.includes(searchLower) ||
+                         bid.title?.toLowerCase().includes(searchLower) ||
+                         bid.tenderTitle?.toLowerCase().includes(searchLower) ||
+                         bid.authority?.toLowerCase().includes(searchLower) ||
+                         bid.office?.toLowerCase().includes(searchLower) ||
+                         bid.category?.toLowerCase().includes(searchLower) ||
+                         bid.clientName?.toLowerCase().includes(searchLower) ||
+                         bid.company?.toLowerCase().includes(searchLower) ||
+                         bid.tenderNo?.toLowerCase().includes(searchLower) ||
+                         bid.id?.toLowerCase().includes(searchLower) ||
+                         bid.status?.toLowerCase().includes(searchLower) ||
+                         bid.result?.toLowerCase().includes(searchLower);
+    
     const matchesStatus = filterStatus === 'All' || bid.status === filterStatus;
     const matchesResult = filterResult === 'All' || bid.result === filterResult;
-    return matchesSearch && matchesStatus && matchesResult;
+    const matchesAuthority = filterAuthority === 'All' || bid.authority === filterAuthority;
+    return matchesSearch && matchesStatus && matchesResult && matchesAuthority;
   });
 
   const getStatusColor = (status) => {
@@ -1111,6 +1127,16 @@ const Bids = ({ initialFilter }) => {
         >
           <option value="All">All Results</option>
           {results.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+        <select
+          value={filterAuthority}
+          onChange={(e) => setFilterAuthority(e.target.value)}
+          className="input w-full sm:w-48 text-sm"
+        >
+          <option value="All">All Authorities</option>
+          {[...new Set(bids.map(b => b.authority).filter(Boolean))].sort().map(auth => (
+            <option key={auth} value={auth}>{auth}</option>
+          ))}
         </select>
       </div>
       </div>
