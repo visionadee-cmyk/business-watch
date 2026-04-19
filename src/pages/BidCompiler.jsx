@@ -228,6 +228,13 @@ export default function BidCompiler() {
   
   const [activeSection, setActiveSection] = useState('page1_cover');
   const [showPreview, setShowPreview] = useState(false);
+  const [printSections, setPrintSections] = useState(() => {
+    // Default all sections to be included in print
+    return Object.keys(defaultBidSections).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+  });
   const [savedBids, setSavedBids] = useState([]);
   const [currentBidName, setCurrentBidName] = useState(() => selectedBid?.title || '');
   const [expandedSections, setExpandedSections] = useState(Object.keys(defaultBidSections));
@@ -699,7 +706,15 @@ export default function BidCompiler() {
   };
 
   const renderPreview = () => {
-    const sections = normalizedSections;
+    const allSections = normalizedSections;
+    // Filter sections based on print selection
+    const sections = Object.keys(allSections).reduce((acc, key) => {
+      if (printSections[key] !== false) {
+        acc[key] = allSections[key];
+      }
+      return acc;
+    }, {});
+    
     return (
       <div className="bg-white p-8 max-w-4xl mx-auto print:p-0" ref={printRef}>
         {/* Page 1 - Cover Page */}
@@ -1194,8 +1209,31 @@ export default function BidCompiler() {
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto">
           {showPreview ? (
-            <div className="p-8 print-content" ref={printRef}>
-              {renderPreview()}
+            <div className="p-4">
+              {/* Section Selection Panel */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 print:hidden">
+                <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Sections to Print
+                </h3>
+                <p className="text-sm text-blue-700 mb-3">Select which sections to include in the printed bid:</p>
+                <div className="flex flex-wrap gap-3">
+                  {Object.entries(sections).map(([key, section]) => (
+                    <label key={key} className="flex items-center gap-2 bg-white px-3 py-2 rounded shadow-sm cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={printSections[key]}
+                        onChange={(e) => setPrintSections(prev => ({ ...prev, [key]: e.target.checked }))}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">{section.title}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="p-8 print-content" ref={printRef}>
+                {renderPreview()}
+              </div>
             </div>
           ) : (
             <div className="p-6">
