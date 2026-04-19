@@ -532,22 +532,23 @@ const Bids = ({ initialFilter }) => {
         bidData.createdAt = serverTimestamp();
         await addDoc(collection(db, 'bids'), bidData);
         
-        // Send new bid notification
+        // Send new bid notification (wrapped in try-catch to not block bid saving)
         try {
-          await fetch('/api/notifications/new-bid', {
+          await fetch('/api/notifications?action=new-bid', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bidData)
           });
         } catch (notifyError) {
           console.error('Failed to send bid notification:', notifyError);
+          // Don't throw - bid saving should continue even if notification fails
         }
       }
 
       setShowModal(false);
       setEditingBid(null);
       resetForm();
-      fetchData();
+      fetchBids();
     } catch (error) {
       console.error('Error saving bid:', error);
       alert('Error saving bid. Please try again.');
@@ -559,7 +560,7 @@ const Bids = ({ initialFilter }) => {
     
     try {
       await deleteDoc(doc(db, 'bids', bidId));
-      fetchData();
+      fetchBids();
     } catch (error) {
       console.error('Error deleting bid:', error);
       alert('Error deleting bid. Please try again.');
@@ -1366,7 +1367,7 @@ const Bids = ({ initialFilter }) => {
                         onChange={(e) => {
                           e.stopPropagation();
                           updateDoc(doc(db, 'bids', bid.id), { result: e.target.value });
-                          fetchData();
+                          fetchBids();
                         }}
                         className={`text-xs rounded-full px-2 py-0.5 border-0 cursor-pointer ${getResultColor(bid.result)}`}
                       >
