@@ -232,6 +232,27 @@ const Bids = ({ initialFilter }) => {
     setFormData(prev => ({ ...prev, profitMargin: profit.toFixed(2) }));
   };
 
+  // Auto-generate bid number
+  const generateBidNumber = () => {
+    const year = new Date().getFullYear();
+    const prefix = 'BID';
+    
+    // Find all existing bid numbers for this year
+    const existingNumbers = bids
+      .map(b => b.bidNo || b.tenderNo)
+      .filter(no => no && no.startsWith(`${prefix}-${year}-`))
+      .map(no => {
+        const match = no.match(/-(\d+)$/);
+        return match ? parseInt(match[1], 10) : 0;
+      });
+    
+    const maxNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 0;
+    const nextNumber = maxNumber + 1;
+    const newBidNo = `${prefix}-${year}-${String(nextNumber).padStart(3, '0')}`;
+    
+    setFormData(prev => ({ ...prev, bidNo: newBidNo, tenderNo: newBidNo }));
+  };
+
   // Add or update supplier in database
   const addSupplierToDB = async (supplierName, itemName) => {
     if (!supplierName || supplierName.trim() === '') return;
@@ -1564,13 +1585,23 @@ const Bids = ({ initialFilter }) => {
                   </div>
                   <div>
                     <label className="label">Tender Number</label>
-                    <input
-                      type="text"
-                      value={formData.tenderNo}
-                      onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
-                      className="input"
-                      placeholder="e.g., HDC (161)-PLM/IU/2026/72"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.tenderNo}
+                        onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
+                        className="input flex-1"
+                        placeholder="e.g., HDC (161)-PLM/IU/2026/72"
+                      />
+                      <button
+                        type="button"
+                        onClick={generateBidNumber}
+                        className="btn-secondary px-3 py-2 text-sm whitespace-nowrap"
+                        title="Auto-generate bid number"
+                      >
+                        Auto-Generate
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="label">Lots</label>
