@@ -1,12 +1,12 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCATTRgC4-AXsIaWHHpVwde_mqFz5tLTgU",
-  authDomain: "bussiness-watch.firebaseapp.com",
-  projectId: "bussiness-watch",
-  storageBucket: "bussiness-watch.firebasestorage.app",
-  messagingSenderId: "48830913744",
-  appId: "1:48830913744:web:7a9289daba9aea050392d5",
-  measurementId: "G-SSL7HXR5MH"
+  apiKey: "AIzaSyAGQaLXpbQaX6frOuBB3tBkVj9oYHOJ4tU",
+  authDomain: "business-watch-52e10.firebaseapp.com",
+  projectId: "business-watch-52e10",
+  storageBucket: "business-watch-52e10.firebasestorage.app",
+  messagingSenderId: "507928698798",
+  appId: "1:507928698798:web:b23a81e62b31daeb25723f",
+  measurementId: "G-YV8R6G6W93"
 };
 
 export default firebaseConfig;
