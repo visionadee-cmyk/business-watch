@@ -78,11 +78,10 @@ const Sidebar = () => {
 
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/tenders', icon: FileText, label: 'Tenders' },
-    { path: '/bids', icon: DollarSign, label: 'Bids' },
-    { path: '/bids/won', icon: CheckCircle, label: 'Won Bids' },
-    { path: '/bids/pending', icon: Clock, label: 'Pending Bids' },
-    { path: '/smart-bids', icon: Brain, label: 'Smart Bids AI' },
+    { path: '/bids', icon: DollarSign, label: 'Projects' },
+    { path: '/bids/won', icon: CheckCircle, label: 'Won Projects' },
+    { path: '/bids/pending', icon: Clock, label: 'Pending Projects' },
+    { path: '/smart-bids', icon: Brain, label: 'Smart Projects AI' },
     { path: '/purchase-orders', icon: ShoppingCart, label: 'Purchase Orders' },
     { path: '/quotations', icon: Receipt, label: 'Quotations' },
     { path: '/procurement', icon: ShoppingCart, label: 'Procurement' },

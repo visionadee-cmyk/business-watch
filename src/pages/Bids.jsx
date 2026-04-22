@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download, FileStack } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download, FileStack, Copy } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -38,6 +38,7 @@ const Bids = ({ initialFilter }) => {
   const [showQuotation, setShowQuotation] = useState(false);
   const [quotationBid, setQuotationBid] = useState(null);
   const [showOpenBidsReport, setShowOpenBidsReport] = useState(false);
+  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
   
   // Staff list for assignment - includes default company staff
   const [staffList, setStaffList] = useState([
@@ -128,6 +129,7 @@ const Bids = ({ initialFilter }) => {
     
     // Documents & Notes
     documents: [],
+    resultSheet: null, // Result/bid document upload
     notes: ''
   });
 
@@ -173,9 +175,13 @@ const Bids = ({ initialFilter }) => {
         id: doc.id,
         ...doc.data()
       }));
-      // Merge default staff with fetched staff (avoiding duplicates)
+      // Merge default staff with fetched staff (avoiding duplicates by ID and name)
       const defaultIds = new Set(staffList.map(s => s.id));
-      const newStaff = staffData.filter(s => !defaultIds.has(s.id));
+      const defaultNames = new Set(staffList.map(s => s.name?.toLowerCase().trim()));
+      const newStaff = staffData.filter(s => {
+        const nameLower = s.name?.toLowerCase().trim();
+        return !defaultIds.has(s.id) && !defaultNames.has(nameLower);
+      });
       if (newStaff.length > 0) {
         setStaffList(prev => [...prev, ...newStaff]);
       }
@@ -185,20 +191,42 @@ const Bids = ({ initialFilter }) => {
     }
   };
 
-  const assignStaffToBid = async (bidId, staffId) => {
+  const assignStaffToBid = async (bidId, staffId, isAdding = true) => {
     try {
       const bidRef = doc(db, 'bids', bidId);
+      const bid = bids.find(b => b.id === bidId);
+      const currentAssignedStaffs = bid?.assignedStaffs || [];
+      
+      let newAssignedStaffs;
+      if (isAdding) {
+        // Add staff if not already assigned
+        if (currentAssignedStaffs.includes(staffId)) {
+          alert('This staff member is already assigned to this project!');
+          return;
+        }
+        newAssignedStaffs = [...currentAssignedStaffs, staffId];
+      } else {
+        // Remove staff
+        newAssignedStaffs = currentAssignedStaffs.filter(id => id !== staffId);
+      }
+      
       await updateDoc(bidRef, {
-        assignedStaff: staffId,
+        assignedStaffs: newAssignedStaffs,
         updatedAt: serverTimestamp()
       });
+      
       // Update local state
-      setBids(prev => prev.map(bid => 
-        bid.id === bidId ? { ...bid, assignedStaff: staffId } : bid
+      setBids(prev => prev.map(b => 
+        b.id === bidId ? { ...b, assignedStaffs: newAssignedStaffs } : b
       ));
+      
       // Show success notification
       const assignedStaffName = staffList.find(s => s.id === staffId)?.name || 'Staff';
-      alert(`Successfully assigned ${assignedStaffName} to bid!`);
+      if (isAdding) {
+        alert(`Successfully assigned ${assignedStaffName} to project!`);
+      } else {
+        alert(`Removed ${assignedStaffName} from project assignment.`);
+      }
     } catch (error) {
       console.error('Error assigning staff:', error);
       alert('Failed to assign staff. Please try again.');
@@ -541,6 +569,20 @@ const Bids = ({ initialFilter }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check for duplicate bids (only when creating new, not editing)
+      if (!editingBid && formData.title && formData.authority) {
+        const normalizedTitle = formData.title.trim().toLowerCase();
+        const normalizedAuthority = formData.authority.trim().toLowerCase();
+        const duplicateBid = bids.find(b => 
+          b.title?.trim().toLowerCase() === normalizedTitle &&
+          b.authority?.trim().toLowerCase() === normalizedAuthority
+        );
+        if (duplicateBid) {
+          alert(`A project with this title and authority already exists!\n\nExisting Project: "${duplicateBid.title}"\nAuthority: ${duplicateBid.authority}\nStatus: ${duplicateBid.status || 'Draft'}\n\nPlease use a different title or check if this is the same project.`);
+          return;
+        }
+      }
+
       const bidData = {
         ...formData,
         bidAmount: parseFloat(formData.bidAmount) || 0,
@@ -574,19 +616,19 @@ const Bids = ({ initialFilter }) => {
       fetchBids();
     } catch (error) {
       console.error('Error saving bid:', error);
-      alert('Error saving bid. Please try again.');
+      alert('Error saving project. Please try again.');
     }
   };
 
   const handleDelete = async (bidId) => {
-    if (!window.confirm('Are you sure you want to delete this bid?')) return;
+    if (!window.confirm('Are you sure you want to delete this project?')) return;
     
     try {
       await deleteDoc(doc(db, 'bids', bidId));
       fetchBids();
     } catch (error) {
       console.error('Error deleting bid:', error);
-      alert('Error deleting bid. Please try again.');
+      alert('Error deleting project. Please try again.');
     }
   };
 
@@ -688,6 +730,7 @@ const Bids = ({ initialFilter }) => {
       
       // Documents & Notes
       documents: [],
+      resultSheet: null,
       notes: ''
     });
   };
@@ -705,6 +748,7 @@ const Bids = ({ initialFilter }) => {
       result: bid.result || 'Pending',
       submissionDate: bid.submissionDate || '',
       documents: bid.documents || [],
+      resultSheet: bid.resultSheet || null,
       notes: bid.notes || '',
       items: bid.items || []
     });
@@ -756,11 +800,69 @@ const Bids = ({ initialFilter }) => {
       items: bid.items || [],
       additionalCosts: bid.additionalCosts || [],
       documents: bid.documents || [],
+      resultSheet: bid.resultSheet || null,
       notes: bid.notes || '',
       deliveryDays: bid.deliveryDays || 35,
       quotationValidity: bid.quotationValidity || 60,
 
       // Evaluation Criteria
+      evaluationPrice: bid.evaluationPrice || '',
+      evaluationDelivery: bid.evaluationDelivery || '',
+      evaluationExperience: bid.evaluationExperience || '',
+    });
+    setShowModal(true);
+  };
+
+  const handleDuplicate = (bid) => {
+    setEditingBid(null);
+    setFormData({
+      tenderId: bid.tenderId || '',
+      gazetteId: bid.gazetteId || '',
+      title: bid.title || '',
+      titleDhivehi: bid.titleDhivehi || '',
+      authority: bid.authority || '',
+      category: bid.category || '',
+      tenderNo: bid.tenderNo || '',
+      requirements: bid.requirements || {},
+      submissionDeadline: bid.submissionDeadline || '',
+      submissionTime: bid.submissionTime || '',
+      bidOpeningDate: bid.bidOpeningDate || '',
+      bidOpeningTime: bid.bidOpeningTime || '',
+      registrationDeadline: bid.registrationDeadline || '',
+      registrationTime: bid.registrationTime || '',
+      bidSubmissionDate: bid.bidSubmissionDate || '',
+      bidTime: bid.bidTime || '',
+      clarificationDeadline: bid.clarificationDeadline || '',
+      clarificationTime: bid.clarificationTime || '',
+      preBidMeeting: bid.preBidMeeting || '',
+      preBidMeetingTime: bid.preBidMeetingTime || '',
+      contactEmail: bid.contactEmail || '',
+      contactPhones: bid.contactPhones || [],
+      contactName: bid.contactName || '',
+      gazetteUrl: bid.gazetteUrl || '',
+      infoSheetUrl: bid.infoSheetUrl || '',
+      portal: bid.portal || '',
+      eligibility: bid.eligibility || '',
+      bidSecurity: bid.bidSecurity || '',
+      performanceGuarantee: bid.performanceGuarantee || '',
+      funding: bid.funding || '',
+      project: bid.project || '',
+      lots: bid.lots || '',
+      lotMode: bid.lotMode || 'single',
+      status: 'Draft',
+      result: 'Pending',
+      bidAmount: '',
+      costEstimate: '',
+      profitMargin: '',
+      vendorNumber: bid.vendorNumber || '514110',
+      items: bid.items || [],
+      additionalCosts: bid.additionalCosts || [],
+      documents: bid.documents || [],
+      resultSheet: bid.resultSheet || null,
+      notes: bid.notes || '',
+      deliveryDays: bid.deliveryDays || 35,
+      quotationValidity: bid.quotationValidity || 60,
+
       evaluationPrice: bid.evaluationPrice || '',
       evaluationDelivery: bid.evaluationDelivery || '',
       evaluationExperience: bid.evaluationExperience || '',
@@ -798,8 +900,8 @@ const Bids = ({ initialFilter }) => {
                          bid.status?.toLowerCase().includes(searchLower) ||
                          bid.result?.toLowerCase().includes(searchLower);
     
-    const matchesStatus = filterStatus === 'All' || bid.status === filterStatus;
-    const matchesResult = filterResult === 'All' || bid.result === filterResult;
+    const matchesStatus = filterStatus === 'All' || (bid.status && bid.status.toLowerCase() === filterStatus.toLowerCase());
+    const matchesResult = filterResult === 'All' || (bid.result && bid.result.toLowerCase() === filterResult.toLowerCase());
     const matchesAuthority = filterAuthority === 'All' || bid.authority === filterAuthority;
     
     // Archive filter: hide expired, missed, and not registered bids unless showArchived is true
@@ -885,13 +987,13 @@ const Bids = ({ initialFilter }) => {
         <div className="flex items-center gap-4">
           <img 
             src="/illustrations/Business%20Plan-amico.svg" 
-            alt="Bids" 
+            alt="Projects" 
             className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
           />
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl sm:text-3xl font-bold text-gray-900">
-                {initialFilter ? `${initialFilter} Bids` : 'Bid Management'}
+                {initialFilter ? `${initialFilter} Projects` : 'Project Management'}
               </h1>
               {initialFilter && (
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -948,7 +1050,7 @@ const Bids = ({ initialFilter }) => {
             className="btn-secondary flex items-center gap-1 sm:gap-2 text-sm bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
           >
             <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">Open Bids Report</span>
+            <span className="hidden sm:inline">Open Projects Report</span>
             <span className="sm:hidden">Report</span>
           </button>
         </div>
@@ -1026,7 +1128,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-orange-50 border-orange-200 p-2 sm:p-4 col-span-2 sm:col-span-1 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('Missed Registered'); setFilterResult('All'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Missed Registered'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <Calendar className="w-5 h-5 sm:w-8 sm:h-8 text-orange-600" />
@@ -1069,7 +1171,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-teal-50 border-teal-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('Registered'); setFilterResult('All'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Registered'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-teal-600" />
@@ -1083,7 +1185,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         {/* Individual Staff Assignment Cards */}
         {staffList.map((staff, index) => {
-          const assignedCount = bids.filter(b => b.assignedStaff === staff.id).length;
+          const assignedCount = bids.filter(b => (b.assignedStaffs || []).includes(staff.id)).length;
           const colors = [
             { bg: 'bg-indigo-50', border: 'border-indigo-200', icon: 'text-indigo-600', text: 'text-indigo-700' },
             { bg: 'bg-cyan-50', border: 'border-cyan-200', icon: 'text-cyan-600', text: 'text-cyan-700' },
@@ -1186,7 +1288,7 @@ const Bids = ({ initialFilter }) => {
       ) : filteredBids.length === 0 ? (
         <div className="p-8 text-center text-gray-500">
           <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-          <p>No bids found</p>
+          <p>No projects found</p>
         </div>
       ) : viewMode === 'cards' ? (
         /* CARD VIEW */
@@ -1214,25 +1316,49 @@ const Bids = ({ initialFilter }) => {
                     </div>
                   </div>
                   
-                  {/* Staff Assignment Dropdown */}
+                  {/* Staff Assignment - Multiple Select */}
                   <div className="mb-3" onClick={(e) => e.stopPropagation()}>
+                    <p className="text-xs text-gray-500 mb-1">Assigned Staff:</p>
+                    {/* Display assigned staff with remove option */}
+                    {(bid.assignedStaffs || []).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {(bid.assignedStaffs || []).map(staffId => {
+                          const staff = staffList.find(s => s.id === staffId);
+                          return (
+                            <span key={staffId} className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                              {staff?.name || staff?.email || staffId}
+                              <button
+                                onClick={() => assignStaffToBid(bid.id, staffId, false)}
+                                className="hover:text-green-900"
+                                title="Remove assignment"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {/* Add staff dropdown */}
                     <select
-                      value={bid.assignedStaff || ''}
-                      onChange={(e) => assignStaffToBid(bid.id, e.target.value)}
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          assignStaffToBid(bid.id, e.target.value, true);
+                          e.target.value = '';
+                        }
+                      }}
                       className="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none cursor-pointer"
                     >
-                      <option value="">Assign Staff...</option>
-                      {staffList.map(staff => (
-                        <option key={staff.id} value={staff.id}>
-                          {staff.name || staff.email || staff.id}
-                        </option>
-                      ))}
+                      <option value="">+ Add Staff...</option>
+                      {staffList
+                        .filter(staff => !(bid.assignedStaffs || []).includes(staff.id))
+                        .map(staff => (
+                          <option key={staff.id} value={staff.id}>
+                            {staff.name || staff.email || staff.id}
+                          </option>
+                        ))}
                     </select>
-                    {bid.assignedStaff && (
-                      <p className="text-xs text-green-600 mt-1">
-                        Assigned: {staffList.find(s => s.id === bid.assignedStaff)?.name || 'Unknown'}
-                      </p>
-                    )}
                   </div>
                   
                   <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
@@ -1344,15 +1470,51 @@ const Bids = ({ initialFilter }) => {
 
                 {/* Quick Actions Overlay */}
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                  {/* Documents View Button */}
+                  {(bid.documents?.length > 0 || bid.resultSheet) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setViewingBid(bid);
+                        setShowDocumentsModal(true);
+                      }}
+                      className="p-2 bg-white rounded-full shadow-sm hover:bg-purple-50 text-gray-600 hover:text-purple-600"
+                      title={`View Documents (${(bid.documents?.length || 0) + (bid.resultSheet ? 1 : 0)})`}
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
+                  )}
+                  {/* Quotation View Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setQuotationBid(bid);
+                      setShowQuotation(true);
+                    }}
+                    className="p-2 bg-white rounded-full shadow-sm hover:bg-blue-50 text-gray-600 hover:text-blue-600"
+                    title="View Quotation"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate('/bid-compiler', { state: { selectedBid: bid } });
                     }}
                     className="p-2 bg-white rounded-full shadow-sm hover:bg-green-50 text-gray-600 hover:text-green-600"
-                    title="Bid Compile"
+                    title="Project Compile"
                   >
                     <FileStack className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDuplicate(bid);
+                    }}
+                    className="p-2 bg-white rounded-full shadow-sm hover:bg-indigo-50 text-gray-600 hover:text-indigo-600"
+                    title="Duplicate"
+                  >
+                    <Copy className="w-4 h-4" />
                   </button>
                   <button
                     onClick={(e) => {
@@ -1438,30 +1600,89 @@ const Bids = ({ initialFilter }) => {
                       </select>
                     </td>
                     <td className="px-2 py-2 hidden md:table-cell" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={bid.assignedStaff || ''}
-                        onChange={(e) => assignStaffToBid(bid.id, e.target.value)}
-                        className="text-xs rounded-full px-2 py-0.5 border border-gray-300 cursor-pointer bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none max-w-[120px]"
-                      >
-                        <option value="">Assign...</option>
-                        {staffList.map(staff => (
-                          <option key={staff.id} value={staff.id}>
-                            {staff.name || staff.email || staff.id}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="flex flex-wrap gap-1">
+                        {/* Show assigned staff */}
+                        {(bid.assignedStaffs || []).map(staffId => {
+                          const staff = staffList.find(s => s.id === staffId);
+                          return (
+                            <span key={staffId} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-700 text-xs rounded">
+                              {staff?.name?.split(' ')[0] || staff?.email || staffId}
+                              <button
+                                onClick={() => assignStaffToBid(bid.id, staffId, false)}
+                                className="hover:text-green-900"
+                                title="Remove"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          );
+                        })}
+                        {/* Add staff dropdown */}
+                        <select
+                          value=""
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              assignStaffToBid(bid.id, e.target.value, true);
+                              e.target.value = '';
+                            }
+                          }}
+                          className="text-xs rounded px-1 py-0.5 border border-gray-300 cursor-pointer bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none"
+                        >
+                          <option value="">+</option>
+                          {staffList
+                            .filter(staff => !(bid.assignedStaffs || []).includes(staff.id))
+                            .map(staff => (
+                              <option key={staff.id} value={staff.id}>
+                                {staff.name || staff.email || staff.id}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
                     </td>
                     <td className="px-2 py-2 text-right font-medium text-xs">
                       {bid.bidAmount ? `${(bid.bidAmount/1000).toFixed(0)}k` : '-'}
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex justify-center gap-1">
+                        {/* Documents View Button */}
+                        {(bid.documents?.length > 0 || bid.resultSheet) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setViewingBid(bid);
+                              setShowDocumentsModal(true);
+                            }}
+                            className="p-1 text-gray-400 hover:text-purple-600"
+                            title={`View Documents (${(bid.documents?.length || 0) + (bid.resultSheet ? 1 : 0)})`}
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
+                        )}
+                        {/* Quotation View Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setQuotationBid(bid);
+                            setShowQuotation(true);
+                          }}
+                          className="p-1 text-gray-400 hover:text-blue-600"
+                          title="View Quotation"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); navigate('/bid-compiler', { state: { selectedBid: bid } }); }}
                           className="p-1 text-gray-400 hover:text-green-600"
-                          title="Bid Compile"
+                          title="Project Compile"
                         >
                           <FileStack className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDuplicate(bid); }}
+                          className="p-1 text-gray-400 hover:text-indigo-600"
+                          title="Duplicate"
+                        >
+                          <Copy className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleEdit(bid); }}
@@ -1490,7 +1711,7 @@ const Bids = ({ initialFilter }) => {
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingBid ? 'Edit Bid' : 'Create New Bid'}
+                {editingBid ? 'Edit Project' : 'Create New Project'}
               </h2>
               <div className="flex items-center gap-2">
                 {editingBid && (
@@ -1503,7 +1724,7 @@ const Bids = ({ initialFilter }) => {
                     className="btn-secondary flex items-center gap-2"
                   >
                     <Printer className="w-4 h-4" />
-                    Print Quotation
+                    Print Project Quotation
                   </button>
                 )}
                 <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
@@ -2497,7 +2718,52 @@ const Bids = ({ initialFilter }) => {
                     />
                   </div>
                   <div>
-                    <label className="label">Documents</label>
+                    <label className="label">Result Sheet / Award Document</label>
+                    <div className="space-y-2">
+                      {formData.resultSheet ? (
+                        <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-green-600" />
+                            <span className="text-sm text-gray-700">{formData.resultSheet.name}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, resultSheet: null }))}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <input
+                            type="file"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  resultSheet: { name: file.name, type: file.type, size: file.size }
+                                }));
+                              }
+                            }}
+                            className="hidden"
+                            id="result-sheet-upload"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                          />
+                          <label
+                            htmlFor="result-sheet-upload"
+                            className="btn-secondary cursor-pointer inline-flex"
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Result Sheet
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="label">Supporting Documents</label>
                     <div className="space-y-2">
                       {formData.documents.map((doc, index) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
@@ -2518,14 +2784,14 @@ const Bids = ({ initialFilter }) => {
                           disabled={uploadingFile}
                           className="hidden"
                           id="bid-file-upload"
-                          accept=".pdf,.doc,.docx,.xls,.xlsx"
+                          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                         />
                         <label
                           htmlFor="bid-file-upload"
                           className="btn-secondary cursor-pointer inline-flex"
                         >
                           <Upload className="w-4 h-4 mr-2" />
-                          {uploadingFile ? 'Uploading...' : 'Upload Document'}
+                          {uploadingFile ? 'Uploading...' : 'Add Document'}
                         </label>
                       </div>
                     </div>
@@ -2564,6 +2830,87 @@ const Bids = ({ initialFilter }) => {
           bids={bids} 
           onClose={() => setShowOpenBidsReport(false)} 
         />
+      )}
+      
+      {/* Documents View Modal */}
+      {showDocumentsModal && viewingBid && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 border-b flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Documents</h3>
+                <p className="text-sm text-gray-500">{viewingBid.title || 'Untitled Project'}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDocumentsModal(false);
+                  setViewingBid(null);
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Result Sheet */}
+              {viewingBid.resultSheet && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <FileText className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">Result Sheet / Award Document</p>
+                      <p className="text-sm text-gray-500">{viewingBid.resultSheet.name}</p>
+                    </div>
+                    <button
+                      onClick={() => alert('Download functionality will be implemented with storage')}
+                      className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
+                      title="Download"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Supporting Documents */}
+              {viewingBid.documents && viewingBid.documents.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Supporting Documents ({viewingBid.documents.length})</h4>
+                  <div className="space-y-2">
+                    {viewingBid.documents.map((doc, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="p-2 bg-white rounded-lg">
+                          <FileText className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">{doc.name}</p>
+                          <p className="text-xs text-gray-500">{doc.type || 'Document'}</p>
+                        </div>
+                        <button
+                          onClick={() => alert('Download functionality will be implemented with storage')}
+                          className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg"
+                          title="Download"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* No Documents */}
+              {(!viewingBid.resultSheet && (!viewingBid.documents || viewingBid.documents.length === 0)) && (
+                <div className="text-center py-8 text-gray-500">
+                  <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                  <p>No documents attached to this project.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

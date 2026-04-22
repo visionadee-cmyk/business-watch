@@ -1,0 +1,84 @@
+{
+  "exportedAt": "2026-04-21T07:11:54.979Z",
+  "sourceProject": "bussiness-watch",
+  "collections": {
+    "bids": {
+      "collection": "bids",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "tenders": {
+      "collection": "tenders",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "users": {
+      "collection": "users",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "documents": {
+      "collection": "documents",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "suppliers": {
+      "collection": "suppliers",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "purchases": {
+      "collection": "purchases",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "deliveries": {
+      "collection": "deliveries",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "projects": {
+      "collection": "projects",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "staffExpenses": {
+      "collection": "staffExpenses",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "capital": {
+      "collection": "capital",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "notifications": {
+      "collection": "notifications",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "subscribers": {
+      "collection": "subscribers",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    },
+    "quotations": {
+      "collection": "quotations",
+      "count": 0,
+      "error": "16 UNAUTHENTICATED: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.",
+      "data": {}
+    }
+  }
+}

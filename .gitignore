@@ -20,3 +20,7 @@ dist/
 
 *~
 
+# Service Account Keys (sensitive)
+service-account*.json
+*service*account*.json
+

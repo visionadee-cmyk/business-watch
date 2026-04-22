@@ -3,7 +3,6 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Tenders from './pages/Tenders';
 import Bids from './pages/Bids';
 import PurchaseOrders from './pages/PurchaseOrders';
 import Procurement from './pages/Procurement';
@@ -62,14 +61,6 @@ function App() {
         <ProtectedRoute>
           <Layout>
             <Dashboard />
-          </Layout>
-        </ProtectedRoute>
-      } />
-      
-      <Route path="/tenders" element={
-        <ProtectedRoute>
-          <Layout>
-            <Tenders />
           </Layout>
         </ProtectedRoute>
       } />

@@ -1,6 +1,0 @@
-tree 1d21f968c10e8f70af98f82431ee8f43bfd80835
-parent fbdc570ef4a57a289f28bdf50355349adf6fc7b0
-author Mohamed Maushaz <maushaz@madihaa.com.mv> 1774931819 +0500
-committer Mohamed Maushaz <maushaz@madihaa.com.mv> 1774931819 +0500
-
-Remove Hisaabu dependency; derive Finance from bids; fix Vercel deploy workflow IDs

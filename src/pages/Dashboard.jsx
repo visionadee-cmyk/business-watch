@@ -48,9 +48,9 @@ import { db } from '../services/firebase';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    activeTenders: 0,
+    activeProjects: 0,
     submittedBids: 0,
-    wonTenders: 0,
+    wonProjects: 0,
     pendingDeliveries: 0,
     completedProjects: 0,
     totalAccounts: 0,
@@ -66,7 +66,7 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [profitData, setProfitData] = useState([]);
-  const [tenderStatusData, setTenderStatusData] = useState([]);
+  const [projectStatusData, setProjectStatusData] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [expiringSubmissions, setExpiringSubmissions] = useState([]);
@@ -104,13 +104,7 @@ const Dashboard = () => {
     });
     unsubscribers.push(unsubBids);
     
-    // Real-time listener for tenders (most recent 10)
-    const tendersQuery = query(collection(db, 'tenders'), orderBy('createdAt', 'desc'), limit(10));
-    const unsubTenders = onSnapshot(tendersQuery, (snapshot) => {
-      const tenders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      updateRecentActivity('tender', tenders);
-    });
-    unsubscribers.push(unsubTenders);
+    // Note: Tenders collection removed - using bids collection only
     
     // Real-time listener for deliveries (most recent 10)
     const deliveriesQuery = query(collection(db, 'deliveries'), orderBy('createdAt', 'desc'), limit(10));
@@ -152,7 +146,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       // Fetch all collections from Firebase
-      const tendersSnapshot = await getDocs(collection(db, 'tenders'));
+      // Note: tenders collection removed - using bids only
       const bidsSnapshot = await getDocs(collection(db, 'bids'));
       const deliveriesSnapshot = await getDocs(collection(db, 'deliveries'));
       const purchasesSnapshot = await getDocs(collection(db, 'purchases'));
@@ -163,7 +157,7 @@ const Dashboard = () => {
       const poSnapshot = await getDocs(collection(db, 'purchaseOrders'));
       const capitalSnapshot = await getDocs(collection(db, 'capital'));
       
-      const tenders = tendersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // tenders removed - using bids only
       const bids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const deliveries = deliveriesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const purchases = purchasesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -177,10 +171,10 @@ const Dashboard = () => {
       setAccounts(accounts);
       setTransactions(transactions);
       
-      // Calculate stats from bids (not tenders, since data is in bids collection)
-      const activeTenders = bids.filter(b => b.status === 'Open' || b.status === 'Bidding' || b.status === 'Draft').length;
+      // Calculate stats from bids
+      const activeProjects = bids.filter(b => b.status === 'Open' || b.status === 'Bidding' || b.status === 'Draft').length;
       const submittedBids = bids.filter(b => b.status === 'Submitted').length;
-      const wonTenders = bids.filter(b => b.result === 'Won' || b.status === 'Won').length;
+      const wonProjects = bids.filter(b => b.result === 'Won' || b.status === 'Won').length;
       const pendingDeliveries = deliveries.filter(d => d.status === 'Pending').length;
       const completedProjects = deliveries.filter(d => d.completed).length;
       
@@ -197,7 +191,7 @@ const Dashboard = () => {
       
       // Won bids financials
       const wonBids = bids.filter(b => b.result === 'Won' || b.status === 'Won');
-      const activeWonTenders = bids.filter(b => b.result === 'Won' && (b.status === 'Open' || b.status === 'In Progress')).length;
+      const activeWonProjects = bids.filter(b => b.result === 'Won' && (b.status === 'Open' || b.status === 'In Progress')).length;
       const wonBidRevenue = wonBids.reduce((sum, b) => sum + (b.bidAmount || 0) + getAdditionalCostsTotal(b), 0);
       const wonBidCost = wonBids.reduce((sum, b) => sum + (b.costEstimate || 0) + getAdditionalCostsTotal(b), 0);
       const wonBidProfit = wonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
@@ -239,10 +233,10 @@ const Dashboard = () => {
       const poReceived = purchaseOrders.filter(po => po.receivingStatus === 'Fully Received').length;
       
       setStats({
-        activeTenders,
+        activeProjects,
         submittedBids,
-        wonTenders,
-        activeWonTenders,
+        wonProjects,
+        activeWonProjects,
         pendingDeliveries,
         completedProjects,
         totalAccounts: accounts.length,
@@ -269,16 +263,16 @@ const Dashboard = () => {
         staffBreakdown
       });
 
-      // Tender status data for pie chart
+      // Project status data for pie chart (from bids)
       const statusCounts = {
-        'Open': tenders.filter(t => t.status === 'Open').length,
-        'Bidding': tenders.filter(t => t.status === 'Bidding').length,
-        'Submitted': tenders.filter(t => t.status === 'Submitted').length,
-        'Won': tenders.filter(t => t.status === 'Won').length,
-        'Lost': tenders.filter(t => t.status === 'Lost').length
+        'Open': bids.filter(b => b.status === 'Open').length,
+        'Bidding': bids.filter(b => b.status === 'Bidding').length,
+        'Submitted': bids.filter(b => b.status === 'Submitted').length,
+        'Won': bids.filter(b => b.result === 'Won' || b.status === 'Won').length,
+        'Lost': bids.filter(b => b.result === 'Lost' || b.status === 'Lost').length
       };
 
-      setTenderStatusData([
+      setProjectStatusData([
         { name: 'Open', value: statusCounts['Open'], color: '#3b82f6' },
         { name: 'Bidding', value: statusCounts['Bidding'], color: '#f59e0b' },
         { name: 'Submitted', value: statusCounts['Submitted'], color: '#8b5cf6' },
@@ -316,17 +310,17 @@ const Dashboard = () => {
 
       setProfitData(Object.values(monthlyData));
 
-      // Generate alerts for approaching deadlines
+      // Generate alerts for approaching deadlines (from bids)
       const alertsList = [];
-      tenders.forEach(tender => {
-        if (tender.submissionDeadline) {
-          const deadline = new Date(tender.submissionDeadline);
+      bids.forEach(bid => {
+        if (bid.submissionDeadline) {
+          const deadline = new Date(bid.submissionDeadline);
           const daysUntil = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24));
-          if (daysUntil <= 7 && daysUntil > 0 && tender.status !== 'Submitted') {
+          if (daysUntil <= 7 && daysUntil > 0 && bid.status !== 'Submitted') {
             alertsList.push({
               type: 'deadline',
-              message: `Tender "${tender.title}" deadline in ${daysUntil} days`,
-              tenderId: tender.id,
+              message: `Project "${bid.title}" deadline in ${daysUntil} days`,
+              bidId: bid.id,
               severity: daysUntil <= 3 ? 'high' : 'medium'
             });
           }
@@ -336,7 +330,6 @@ const Dashboard = () => {
 
       // Recent activity
       const activity = [
-        ...tenders.map(t => ({ type: 'tender', data: t, date: t.createdAt || t.updatedAt })),
         ...bids.map(b => ({ type: 'bid', data: b, date: b.createdAt || b.updatedAt })),
         ...deliveries.map(d => ({ type: 'delivery', data: d, date: d.createdAt || d.updatedAt }))
       ]
@@ -373,8 +366,8 @@ const Dashboard = () => {
   };
 
   const statCards = [
-    { title: 'Active Tenders', value: stats.activeTenders, icon: FileText, color: 'blue', path: '/tenders' },
-    { title: 'Won Tenders', value: stats.wonTenders, icon: CheckCircle, color: 'green', path: '/bids?filter=won' },
+    { title: 'Active Projects', value: stats.activeProjects, icon: FileText, color: 'blue', path: '/bids' },
+    { title: 'Won Projects', value: stats.wonProjects, icon: CheckCircle, color: 'green', path: '/bids?filter=won' },
     { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple', path: '/bids' },
     { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green', path: '/accounts' },
     { title: 'Total Cost', value: `MVR ${(stats.totalExpenses || 0).toLocaleString()}`, icon: TrendingDown, color: 'red', path: '/expenses' },
@@ -383,7 +376,6 @@ const Dashboard = () => {
 
   const getActivityIcon = (type) => {
     switch (type) {
-      case 'tender': return <FileText className="w-5 h-5 text-blue-500" />;
       case 'bid': return <DollarSign className="w-5 h-5 text-purple-500" />;
       case 'delivery': return <Truck className="w-5 h-5 text-orange-500" />;
       case 'purchaseOrder': return <ShoppingCart className="w-5 h-5 text-green-500" />;
@@ -393,10 +385,8 @@ const Dashboard = () => {
 
   const getActivityText = (item) => {
     switch (item.type) {
-      case 'tender':
-        return `New tender "${item.data.title}" created`;
       case 'bid':
-        return `Bid submitted for tender`;
+        return `New project "${item.data.title || 'Untitled'}" created`;
       case 'delivery':
         return `Delivery status updated to ${item.data.status}`;
       case 'purchaseOrder':
@@ -417,7 +407,7 @@ const Dashboard = () => {
           />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-500 mt-1">Overview of your tender and procurement activities</p>
+            <p className="text-gray-500 mt-1">Overview of your projects and procurement activities</p>
           </div>
         </div>
         <button
@@ -706,18 +696,18 @@ const Dashboard = () => {
         </div>
 
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tender Status Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={tenderStatusData}
+                data={projectStatusData}
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
                 dataKey="value"
                 label={({ name, value }) => `${name}: ${value}`}
               >
-                {tenderStatusData.map((entry, index) => (
+                {projectStatusData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>

@@ -6,7 +6,7 @@ const serviceAccount = require('../service-account.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'business-watch-52e10'
+  projectId: 'bussiness-watch'
 });
 
 const db = admin.firestore();
