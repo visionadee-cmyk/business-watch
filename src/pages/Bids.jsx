@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download, FileStack, Copy } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Eye, X, FileText, CheckCircle, XCircle, Clock, DollarSign, ExternalLink, Calendar, Building2, Mail, Phone, Globe, Hash, Trash, LayoutGrid, Table2, Timer, ChevronRight, Upload, Printer, Download, FileStack, Copy, Archive } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { 
@@ -632,6 +632,27 @@ const Bids = ({ initialFilter }) => {
     }
   };
 
+  const handleArchiveToggle = async (bid) => {
+    try {
+      const bidRef = doc(db, 'bids', bid.id);
+      const newArchivedState = !bid.archived;
+      await updateDoc(bidRef, {
+        archived: newArchivedState,
+        updatedAt: serverTimestamp()
+      });
+      
+      // Update local state
+      setBids(prev => prev.map(b => 
+        b.id === bid.id ? { ...b, archived: newArchivedState } : b
+      ));
+      
+      alert(`Project ${newArchivedState ? 'archived' : 'unarchived'} successfully!`);
+    } catch (error) {
+      console.error('Error archiving bid:', error);
+      alert('Error archiving project. Please try again.');
+    }
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -904,9 +925,10 @@ const Bids = ({ initialFilter }) => {
     const matchesResult = filterResult === 'All' || (bid.result && bid.result.toLowerCase() === filterResult.toLowerCase());
     const matchesAuthority = filterAuthority === 'All' || bid.authority === filterAuthority;
     
-    // Archive filter: hide expired, missed, and not registered bids unless showArchived is true
-    const isArchived = bid.result === 'Missed' || bid.result === 'Not Registered' || 
+    // Archive filter: check manual archived flag or auto-archive conditions
+    const isAutoArchived = bid.result === 'Missed' || bid.result === 'Not Registered' || 
                        (bid.submissionDeadline && new Date(bid.submissionDeadline) < new Date() && bid.status !== 'Submitted' && bid.result !== 'Won');
+    const isArchived = bid.archived === true || isAutoArchived;
     const matchesArchive = showArchived || !isArchived;
     
     return matchesSearch && matchesStatus && matchesResult && matchesAuthority && matchesArchive;
@@ -1528,6 +1550,16 @@ const Bids = ({ initialFilter }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleArchiveToggle(bid);
+                    }}
+                    className={`p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 ${bid.archived ? 'text-amber-600 hover:text-amber-700' : 'text-gray-600 hover:text-gray-700'}`}
+                    title={bid.archived ? 'Unarchive' : 'Archive'}
+                  >
+                    <Archive className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleDelete(bid.id);
                     }}
                     className="p-2 bg-white rounded-full shadow-sm hover:bg-red-50 text-gray-600 hover:text-red-600"
@@ -1689,6 +1721,13 @@ const Bids = ({ initialFilter }) => {
                           className="p-1 text-gray-400 hover:text-blue-600"
                         >
                           <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleArchiveToggle(bid); }}
+                          className={`p-1 ${bid.archived ? 'text-amber-600 hover:text-amber-700' : 'text-gray-400 hover:text-gray-600'}`}
+                          title={bid.archived ? 'Unarchive' : 'Archive'}
+                        >
+                          <Archive className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleDelete(bid.id); }}
