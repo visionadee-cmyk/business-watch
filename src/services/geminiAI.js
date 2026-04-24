@@ -1,5 +1,5 @@
 // Google Gemini AI Service for Smart Bids
-const API_KEY = 'AIzaSyA6MyrMHXP_1VY7iOOJTI25Ci9MHHfrmcA';
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 /**

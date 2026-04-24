@@ -199,21 +199,10 @@ const NotificationPreferences = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const response = await fetch('/api/notifications/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, preferences })
-      });
-
-      if (response.ok) {
-        setSubscribed(true);
-        localStorage.setItem('notificationEmail', email);
-      }
-    } catch (error) {
-      console.error('Failed to subscribe:', error);
-    }
+    // Email notification subscription disabled to prevent Firebase blocking
+    // Preferences saved locally only
+    setSubscribed(true);
+    localStorage.setItem('notificationEmail', email);
   };
 
   if (subscribed) {

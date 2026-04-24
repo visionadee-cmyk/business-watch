@@ -596,18 +596,6 @@ const Bids = ({ initialFilter }) => {
       } else {
         bidData.createdAt = serverTimestamp();
         await addDoc(collection(db, 'bids'), bidData);
-        
-        // Send new bid notification (wrapped in try-catch to not block bid saving)
-        try {
-          await fetch('/api/notifications?action=new-bid', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bidData)
-          });
-        } catch (notifyError) {
-          console.error('Failed to send bid notification:', notifyError);
-          // Don't throw - bid saving should continue even if notification fails
-        }
       }
 
       setShowModal(false);
