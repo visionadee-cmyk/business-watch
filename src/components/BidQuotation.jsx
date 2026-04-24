@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
-import { Printer, Download, X, FileText, Building2, Phone, Mail, MapPin, Hash, Calendar, User } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { Printer, Download, X, FileText, Building2, Phone, Mail, MapPin, Hash, Calendar, User, FileSpreadsheet } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 export const BidQuotationPage = ({ bid, showTax = true, gstRate = 8, selectedSignatory = 0 }) => {
   const signatories = [
@@ -317,64 +316,107 @@ const BidQuotation = ({ bid, onClose }) => {
 
   const handleDownloadPDF = async () => {
     if (!quotationRef.current) return;
-    
+
     setIsGeneratingPDF(true);
     try {
       const element = quotationRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-          // Apply styles for PDF rendering
-          const allCells = clonedDoc.querySelectorAll('table.quotation-table td, table.quotation-table th');
-          allCells.forEach((cell) => {
-            const row = cell.parentElement;
-            const cellsInRow = Array.from(row.children);
-            const colIndex = cellsInRow.indexOf(cell);
-            
-            // Column 1 is Item Description - left aligned, others centered
-            if (colIndex !== 1) {
-              cell.style.textAlign = 'center';
-            } else {
-              cell.style.textAlign = 'left';
-            }
-            cell.style.verticalAlign = 'middle';
-          });
-          
-          // Add vertical centering to Item Description cells using padding
-          const itemDescCells = clonedDoc.querySelectorAll('table.quotation-table td:nth-child(2)');
-          itemDescCells.forEach(cell => {
-            cell.style.paddingTop = '16px';
-            cell.style.paddingBottom = '16px';
-            cell.style.verticalAlign = 'middle';
-          });
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `Quotation_${bid?.title?.replace(/\s+/g, '_') || 'Bid'}_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        },
+        pagebreak: {
+          mode: ['css', 'legacy'],
+          before: '.page-break-before',
+          after: '.page-break-after',
+          avoid: 'img, table, tr, td, th'
         }
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-      
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      
-      const fileName = `Quotation_${bid?.title?.replace(/\s+/g, '_') || 'Bid'}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
+      };
+
+      await html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try using the Print button instead.');
     } finally {
       setIsGeneratingPDF(false);
     }
+  };
+
+  const handleDownloadExcel = () => {
+    if (!bid?.items || bid.items.length === 0) {
+      alert('No items to export');
+      return;
+    }
+
+    const { subTotal, taxAmount, total } = calculateTotals();
+
+    // Create CSV content
+    const headers = ['#', 'Item Description', 'Qty', 'Rate (MVR)', 'Amount (MVR)'];
+    const rows = bid.items.map((item, index) => {
+      const qty = parseFloat(item.quantity) || 0;
+      const bidPrice = parseFloat(item.bidPrice) || 0;
+      const itemTotal = qty * bidPrice;
+      return [
+        index + 1,
+        `"${(item.name || `ITEM-${index + 1}`).replace(/"/g, '""')}"`,
+        qty,
+        bidPrice.toFixed(2),
+        itemTotal.toFixed(2)
+      ];
+    });
+
+    // Add totals
+    rows.push(['', '', '', 'Sub Total:', subTotal.toFixed(2)]);
+    if (showTax) {
+      rows.push(['', '', '', `GST (${gstRate}%):`, taxAmount.toFixed(2)]);
+    }
+    rows.push(['', '', '', 'Total:', total.toFixed(2)]);
+
+    // Add quotation details at top
+    const quotationNo = bid?.quotationNo || generateQuotationNo();
+    const quotationDate = bid?.quotationDate || new Date().toLocaleDateString('en-GB');
+    const client = bid?.authority || bid?.title || 'N/A';
+    const vendorNo = bid?.vendorNumber || '514110';
+
+    const csvContent = [
+      ['Business Watch Private Limited'],
+      ['Quotation'],
+      [''],
+      ['Quotation No:', quotationNo],
+      ['Date:', quotationDate],
+      ['Client:', client],
+      ['Vendor No:', vendorNo],
+      [''],
+      headers,
+      ...rows,
+      [''],
+      ['Bank Account Information:'],
+      ['Bank of Maldives (BML) - MVR: 7770000188096 | USD: 7770000188098'],
+      ['Maldives Islamic Bank (MIB) - MVR: 90101480036671000 | USD: 90101480036672000'],
+      [''],
+      [`Delivery: ${bid?.deliveryDays || 35} Days`],
+      [`Validity: ${bid?.quotationValidity || 60} days`]
+    ].map(row => row.join(',')).join('\n');
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Quotation_${bid?.title?.replace(/\s+/g, '_') || 'Bid'}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Render individual item quotations
@@ -804,6 +846,14 @@ const BidQuotation = ({ bid, onClose }) => {
             >
               <Download className="w-4 h-4" />
               {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
+            </button>
+
+            <button
+              onClick={handleDownloadExcel}
+              className="btn-secondary flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              Download Excel
             </button>
 
             <button
