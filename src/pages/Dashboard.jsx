@@ -398,21 +398,21 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <img 
             src="/illustrations/At%20the%20office-amico.svg" 
             alt="Dashboard" 
-            className="w-16 h-16 object-contain"
+            className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
           />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-500 mt-1">Overview of your projects and procurement activities</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-500 mt-1 text-sm">Overview of your projects and procurement activities</p>
           </div>
         </div>
         <button
           onClick={fetchDashboardData}
-          className="btn-secondary flex items-center gap-2"
+          className="btn-secondary flex items-center gap-2 w-full sm:w-auto"
           title="Refresh data"
         >
           <RefreshCw className="w-4 h-4" />
@@ -421,11 +421,11 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
         {statCards.map((stat, index) => (
           <div 
             key={index} 
-            className="card p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            className="card p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => stat.path && navigate(stat.path)}
           >
             <div className="flex items-center justify-between">
@@ -503,7 +503,7 @@ const Dashboard = () => {
             Other Party Capital (Consolidated)
           </h3>
           <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
               <div>
                 <p className="text-xs text-gray-500">Borrowed</p>
                 <p className="text-lg font-semibold text-blue-600">
@@ -565,7 +565,7 @@ const Dashboard = () => {
           </div>
           {/* Staff Totals */}
           <div className="mt-3 bg-indigo-50 p-3 rounded-lg">
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 text-center">
               <div>
                 <p className="text-xs text-gray-500">Total Borrowed (Staff)</p>
                 <p className="text-lg font-semibold text-indigo-600">
@@ -682,12 +682,12 @@ const Dashboard = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Monthly Revenue & Profit</h2>
-          <ResponsiveContainer width="100%" height={300}>
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Monthly Revenue & Profit</h2>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart data={profitData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis dataKey="month" tick={{fontSize: 10}} />
+              <YAxis tick={{fontSize: 10}} />
               <Tooltip />
               <Bar dataKey="revenue" fill="#3b82f6" name="Revenue" />
               <Bar dataKey="profit" fill="#22c55e" name="Profit" />
@@ -696,16 +696,18 @@ const Dashboard = () => {
         </div>
 
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h2>
-          <ResponsiveContainer width="100%" height={300}>
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h2>
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={projectStatusData}
                 cx="50%"
                 cy="50%"
-                outerRadius={100}
+                outerRadius={80}
                 dataKey="value"
                 label={({ name, value }) => `${name}: ${value}`}
+                labelLine={false}
+                label={{fontSize: 10}}
               >
                 {projectStatusData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
