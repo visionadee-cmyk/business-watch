@@ -569,6 +569,40 @@ const Bids = ({ initialFilter }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const normalizeId = (value) => (value || '').toString().trim().toLowerCase();
+      const normalizedTenderId = normalizeId(formData.tenderId);
+      const normalizedGazetteId = normalizeId(formData.gazetteId);
+
+      // Prevent duplicate Tender ID / Gazette ID across all projects (create + edit)
+      if (normalizedTenderId || normalizedGazetteId) {
+        const duplicateIdBid = bids.find((b) => {
+          if (editingBid && b.id === editingBid.id) return false;
+
+          const bTender = normalizeId(b.tenderId);
+          const bGazette = normalizeId(b.gazetteId);
+
+          // If user entered a tenderId, it must not match any existing tenderId OR gazetteId
+          if (normalizedTenderId && (bTender === normalizedTenderId || bGazette === normalizedTenderId)) return true;
+
+          // If user entered a gazetteId, it must not match any existing tenderId OR gazetteId
+          if (normalizedGazetteId && (bTender === normalizedGazetteId || bGazette === normalizedGazetteId)) return true;
+
+          return false;
+        });
+
+        if (duplicateIdBid) {
+          alert(
+            `Tender ID / Gazette ID already exists for another project!\n\n` +
+              `Existing Project: "${duplicateIdBid.title || '(No title)'}"\n` +
+              `Authority: ${duplicateIdBid.authority || '(No authority)'}\n` +
+              `Tender ID: ${duplicateIdBid.tenderId || '-'}\n` +
+              `Gazette ID: ${duplicateIdBid.gazetteId || '-'}\n\n` +
+              `Please use a different Tender ID / Gazette ID.`
+          );
+          return;
+        }
+      }
+
       // Check for duplicate bids (only when creating new, not editing)
       if (!editingBid && formData.title && formData.authority) {
         const normalizedTitle = formData.title.trim().toLowerCase();
