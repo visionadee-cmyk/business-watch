@@ -566,8 +566,8 @@ const Bids = ({ initialFilter }) => {
     }
   };
 
-  // Auto-generate Tender ID
-  const generateTenderId = () => {
+  // Auto-generate Tender Number
+  const generateTenderNo = () => {
     const prefix = 'TND';
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
@@ -576,41 +576,53 @@ const Bids = ({ initialFilter }) => {
     return `${prefix}-${year}${month}-${random}`;
   };
 
+  // Normalize ID for duplicate checking (remove spaces, lowercase)
+  const normalizeId = (id) => {
+    if (!id) return '';
+    return id.toString().toLowerCase().trim().replace(/\s+/g, '').replace(/[-_/]/g, '');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      // Auto-generate tender ID if not provided
-      const tenderId = formData.tenderId || generateTenderId();
+      // Auto-generate tender number if not provided
+      const tenderNo = formData.tenderNo || generateTenderNo();
       
       const normalizedTenderId = normalizeId(formData.tenderId);
       const normalizedGazetteId = normalizeId(formData.gazetteId);
+      const normalizedTenderNo = normalizeId(tenderNo);
 
-      // Prevent duplicate Tender ID / Gazette ID across all projects (create + edit)
-      if (normalizedTenderId || normalizedGazetteId) {
+      // Prevent duplicate Tender Number / Tender ID / Gazette ID across all projects (create + edit)
+      if (normalizedTenderNo || normalizedTenderId || normalizedGazetteId) {
         const duplicateIdBid = bids.find((b) => {
           if (editingBid && b.id === editingBid.id) return false;
 
           const bTender = normalizeId(b.tenderId);
+          const bTenderNo = normalizeId(b.tenderNo);
           const bGazette = normalizeId(b.gazetteId);
 
-          // If user entered a tenderId, it must not match any existing tenderId OR gazetteId
-          if (normalizedTenderId && (bTender === normalizedTenderId || bGazette === normalizedTenderId)) return true;
+          // If user entered a tenderNo, it must not match any existing tenderNo OR tenderId OR gazetteId
+          if (normalizedTenderNo && (bTenderNo === normalizedTenderNo || bTender === normalizedTenderNo || bGazette === normalizedTenderNo)) return true;
 
-          // If user entered a gazetteId, it must not match any existing tenderId OR gazetteId
-          if (normalizedGazetteId && (bTender === normalizedGazetteId || bGazette === normalizedGazetteId)) return true;
+          // If user entered a tenderId, it must not match any existing tenderId OR tenderNo OR gazetteId
+          if (normalizedTenderId && (bTender === normalizedTenderId || bTenderNo === normalizedTenderId || bGazette === normalizedTenderId)) return true;
+
+          // If user entered a gazetteId, it must not match any existing gazetteId OR tenderId OR tenderNo
+          if (normalizedGazetteId && (bGazette === normalizedGazetteId || bTender === normalizedGazetteId || bTenderNo === normalizedGazetteId)) return true;
 
           return false;
         });
 
         if (duplicateIdBid) {
           alert(
-            `Tender ID / Gazette ID already exists for another project!\n\n` +
+            `Tender Number / Tender ID / Gazette ID already exists for another project!\n\n` +
               `Existing Project: "${duplicateIdBid.title || '(No title)'}"\n` +
               `Authority: ${duplicateIdBid.authority || '(No authority)'}\n` +
+              `Tender Number: ${duplicateIdBid.tenderNo || '-'}\n` +
               `Tender ID: ${duplicateIdBid.tenderId || '-'}\n` +
               `Gazette ID: ${duplicateIdBid.gazetteId || '-'}\n\n` +
-              `Please use a different Tender ID / Gazette ID.`
+              `Please use a different Tender Number / Tender ID / Gazette ID.`
           );
           return;
         }
@@ -632,7 +644,7 @@ const Bids = ({ initialFilter }) => {
 
       const bidData = {
         ...formData,
-        tenderId,
+        tenderNo,
         bidAmount: parseFloat(formData.bidAmount) || 0,
         costEstimate: parseFloat(formData.costEstimate) || 0,
         profitMargin: parseFloat(formData.profitMargin) || 0,
@@ -1820,13 +1832,13 @@ const Bids = ({ initialFilter }) => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Tender ID</label>
+                    <label className="label">Tender Number</label>
                     <input
                       type="text"
-                      value={formData.tenderId}
-                      onChange={(e) => setFormData({...formData, tenderId: e.target.value})}
+                      value={formData.tenderNo}
+                      onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
                       className="input"
-                      placeholder="e.g., TND-2026-001"
+                      placeholder="Auto-generated (e.g., TND-2604-001)"
                     />
                   </div>
                   <div>
@@ -1882,24 +1894,14 @@ const Bids = ({ initialFilter }) => {
                     </select>
                   </div>
                   <div>
-                    <label className="label">Tender Number</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={formData.tenderNo}
-                        onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
-                        className="input flex-1"
-                        placeholder="e.g., HDC (161)-PLM/IU/2026/72"
-                      />
-                      <button
-                        type="button"
-                        onClick={generateBidNumber}
-                        className="btn-secondary px-3 py-2 text-sm whitespace-nowrap"
-                        title="Auto-generate bid number"
-                      >
-                        Auto-Generate
-                      </button>
-                    </div>
+                    <label className="label">Tender ID</label>
+                    <input
+                      type="text"
+                      value={formData.tenderId}
+                      onChange={(e) => setFormData({...formData, tenderId: e.target.value})}
+                      className="input"
+                      placeholder="e.g., HDC (161)-PLM/IU/2026/72"
+                    />
                   </div>
                   <div>
                     <label className="label">Lots</label>
