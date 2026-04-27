@@ -16,7 +16,7 @@ import {
   where
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import BidQuotation from '../components/BidQuotation';
 import OpenBidsReport from '../components/OpenBidsReport';
 
@@ -40,7 +40,7 @@ const Bids = ({ initialFilter }) => {
   const [showOpenBidsReport, setShowOpenBidsReport] = useState(false);
   const [showDocumentsModal, setShowDocumentsModal] = useState(false);
   
-  // Staff list for assignment - includes default company staff
+  // Staff list for assignment - only these 3 staff members are allowed
   const [staffList, setStaffList] = useState([
     { id: 'staff-001', name: 'Abdul Rasheed Ali', email: 'abdul@businesswatch.mv', role: 'staff' },
     { id: 'staff-002', name: 'Ziyad Rashad', email: 'ziyad@businesswatch.mv', role: 'staff' },
@@ -57,6 +57,7 @@ const Bids = ({ initialFilter }) => {
   
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const categories = ['IT', 'Medical Equipment', 'Office Supplies', 'Furniture', 'Electrical', 'Electronics', 'Safety Equipment', 'Machinery', 'Construction', 'Sports Equipment', 'Printing', 'Security/IT', 'Apparel', 'Apparel/Uniform', 'Supply', 'Awards', 'IT/Equipment', 'Construction/Furniture', 'Civil Works'];
   const statuses = ['Draft', 'Submitted', 'Under Review', 'Accepted', 'Rejected', 'Open', 'Closed', 'Cancelled', 'Registered', 'Register not required'];
@@ -141,6 +142,20 @@ const Bids = ({ initialFilter }) => {
     fetchStaff();
   }, []);
 
+  // Handle URL filter parameters
+  useEffect(() => {
+    const filter = searchParams.get('filter');
+    if (filter) {
+      if (filter === 'won') {
+        setFilterResult('Won');
+      } else if (filter === 'active') {
+        setFilterStatus('Open');
+      } else if (filter === 'submitted') {
+        setFilterStatus('Submitted');
+      }
+    }
+  }, [searchParams]);
+
   const fetchBids = async () => {
     try {
       const bidsSnapshot = await getDocs(collection(db, 'bids'));
@@ -172,22 +187,23 @@ const Bids = ({ initialFilter }) => {
 
   const fetchStaff = async () => {
     try {
-      const staffSnapshot = await getDocs(collection(db, 'staff'));
-      const staffData = staffSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      // Merge default staff with fetched staff (avoiding duplicates by ID and name)
-      const defaultIds = new Set(staffList.map(s => s.id));
-      const defaultNames = new Set(staffList.map(s => s.name?.toLowerCase().trim()));
-      const newStaff = staffData.filter(s => {
-        const nameLower = s.name?.toLowerCase().trim();
-        return !defaultIds.has(s.id) && !defaultNames.has(nameLower);
-      });
-      if (newStaff.length > 0) {
-        setStaffList(prev => [...prev, ...newStaff]);
-      }
-      console.log('Fetched staff:', staffData);
+      // Staff list is now fixed to only the 3 default members - no fetching from Firestore
+      // const staffSnapshot = await getDocs(collection(db, 'staff'));
+      // const staffData = staffSnapshot.docs.map(doc => ({
+      //   id: doc.id,
+      //   ...doc.data()
+      // }));
+      // // Merge default staff with fetched staff (avoiding duplicates by ID and name)
+      // const defaultIds = new Set(staffList.map(s => s.id));
+      // const defaultNames = new Set(staffList.map(s => s.name?.toLowerCase().trim()));
+      // const newStaff = staffData.filter(s => {
+      //   const nameLower = s.name?.toLowerCase().trim();
+      //   return !defaultIds.has(s.id) && !defaultNames.has(nameLower);
+      // });
+      // if (newStaff.length > 0) {
+      //   setStaffList(prev => [...prev, ...newStaff]);
+      // }
+      console.log('Staff list fixed to 3 default members only');
     } catch (error) {
       console.error('Error fetching staff:', error);
     }

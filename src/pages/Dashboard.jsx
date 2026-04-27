@@ -202,8 +202,14 @@ const Dashboard = () => {
       const wonBidCost = wonBids.reduce((sum, b) => sum + (b.costEstimate || 0) + getAdditionalCostsTotal(b), 0);
       const wonBidProfit = wonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
 
+      // Submitted AND Won bids financials (for net profit display)
+      const submittedWonBids = bids.filter(b => b.status === 'Submitted' && (b.result === 'Won' || b.status === 'Won'));
+      const submittedWonBidRevenue = submittedWonBids.reduce((sum, b) => sum + (b.bidAmount || 0) + getAdditionalCostsTotal(b), 0);
+      const submittedWonBidCost = submittedWonBids.reduce((sum, b) => sum + (b.costEstimate || 0) + getAdditionalCostsTotal(b), 0);
+      const submittedWonBidProfit = submittedWonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
+
       const totalStaffExpenses = staffExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-      const netProfitAfterStaffExpenses = submittedBidProfit - totalStaffExpenses;
+      const netProfitAfterStaffExpenses = submittedWonBidProfit - totalStaffExpenses;
       
       // Capital calculations (standalone - not affecting profit)
       const totalBorrowed = capitalEntries.reduce((sum, e) => sum + (parseFloat(e.borrowedAmount) || 0), 0);
@@ -247,8 +253,8 @@ const Dashboard = () => {
         completedProjects,
         totalAccounts: accounts.length,
         totalBalance,
-        totalRevenue: submittedBidRevenue || budget.total_revenue || 0,
-        totalExpenses: (submittedBidCost + totalStaffExpenses) || budget.total_expenses || 0,
+        totalRevenue: submittedWonBidRevenue || budget.total_revenue || 0,
+        totalExpenses: (submittedWonBidCost + totalStaffExpenses) || budget.total_expenses || 0,
         netProfit: netProfitAfterStaffExpenses || budget.net_profit || 0,
         totalBidValue,
         totalBidCost,
@@ -372,12 +378,12 @@ const Dashboard = () => {
   };
 
   const statCards = [
-    { title: 'Active Projects', value: stats.activeProjects, icon: FileText, color: 'blue', path: '/bids' },
+    { title: 'Active Projects', value: stats.activeProjects, icon: FileText, color: 'blue', path: '/bids?filter=active' },
     { title: 'Won Projects', value: stats.wonProjects, icon: CheckCircle, color: 'green', path: '/bids?filter=won' },
     { title: 'Total Bid Value', value: `MVR ${(stats.totalBidValue || 0).toLocaleString()}`, icon: DollarSign, color: 'purple', path: '/bids' },
-    { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green', path: '/accounts' },
-    { title: 'Total Cost', value: `MVR ${(stats.totalExpenses || 0).toLocaleString()}`, icon: TrendingDown, color: 'red', path: '/expenses' },
-    { title: 'Net Profit', value: `MVR ${(stats.netProfit || 0).toLocaleString()}`, icon: Wallet, color: 'teal', path: '/budget' }
+    { title: 'Total Revenue', value: `MVR ${(stats.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'green', path: '/bids?filter=submitted' },
+    { title: 'Total Cost', value: `MVR ${(stats.totalExpenses || 0).toLocaleString()}`, icon: TrendingDown, color: 'red', path: '/bids?filter=submitted' },
+    { title: 'Net Profit', value: `MVR ${(stats.netProfit || 0).toLocaleString()}`, icon: Wallet, color: 'teal', path: '/bids?filter=submitted' }
   ];
 
   const getActivityIcon = (type) => {
