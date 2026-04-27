@@ -29,6 +29,7 @@ const Bids = ({ initialFilter }) => {
   const [filterCategory, setFilterCategory] = useState('All');
   const [filterResult, setFilterResult] = useState(initialFilter || 'All');
   const [filterAuthority, setFilterAuthority] = useState('All');
+  const [filterStaff, setFilterStaff] = useState('All');
   const [showArchived, setShowArchived] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingBid, setEditingBid] = useState(null);
@@ -145,6 +146,7 @@ const Bids = ({ initialFilter }) => {
   // Handle URL filter parameters
   useEffect(() => {
     const filter = searchParams.get('filter');
+    const staffId = searchParams.get('staff');
     if (filter) {
       if (filter === 'won') {
         setFilterResult('Won');
@@ -152,7 +154,22 @@ const Bids = ({ initialFilter }) => {
         setFilterStatus('Open');
       } else if (filter === 'submitted') {
         setFilterStatus('Submitted');
+      } else if (filter === 'lost') {
+        setFilterResult('Lost');
+      } else if (filter === 'pending') {
+        setFilterResult('Pending');
+      } else if (filter === 'missed') {
+        setFilterResult('Missed Registered');
+      } else if (filter === 'unconcerned') {
+        setFilterResult('Unconcerned');
+      } else if (filter === 'urgent') {
+        setFilterResult('Urgent');
+      } else if (filter === 'registered') {
+        setFilterResult('Registered');
       }
+    }
+    if (staffId) {
+      setFilterStaff(staffId);
     }
   }, [searchParams]);
 
@@ -913,8 +930,6 @@ const Bids = ({ initialFilter }) => {
       requirements: bid.requirements || {},
       submissionDeadline: bid.submissionDeadline || '',
       submissionTime: bid.submissionTime || '',
-      bidOpeningDate: bid.bidOpeningDate || '',
-      bidOpeningTime: bid.bidOpeningTime || '',
       registrationDeadline: bid.registrationDeadline || '',
       registrationTime: bid.registrationTime || '',
       bidSubmissionDate: bid.bidSubmissionDate || '',
@@ -990,6 +1005,7 @@ const Bids = ({ initialFilter }) => {
     const matchesStatus = filterStatus === 'All' || (bid.status && bid.status.toLowerCase() === filterStatus.toLowerCase());
     const matchesResult = filterResult === 'All' || (bid.result && bid.result.toLowerCase() === filterResult.toLowerCase());
     const matchesAuthority = filterAuthority === 'All' || bid.authority === filterAuthority;
+    const matchesStaff = filterStaff === 'All' || (bid.assignedStaffs || []).includes(filterStaff);
     
     // Archive filter: check manual archived flag or auto-archive conditions
     const isAutoArchived = bid.result === 'Missed' || bid.result === 'Not Registered' || 
@@ -997,7 +1013,7 @@ const Bids = ({ initialFilter }) => {
     const isArchived = bid.archived === true || isAutoArchived;
     const matchesArchive = showArchived || !isArchived;
     
-    return matchesSearch && matchesStatus && matchesResult && matchesAuthority && matchesArchive;
+    return matchesSearch && matchesStatus && matchesResult && matchesAuthority && matchesStaff && matchesArchive;
   });
 
   const getStatusColor = (status) => {
@@ -1148,7 +1164,7 @@ const Bids = ({ initialFilter }) => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4">
         <div 
           className="card bg-blue-50 border-blue-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('All'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('All'); setFilterStaff('All'); navigate('/bids'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <FileText className="w-5 h-5 sm:w-8 sm:h-8 text-blue-600" />
@@ -1160,7 +1176,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-green-50 border-green-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('Open'); setFilterResult('All'); }}
+          onClick={() => { setFilterStatus('Open'); setFilterResult('All'); setFilterStaff('All'); navigate('/bids?filter=active'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-green-600" />
@@ -1174,7 +1190,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-yellow-50 border-yellow-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Won'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Won'); setFilterStaff('All'); navigate('/bids?filter=won'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <DollarSign className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-600" />
@@ -1188,7 +1204,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-red-50 border-red-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Lost'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Lost'); setFilterStaff('All'); navigate('/bids?filter=lost'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <XCircle className="w-5 h-5 sm:w-8 sm:h-8 text-red-600" />
@@ -1202,7 +1218,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-purple-50 border-purple-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Pending'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Pending'); setFilterStaff('All'); navigate('/bids?filter=pending'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-purple-600" />
@@ -1216,7 +1232,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-orange-50 border-orange-200 p-2 sm:p-4 col-span-2 sm:col-span-1 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Missed Registered'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Missed Registered'); setFilterStaff('All'); navigate('/bids?filter=missed'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <Calendar className="w-5 h-5 sm:w-8 sm:h-8 text-orange-600" />
@@ -1231,7 +1247,7 @@ const Bids = ({ initialFilter }) => {
         {/* New Stats Cards */}
         <div 
           className="card bg-slate-50 border-slate-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Unconcerned'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Unconcerned'); setFilterStaff('All'); navigate('/bids?filter=unconcerned'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <XCircle className="w-5 h-5 sm:w-8 sm:h-8 text-slate-500" />
@@ -1245,7 +1261,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-rose-50 border-rose-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Urgent'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Urgent'); setFilterStaff('All'); navigate('/bids?filter=urgent'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-rose-600" />
@@ -1259,7 +1275,7 @@ const Bids = ({ initialFilter }) => {
         </div>
         <div 
           className="card bg-teal-50 border-teal-200 p-2 sm:p-4 cursor-pointer hover:shadow-md transition-shadow"
-          onClick={() => { setFilterStatus('All'); setFilterResult('Registered'); }}
+          onClick={() => { setFilterStatus('All'); setFilterResult('Registered'); setFilterStaff('All'); navigate('/bids?filter=registered'); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <CheckCircle className="w-5 h-5 sm:w-8 sm:h-8 text-teal-600" />
@@ -1290,8 +1306,9 @@ const Bids = ({ initialFilter }) => {
               onClick={() => { 
                 setFilterStatus('All'); 
                 setFilterResult('All');
-                // Store staff filter in a new state or use a different approach
-                setSearchTerm(staff.name);
+                setFilterStaff(staff.id);
+                setSearchTerm('');
+                navigate(`/bids?staff=${staff.id}`);
               }}
             >
               <div className="flex items-center gap-2 sm:gap-3">
@@ -2357,24 +2374,6 @@ const Bids = ({ initialFilter }) => {
                       type="time"
                       value={formData.submissionTime}
                       onChange={(e) => setFormData({...formData, submissionTime: e.target.value})}
-                      className="input"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Bid Opening Date</label>
-                    <input
-                      type="date"
-                      value={formData.bidOpeningDate}
-                      onChange={(e) => setFormData({...formData, bidOpeningDate: e.target.value})}
-                      className="input"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Bid Opening Time</label>
-                    <input
-                      type="time"
-                      value={formData.bidOpeningTime}
-                      onChange={(e) => setFormData({...formData, bidOpeningTime: e.target.value})}
                       className="input"
                     />
                   </div>
