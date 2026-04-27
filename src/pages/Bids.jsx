@@ -1833,13 +1833,23 @@ const Bids = ({ initialFilter }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="label">Tender Number</label>
-                    <input
-                      type="text"
-                      value={formData.tenderNo}
-                      onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
-                      className="input"
-                      placeholder="Auto-generated (e.g., TND-2604-001)"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.tenderNo}
+                        onChange={(e) => setFormData({...formData, tenderNo: e.target.value})}
+                        className="input flex-1"
+                        placeholder="Auto-generated (e.g., TND-2604-001)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({...formData, tenderNo: generateTenderNo()})}
+                        className="btn-secondary px-3 py-2 text-sm whitespace-nowrap"
+                        title="Auto-generate tender number"
+                      >
+                        Auto-Generate
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="label">Gazette ID</label>
