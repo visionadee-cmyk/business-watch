@@ -173,7 +173,7 @@ const Dashboard = () => {
       
       // Calculate stats from bids
       const activeProjects = bids.filter(b => b.status === 'Open' || b.status === 'Bidding' || b.status === 'Draft').length;
-      const submittedBids = bids.filter(b => b.status === 'Submitted').length;
+      const submittedBidsCount = bids.filter(b => b.status === 'Submitted').length;
       const wonProjects = bids.filter(b => b.result === 'Won' || b.status === 'Won').length;
       const pendingDeliveries = deliveries.filter(d => d.status === 'Pending').length;
       const completedProjects = deliveries.filter(d => d.completed).length;
@@ -189,6 +189,12 @@ const Dashboard = () => {
       const totalBidCost = bids.reduce((sum, b) => sum + (b.costEstimate || 0) + getAdditionalCostsTotal(b), 0);
       const totalBidProfit = bids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
       
+      // Submitted bids financials (for profit/expenses display)
+      const submittedBids = bids.filter(b => b.status === 'Submitted');
+      const submittedBidRevenue = submittedBids.reduce((sum, b) => sum + (b.bidAmount || 0) + getAdditionalCostsTotal(b), 0);
+      const submittedBidCost = submittedBids.reduce((sum, b) => sum + (b.costEstimate || 0) + getAdditionalCostsTotal(b), 0);
+      const submittedBidProfit = submittedBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
+      
       // Won bids financials
       const wonBids = bids.filter(b => b.result === 'Won' || b.status === 'Won');
       const activeWonProjects = bids.filter(b => b.result === 'Won' && (b.status === 'Open' || b.status === 'In Progress')).length;
@@ -197,7 +203,7 @@ const Dashboard = () => {
       const wonBidProfit = wonBids.reduce((sum, b) => sum + (b.profitMargin || 0), 0);
 
       const totalStaffExpenses = staffExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-      const netProfitAfterStaffExpenses = wonBidProfit - totalStaffExpenses;
+      const netProfitAfterStaffExpenses = submittedBidProfit - totalStaffExpenses;
       
       // Capital calculations (standalone - not affecting profit)
       const totalBorrowed = capitalEntries.reduce((sum, e) => sum + (parseFloat(e.borrowedAmount) || 0), 0);
@@ -234,15 +240,15 @@ const Dashboard = () => {
       
       setStats({
         activeProjects,
-        submittedBids,
+        submittedBids: submittedBidsCount,
         wonProjects,
         activeWonProjects,
         pendingDeliveries,
         completedProjects,
         totalAccounts: accounts.length,
         totalBalance,
-        totalRevenue: wonBidRevenue || budget.total_revenue || 0,
-        totalExpenses: (wonBidCost + totalStaffExpenses) || budget.total_expenses || 0,
+        totalRevenue: submittedBidRevenue || budget.total_revenue || 0,
+        totalExpenses: (submittedBidCost + totalStaffExpenses) || budget.total_expenses || 0,
         netProfit: netProfitAfterStaffExpenses || budget.net_profit || 0,
         totalBidValue,
         totalBidCost,
@@ -707,7 +713,6 @@ const Dashboard = () => {
                 dataKey="value"
                 label={({ name, value }) => `${name}: ${value}`}
                 labelLine={false}
-                label={{fontSize: 10}}
               >
                 {projectStatusData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />

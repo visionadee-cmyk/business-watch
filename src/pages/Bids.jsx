@@ -59,7 +59,7 @@ const Bids = ({ initialFilter }) => {
   const navigate = useNavigate();
 
   const categories = ['IT', 'Medical Equipment', 'Office Supplies', 'Furniture', 'Electrical', 'Electronics', 'Safety Equipment', 'Machinery', 'Construction', 'Sports Equipment', 'Printing', 'Security/IT', 'Apparel', 'Apparel/Uniform', 'Supply', 'Awards', 'IT/Equipment', 'Construction/Furniture', 'Civil Works'];
-  const statuses = ['Draft', 'Submitted', 'Under Review', 'Accepted', 'Rejected', 'Open', 'Closed', 'Cancelled', 'Registered'];
+  const statuses = ['Draft', 'Submitted', 'Under Review', 'Accepted', 'Rejected', 'Open', 'Closed', 'Cancelled', 'Registered', 'Register not required'];
   const results = ['Pending', 'Won', 'Lost', 'Cancelled', 'Registered', 'Missed Registered', 'Unconcerned', 'Urgent'];
 
   const [formData, setFormData] = useState({
@@ -77,15 +77,17 @@ const Bids = ({ initialFilter }) => {
     // Dates & Deadlines
     submissionDeadline: '',
     submissionTime: '',
-    bidOpeningDate: '',
-    bidOpeningTime: '',
     registrationDeadline: '',
     registrationTime: '',
     bidSubmissionDate: '',
     bidTime: '',
+    hasClarification: false,
     clarificationDeadline: '',
     clarificationTime: '',
+    clarificationLocation: '',
+    hasPreBidMeeting: false,
     preBidMeeting: '',
+    preBidMeetingTime: '',
     
     // Contact Info
     contactEmail: '',
@@ -537,8 +539,6 @@ const Bids = ({ initialFilter }) => {
         gazetteId: data.gazetteId || prev.gazetteId,
         submissionDeadline: data.submissionDeadline || prev.submissionDeadline,
         submissionTime: data.submissionTime || prev.submissionTime,
-        bidOpeningDate: data.bidOpeningDate || prev.bidOpeningDate,
-        bidOpeningTime: data.bidOpeningTime || prev.bidOpeningTime,
         registrationDeadline: data.registrationDeadline || prev.registrationDeadline,
         registrationTime: data.registrationTime || prev.registrationTime,
         clarificationDeadline: data.clarificationDeadline || prev.clarificationDeadline,
@@ -566,10 +566,23 @@ const Bids = ({ initialFilter }) => {
     }
   };
 
+  // Auto-generate Tender ID
+  const generateTenderId = () => {
+    const prefix = 'TND';
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${prefix}-${year}${month}-${random}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      const normalizeId = (value) => (value || '').toString().trim().toLowerCase();
+      // Auto-generate tender ID if not provided
+      const tenderId = formData.tenderId || generateTenderId();
+      
       const normalizedTenderId = normalizeId(formData.tenderId);
       const normalizedGazetteId = normalizeId(formData.gazetteId);
 
@@ -619,6 +632,7 @@ const Bids = ({ initialFilter }) => {
 
       const bidData = {
         ...formData,
+        tenderId,
         bidAmount: parseFloat(formData.bidAmount) || 0,
         costEstimate: parseFloat(formData.costEstimate) || 0,
         profitMargin: parseFloat(formData.profitMargin) || 0,
@@ -713,14 +727,15 @@ const Bids = ({ initialFilter }) => {
       // Dates & Deadlines
       submissionDeadline: '',
       submissionTime: '',
-      bidOpeningDate: '',
-      bidOpeningTime: '',
       registrationDeadline: '',
       registrationTime: '',
       bidSubmissionDate: '',
       bidTime: '',
+      hasClarification: false,
       clarificationDeadline: '',
       clarificationTime: '',
+      clarificationLocation: '',
+      hasPreBidMeeting: false,
       preBidMeeting: '',
       preBidMeetingTime: '',
       
@@ -811,14 +826,15 @@ const Bids = ({ initialFilter }) => {
       requirements: bid.requirements || {},
       submissionDeadline: bid.submissionDeadline || '',
       submissionTime: bid.submissionTime || '',
-      bidOpeningDate: bid.bidOpeningDate || '',
-      bidOpeningTime: bid.bidOpeningTime || '',
       registrationDeadline: bid.registrationDeadline || '',
       registrationTime: bid.registrationTime || '',
       bidSubmissionDate: bid.bidSubmissionDate || '',
       bidTime: bid.bidTime || '',
+      hasClarification: bid.hasClarification || false,
       clarificationDeadline: bid.clarificationDeadline || '',
       clarificationTime: bid.clarificationTime || '',
+      clarificationLocation: bid.clarificationLocation || '',
+      hasPreBidMeeting: bid.hasPreBidMeeting || false,
       preBidMeeting: bid.preBidMeeting || '',
       preBidMeetingTime: bid.preBidMeetingTime || '',
       contactEmail: bid.contactEmail || '',
@@ -2352,52 +2368,82 @@ const Bids = ({ initialFilter }) => {
                       className="input"
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="label">Clarification Deadline</label>
-                    <input
-                      type="date"
-                      value={formData.clarificationDeadline}
-                      onChange={(e) => setFormData({...formData, clarificationDeadline: e.target.value})}
+                    <select
+                      value={formData.hasClarification ? 'yes' : 'no'}
+                      onChange={(e) => setFormData({...formData, hasClarification: e.target.value === 'yes'})}
                       className="input"
-                    />
+                    >
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
                   </div>
-                  <div>
-                    <label className="label">Clarification Time</label>
-                    <input
-                      type="time"
-                      value={formData.clarificationTime}
-                      onChange={(e) => setFormData({...formData, clarificationTime: e.target.value})}
-                      className="input"
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Clarification Location/Email</label>
-                    <input
-                      type="text"
-                      value={formData.clarificationLocation}
-                      onChange={(e) => setFormData({...formData, clarificationLocation: e.target.value})}
-                      className="input"
-                      placeholder="Room 101 or email@example.com"
-                    />
-                  </div>
-                  <div>
+                  {formData.hasClarification && (
+                    <>
+                      <div>
+                        <label className="label">Clarification Deadline Date</label>
+                        <input
+                          type="date"
+                          value={formData.clarificationDeadline}
+                          onChange={(e) => setFormData({...formData, clarificationDeadline: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">Clarification Time</label>
+                        <input
+                          type="time"
+                          value={formData.clarificationTime}
+                          onChange={(e) => setFormData({...formData, clarificationTime: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">Clarification Location/Email</label>
+                        <input
+                          type="text"
+                          value={formData.clarificationLocation}
+                          onChange={(e) => setFormData({...formData, clarificationLocation: e.target.value})}
+                          className="input"
+                          placeholder="Room 101 or email@example.com"
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div className="md:col-span-2">
                     <label className="label">Pre-Bid Meeting</label>
-                    <input
-                      type="date"
-                      value={formData.preBidMeeting}
-                      onChange={(e) => setFormData({...formData, preBidMeeting: e.target.value})}
+                    <select
+                      value={formData.hasPreBidMeeting ? 'yes' : 'no'}
+                      onChange={(e) => setFormData({...formData, hasPreBidMeeting: e.target.value === 'yes'})}
                       className="input"
-                    />
+                    >
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
                   </div>
-                  <div>
-                    <label className="label">Pre-Bid Meeting Time</label>
-                    <input
-                      type="time"
-                      value={formData.preBidMeetingTime}
-                      onChange={(e) => setFormData({...formData, preBidMeetingTime: e.target.value})}
-                      className="input"
-                    />
-                  </div>
+                  {formData.hasPreBidMeeting && (
+                    <>
+                      <div>
+                        <label className="label">Pre-Bid Meeting Date</label>
+                        <input
+                          type="date"
+                          value={formData.preBidMeeting}
+                          onChange={(e) => setFormData({...formData, preBidMeeting: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">Pre-Bid Meeting Time</label>
+                        <input
+                          type="time"
+                          value={formData.preBidMeetingTime}
+                          onChange={(e) => setFormData({...formData, preBidMeetingTime: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                    </>
+                  )}
                   <div className="md:col-span-2">
                     <label className="label">Bid Submission Location</label>
                     <input
