@@ -79,6 +79,7 @@ const Bids = ({ initialFilter }) => {
     // Dates & Deadlines
     submissionDeadline: '',
     submissionTime: '',
+    hasRegistration: false,
     registrationDeadline: '',
     registrationTime: '',
     bidSubmissionDate: '',
@@ -772,6 +773,7 @@ const Bids = ({ initialFilter }) => {
       // Dates & Deadlines
       submissionDeadline: '',
       submissionTime: '',
+      hasRegistration: false,
       registrationDeadline: '',
       registrationTime: '',
       bidSubmissionDate: '',
@@ -871,6 +873,7 @@ const Bids = ({ initialFilter }) => {
       requirements: bid.requirements || {},
       submissionDeadline: bid.submissionDeadline || '',
       submissionTime: bid.submissionTime || '',
+      hasRegistration: bid.hasRegistration || false,
       registrationDeadline: bid.registrationDeadline || '',
       registrationTime: bid.registrationTime || '',
       bidSubmissionDate: bid.bidSubmissionDate || '',
@@ -930,6 +933,7 @@ const Bids = ({ initialFilter }) => {
       requirements: bid.requirements || {},
       submissionDeadline: bid.submissionDeadline || '',
       submissionTime: bid.submissionTime || '',
+      hasRegistration: bid.hasRegistration || false,
       registrationDeadline: bid.registrationDeadline || '',
       registrationTime: bid.registrationTime || '',
       bidSubmissionDate: bid.bidSubmissionDate || '',
@@ -2377,24 +2381,39 @@ const Bids = ({ initialFilter }) => {
                       className="input"
                     />
                   </div>
-                  <div>
-                    <label className="label">Registration Deadline</label>
-                    <input
-                      type="date"
-                      value={formData.registrationDeadline}
-                      onChange={(e) => setFormData({...formData, registrationDeadline: e.target.value})}
+                  <div className="md:col-span-2">
+                    <label className="label">Registration Required</label>
+                    <select
+                      value={formData.hasRegistration ? 'yes' : 'no'}
+                      onChange={(e) => setFormData({...formData, hasRegistration: e.target.value === 'yes'})}
                       className="input"
-                    />
+                    >
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
                   </div>
-                  <div>
-                    <label className="label">Registration Time</label>
-                    <input
-                      type="time"
-                      value={formData.registrationTime}
-                      onChange={(e) => setFormData({...formData, registrationTime: e.target.value})}
-                      className="input"
-                    />
-                  </div>
+                  {formData.hasRegistration && (
+                    <>
+                      <div>
+                        <label className="label">Registration Deadline</label>
+                        <input
+                          type="date"
+                          value={formData.registrationDeadline}
+                          onChange={(e) => setFormData({...formData, registrationDeadline: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">Registration Time</label>
+                        <input
+                          type="time"
+                          value={formData.registrationTime}
+                          onChange={(e) => setFormData({...formData, registrationTime: e.target.value})}
+                          className="input"
+                        />
+                      </div>
+                    </>
+                  )}
                   <div className="md:col-span-2">
                     <label className="label">Clarification Deadline</label>
                     <select
@@ -2933,8 +2952,8 @@ const Bids = ({ initialFilter }) => {
                 </div>
               </div>
 
-              {/* Submit Buttons */}
-              <div className="flex justify-end gap-4 pt-6 border-t">
+              {/* Submit Buttons - Sticky at bottom */}
+              <div className="sticky bottom-0 left-0 right-0 bg-white border-t pt-4 pb-2 px-6 mt-4 -mx-6 flex justify-end gap-4 z-10">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
@@ -2942,7 +2961,7 @@ const Bids = ({ initialFilter }) => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="btn-primary shadow-lg">
                   {editingBid ? 'Update' : 'Create'} Bid
                 </button>
               </div>
