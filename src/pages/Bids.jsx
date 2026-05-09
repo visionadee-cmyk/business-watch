@@ -15,7 +15,8 @@ import {
   writeBatch,
   where
 } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { db, storage } from '../services/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BidQuotation from '../components/BidQuotation';
 import OpenBidsReport from '../components/OpenBidsReport';
@@ -143,6 +144,19 @@ const Bids = ({ initialFilter }) => {
     fetchTenders();
     fetchStaff();
   }, []);
+
+  // Auto-open bid from Dashboard expiry click
+  useEffect(() => {
+    const bidId = searchParams.get('bid');
+    if (bidId && bids.length > 0) {
+      const bid = bids.find(b => b.id === bidId);
+      if (bid) {
+        handleEdit(bid);
+        // Clear the bid param from URL
+        navigate('/bids', { replace: true });
+      }
+    }
+  }, [bids, searchParams]);
 
   // Handle URL filter parameters
   useEffect(() => {
@@ -739,15 +753,28 @@ const Bids = ({ initialFilter }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Store file metadata only (no storage upload)
-    setFormData(prev => ({
-      ...prev,
-      documents: [...prev.documents, { 
-        name: file.name, 
-        type: file.type,
-        size: file.size
-      }]
-    }));
+    setUploadingFile(true);
+    try {
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, `bid-documents/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
+
+      setFormData(prev => ({
+        ...prev,
+        documents: [...prev.documents, { 
+          name: file.name, 
+          type: file.type,
+          size: file.size,
+          url: downloadUrl
+        }]
+      }));
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
   const removeDocument = (index) => {
@@ -2896,13 +2923,24 @@ const Bids = ({ initialFilter }) => {
                         <div className="relative">
                           <input
                             type="file"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files[0];
                               if (file) {
-                                setFormData(prev => ({
-                                  ...prev,
-                                  resultSheet: { name: file.name, type: file.type, size: file.size }
-                                }));
+                                setUploadingFile(true);
+                                try {
+                                  const storageRef = ref(storage, `result-sheets/${Date.now()}_${file.name}`);
+                                  await uploadBytes(storageRef, file);
+                                  const downloadUrl = await getDownloadURL(storageRef);
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    resultSheet: { name: file.name, type: file.type, size: file.size, url: downloadUrl }
+                                  }));
+                                } catch (error) {
+                                  console.error('Error uploading result sheet:', error);
+                                  alert('Failed to upload result sheet. Please try again.');
+                                } finally {
+                                  setUploadingFile(false);
+                                }
                               }
                             }}
                             className="hidden"
@@ -3034,13 +3072,15 @@ const Bids = ({ initialFilter }) => {
                       <p className="font-medium text-gray-900">Result Sheet / Award Document</p>
                       <p className="text-sm text-gray-500">{viewingBid.resultSheet.name}</p>
                     </div>
-                    <button
-                      onClick={() => alert('Download functionality will be implemented with storage')}
-                      className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
-                      title="Download"
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
+                    {viewingBid.resultSheet.url && (
+                      <button
+                        onClick={() => window.open(viewingBid.resultSheet.url, '_blank')}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
+                        title="View Document"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -3059,13 +3099,15 @@ const Bids = ({ initialFilter }) => {
                           <p className="text-sm font-medium text-gray-900">{doc.name}</p>
                           <p className="text-xs text-gray-500">{doc.type || 'Document'}</p>
                         </div>
-                        <button
-                          onClick={() => alert('Download functionality will be implemented with storage')}
-                          className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg"
-                          title="Download"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
+                        {doc.url && (
+                          <button
+                            onClick={() => window.open(doc.url, '_blank')}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                            title="View Document"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
