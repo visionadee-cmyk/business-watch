@@ -15,8 +15,7 @@ import {
   writeBatch,
   where
 } from 'firebase/firestore';
-import { db, storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from '../services/firebase';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BidQuotation from '../components/BidQuotation';
 import OpenBidsReport from '../components/OpenBidsReport';
@@ -755,24 +754,38 @@ const Bids = ({ initialFilter }) => {
 
     setUploadingFile(true);
     try {
-      // Upload to Firebase Storage
-      const storageRef = ref(storage, `bid-documents/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadUrl = await getDownloadURL(storageRef);
-      console.log('File uploaded successfully:', downloadUrl);
+      // Upload to Cloudinary
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('upload_preset', 'business_watch');
 
-      setFormData(prev => ({
-        ...prev,
-        documents: [...prev.documents, { 
-          name: file.name, 
-          type: file.type,
-          size: file.size,
-          url: downloadUrl
-        }]
-      }));
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/dr9nhz1hs/upload`,
+        {
+          method: 'POST',
+          body: uploadFormData
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.secure_url) {
+        setFormData(prev => ({
+          ...prev,
+          documents: [...prev.documents, { 
+            name: file.name, 
+            type: file.type,
+            size: file.size,
+            url: data.secure_url,
+            publicId: data.public_id
+          }]
+        }));
+      } else {
+        throw new Error('Upload failed - no URL returned');
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Failed to upload file. Please check Firebase Storage is enabled and try again.');
+      alert('Failed to upload file. Please try again.');
     } finally {
       setUploadingFile(false);
     }
@@ -2929,13 +2942,29 @@ const Bids = ({ initialFilter }) => {
                               if (file) {
                                 setUploadingFile(true);
                                 try {
-                                  const storageRef = ref(storage, `result-sheets/${Date.now()}_${file.name}`);
-                                  await uploadBytes(storageRef, file);
-                                  const downloadUrl = await getDownloadURL(storageRef);
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    resultSheet: { name: file.name, type: file.type, size: file.size, url: downloadUrl }
-                                  }));
+                                  // Upload to Cloudinary
+                                  const uploadFormData = new FormData();
+                                  uploadFormData.append('file', file);
+                                  uploadFormData.append('upload_preset', 'business_watch');
+
+                                  const response = await fetch(
+                                    `https://api.cloudinary.com/v1_1/dr9nhz1hs/upload`,
+                                    {
+                                      method: 'POST',
+                                      body: uploadFormData
+                                    }
+                                  );
+
+                                  const data = await response.json();
+
+                                  if (data.secure_url) {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      resultSheet: { name: file.name, type: file.type, size: file.size, url: data.secure_url, publicId: data.public_id }
+                                    }));
+                                  } else {
+                                    throw new Error('Upload failed - no URL returned');
+                                  }
                                 } catch (error) {
                                   console.error('Error uploading result sheet:', error);
                                   alert('Failed to upload result sheet. Please try again.');
