@@ -759,6 +759,7 @@ const Bids = ({ initialFilter }) => {
       const storageRef = ref(storage, `bid-documents/${Date.now()}_${file.name}`);
       await uploadBytes(storageRef, file);
       const downloadUrl = await getDownloadURL(storageRef);
+      console.log('File uploaded successfully:', downloadUrl);
 
       setFormData(prev => ({
         ...prev,
@@ -771,7 +772,7 @@ const Bids = ({ initialFilter }) => {
       }));
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Failed to upload file. Please try again.');
+      alert('Failed to upload file. Please check Firebase Storage is enabled and try again.');
     } finally {
       setUploadingFile(false);
     }
@@ -2965,15 +2966,23 @@ const Bids = ({ initialFilter }) => {
                         <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
                           <span className="text-sm text-gray-700">{doc.name}</span>
                           <div className="flex items-center gap-2">
-                            {doc.url && (
+                            {doc.url ? (
                               <button
                                 type="button"
-                                onClick={() => window.open(doc.url, '_blank')}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  console.log('Opening document:', doc.url);
+                                  window.open(doc.url, '_blank');
+                                }}
                                 className="text-blue-500 hover:text-blue-700"
                                 title="View Document"
                               >
                                 <Eye className="w-4 h-4" />
                               </button>
+                            ) : (
+                              <span className="text-gray-300" title="No preview available - re-upload to enable viewing">
+                                <Eye className="w-4 h-4" />
+                              </span>
                             )}
                             <button
                               type="button"
@@ -3099,14 +3108,22 @@ const Bids = ({ initialFilter }) => {
                           <p className="text-sm font-medium text-gray-900">{doc.name}</p>
                           <p className="text-xs text-gray-500">{doc.type || 'Document'}</p>
                         </div>
-                        {doc.url && (
+                        {doc.url ? (
                           <button
-                            onClick={() => window.open(doc.url, '_blank')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log('Opening document:', doc.url);
+                              window.open(doc.url, '_blank');
+                            }}
                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
                             title="View Document"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
+                        ) : (
+                          <span className="p-2 text-gray-300" title="No preview available - re-upload to enable viewing">
+                            <Eye className="w-4 h-4" />
+                          </span>
                         )}
                       </div>
                     ))}
