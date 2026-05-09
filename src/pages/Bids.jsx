@@ -34,6 +34,7 @@ const Bids = ({ initialFilter }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingBid, setEditingBid] = useState(null);
   const [viewingBid, setViewingBid] = useState(null);
+  const [viewingDoc, setViewingDoc] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
   const [showQuotation, setShowQuotation] = useState(false);
@@ -798,12 +799,12 @@ const Bids = ({ initialFilter }) => {
     }));
   };
 
-  // Helper to get view URL for PDFs using Google Docs Viewer
+  // Helper to get view URL for PDFs
   const getCloudinaryViewUrl = (url) => {
     if (!url) return '';
-    // For PDFs, use Google Docs Viewer to bypass auth issues
+    // For PDFs, try direct open - browser may handle it
     if (url.includes('.pdf')) {
-      return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
+      return url;
     }
     return url;
   };
@@ -3010,8 +3011,7 @@ const Bids = ({ initialFilter }) => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const viewUrl = getCloudinaryViewUrl(doc.url);
-                                  window.open(viewUrl, '_blank');
+                                  setViewingDoc(doc);
                                 }}
                                 className="text-blue-500 hover:text-blue-700"
                                 title="View Document"
@@ -3122,7 +3122,7 @@ const Bids = ({ initialFilter }) => {
                     </div>
                     {viewingBid.resultSheet.url && (
                       <button
-                        onClick={() => window.open(getCloudinaryViewUrl(viewingBid.resultSheet.url), '_blank')}
+                        onClick={() => setViewingDoc(viewingBid.resultSheet)}
                         className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
                         title="View Document"
                       >
@@ -3151,8 +3151,7 @@ const Bids = ({ initialFilter }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              const viewUrl = getCloudinaryViewUrl(doc.url);
-                              window.open(viewUrl, '_blank');
+                              setViewingDoc(doc);
                             }}
                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
                             title="View Document"
@@ -3177,6 +3176,43 @@ const Bids = ({ initialFilter }) => {
                   <p>No documents attached to this project.</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {viewingDoc && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{viewingDoc.name}</h3>
+                <p className="text-sm text-gray-500">{viewingDoc.type || 'Document'}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={viewingDoc.url}
+                  download={viewingDoc.name}
+                  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  title="Download"
+                >
+                  <Download className="w-5 h-5" />
+                </a>
+                <button
+                  onClick={() => setViewingDoc(null)}
+                  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={viewingDoc.url}
+                className="w-full h-full"
+                title={viewingDoc.name}
+              />
             </div>
           </div>
         </div>
