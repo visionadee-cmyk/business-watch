@@ -798,14 +798,13 @@ const Bids = ({ initialFilter }) => {
     }));
   };
 
-  // Helper to get Cloudinary view URL for PDFs
+  // Helper to get view URL for PDFs using Google Docs Viewer
   const getCloudinaryViewUrl = (url) => {
     if (!url) return '';
-    // For PDFs, Cloudinary serves them natively - just use original URL
+    // For PDFs, use Google Docs Viewer to bypass auth issues
     if (url.includes('.pdf')) {
-      return url;
+      return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
     }
-    // For images, can use raw for PDFs but for images use original
     return url;
   };
 
