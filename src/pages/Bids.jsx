@@ -798,6 +798,12 @@ const Bids = ({ initialFilter }) => {
     }));
   };
 
+  // Helper to get Cloudinary view URL for PDFs
+  const getCloudinaryViewUrl = (url) => {
+    if (!url) return '';
+    return url.replace('/image/upload/', '/raw/upload/fl_inline/');
+  };
+
   const resetForm = () => {
     setFormData({
       // Tender Info
@@ -3000,8 +3006,8 @@ const Bids = ({ initialFilter }) => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  console.log('Opening document:', doc.url);
-                                  window.open(doc.url, '_blank');
+                                  const viewUrl = getCloudinaryViewUrl(doc.url);
+                                  window.open(viewUrl, '_blank');
                                 }}
                                 className="text-blue-500 hover:text-blue-700"
                                 title="View Document"
@@ -3112,7 +3118,7 @@ const Bids = ({ initialFilter }) => {
                     </div>
                     {viewingBid.resultSheet.url && (
                       <button
-                        onClick={() => window.open(viewingBid.resultSheet.url, '_blank')}
+                        onClick={() => window.open(getCloudinaryViewUrl(viewingBid.resultSheet.url), '_blank')}
                         className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
                         title="View Document"
                       >
@@ -3141,8 +3147,8 @@ const Bids = ({ initialFilter }) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              console.log('Opening document:', doc.url);
-                              window.open(doc.url, '_blank');
+                              const viewUrl = getCloudinaryViewUrl(doc.url);
+                              window.open(viewUrl, '_blank');
                             }}
                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
                             title="View Document"
