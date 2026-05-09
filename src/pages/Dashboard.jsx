@@ -639,7 +639,8 @@ const Dashboard = () => {
               </h2>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {expiringSubmissions.map((bid, index) => (
-                  <div key={bid.id || index} className="p-3 bg-red-50 rounded-lg border border-red-100">
+                  <div key={bid.id || index} className="p-3 bg-red-50 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition-colors"
+                    onClick={() => navigate(`/bids/${bid.id}`)}>
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="text-sm font-medium text-gray-900 line-clamp-1">{bid.title}</p>
@@ -670,7 +671,8 @@ const Dashboard = () => {
               </h2>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {expiringRegistrations.map((bid, index) => (
-                  <div key={bid.id || index} className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                  <div key={bid.id || index} className="p-3 bg-orange-50 rounded-lg border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors"
+                    onClick={() => navigate(`/bids/${bid.id}`)}>
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="text-sm font-medium text-gray-900 line-clamp-1">{bid.title}</p>

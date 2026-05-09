@@ -112,7 +112,7 @@ const Bids = ({ initialFilter }) => {
     lots: null,
     
     // Bid Status
-    status: 'Draft',
+    status: 'Open',
     result: 'Pending',
     
     // Financial
@@ -809,7 +809,7 @@ const Bids = ({ initialFilter }) => {
       lotMode: 'single',
       
       // Bid Status
-      status: 'Draft',
+      status: 'Open',
       result: 'Pending',
       
       // Financial
@@ -849,7 +849,7 @@ const Bids = ({ initialFilter }) => {
       bidAmount: bid.bidAmount || '',
       costEstimate: bid.costEstimate || '',
       profitMargin: bid.profitMargin || '',
-      status: bid.status || 'Draft',
+      status: bid.status || 'Open',
       result: bid.result || 'Pending',
       submissionDate: bid.submissionDate || '',
       documents: bid.documents || [],
@@ -898,7 +898,7 @@ const Bids = ({ initialFilter }) => {
       project: bid.project || '',
       lots: bid.lots || '',
       lotMode: bid.lotMode || 'single',
-      status: bid.status || 'Draft',
+      status: bid.status || 'Open',
       result: bid.result || 'Pending',
       bidAmount: bid.bidAmount || '',
       costEstimate: bid.costEstimate || '',
@@ -955,7 +955,7 @@ const Bids = ({ initialFilter }) => {
       project: bid.project || '',
       lots: bid.lots || '',
       lotMode: bid.lotMode || 'single',
-      status: 'Draft',
+      status: 'Open',
       result: 'Pending',
       bidAmount: '',
       costEstimate: '',
@@ -1012,8 +1012,13 @@ const Bids = ({ initialFilter }) => {
     const matchesStaff = filterStaff === 'All' || (bid.assignedStaffs || []).includes(filterStaff);
     
     // Archive filter: check manual archived flag or auto-archive conditions
+    // Only auto-archive if deadline is BEFORE today (not today or in future)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const submissionDate = bid.submissionDeadline ? new Date(bid.submissionDeadline) : null;
+    if (submissionDate) submissionDate.setHours(0, 0, 0, 0);
     const isAutoArchived = bid.result === 'Missed' || bid.result === 'Not Registered' || 
-                       (bid.submissionDeadline && new Date(bid.submissionDeadline) < new Date() && bid.status !== 'Submitted' && bid.result !== 'Won');
+                       (submissionDate && submissionDate < today && bid.status !== 'Submitted' && bid.result !== 'Won');
     const isArchived = bid.archived === true || isAutoArchived;
     const matchesArchive = showArchived || !isArchived;
     
@@ -2921,13 +2926,26 @@ const Bids = ({ initialFilter }) => {
                       {formData.documents.map((doc, index) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
                           <span className="text-sm text-gray-700">{doc.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeDocument(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center gap-2">
+                            {doc.url && (
+                              <button
+                                type="button"
+                                onClick={() => window.open(doc.url, '_blank')}
+                                className="text-blue-500 hover:text-blue-700"
+                                title="View Document"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeDocument(index)}
+                              className="text-red-500 hover:text-red-700"
+                              title="Remove Document"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                       <div className="relative">

@@ -95,6 +95,58 @@ const OpenBidsReport = ({ bids, onClose }) => {
     }
   };
 
+  const handleDownloadExcel = () => {
+    if (!openBids || openBids.length === 0) {
+      alert('No bids to export');
+      return;
+    }
+
+    // Create CSV content
+    const headers = ['#', 'Tender Details', 'Client/Authority', 'Registration Required', 'Registration Deadline', 'Submission Deadline', 'Days Left', 'Bid Amount (MVR)', 'Cost (MVR)', 'Profit %', 'Status'];
+    const rows = openBids.map((bid, index) => {
+      const bidAmount = parseFloat(bid.bidAmount) || 0;
+      const costEstimate = parseFloat(bid.costEstimate) || 0;
+      const profit = bidAmount - costEstimate;
+      const profitPercent = costEstimate > 0 ? ((profit / costEstimate) * 100).toFixed(1) : 0;
+      const daysLeft = getDaysLeft(bid.submissionDeadline || bid.submissionDate);
+      return [
+        index + 1,
+        `"${(bid.title || bid.tenderTitle || 'Untitled').replace(/"/g, '""')}"`,
+        `"${(bid.authority || bid.clientName || 'N/A').replace(/"/g, '""')}"`,
+        bid.hasRegistration ? 'Yes' : 'No',
+        bid.hasRegistration ? (bid.registrationDeadline || 'N/A') : 'N/A',
+        bid.submissionDeadline || bid.submissionDate || 'N/A',
+        daysLeft,
+        bidAmount.toFixed(2),
+        costEstimate.toFixed(2),
+        profitPercent,
+        bid.status || 'Pending'
+      ];
+    });
+
+    const csvContent = [
+      ['Business Watch Private Limited - Open Bids Report'],
+      ['Generated:', format(new Date(), 'dd MMM yyyy, HH:mm')],
+      [''],
+      headers,
+      ...rows,
+      [''],
+      ['Total Open Bids:', openBids.length],
+      ['Total Bid Value:', stats.totalValue.toFixed(2)],
+      ['Total Cost Estimate:', stats.totalCost.toFixed(2)]
+    ].map(row => row.join(',')).join('\n');
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Open_Bids_Report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const getDaysLeft = (deadline) => {
     if (!deadline) return 'N/A';
     const days = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
@@ -150,6 +202,14 @@ const OpenBidsReport = ({ bids, onClose }) => {
             >
               <Download className="w-4 h-4" />
               {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
+            </button>
+
+            <button
+              onClick={handleDownloadExcel}
+              className="btn-secondary flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
+            >
+              <FileText className="w-4 h-4" />
+              Export Excel
             </button>
 
             <button
@@ -263,7 +323,9 @@ const OpenBidsReport = ({ bids, onClose }) => {
                       <th className="border border-gray-800 px-3 py-2 text-left w-12">#</th>
                       <th className="border border-gray-800 px-3 py-2 text-left">Tender Details</th>
                       <th className="border border-gray-800 px-3 py-2 text-left">Client/Authority</th>
-                      <th className="border border-gray-800 px-3 py-2 text-left">Deadline</th>
+                      <th className="border border-gray-800 px-3 py-2 text-center">Registration</th>
+                      <th className="border border-gray-800 px-3 py-2 text-left">Reg. Deadline</th>
+                      <th className="border border-gray-800 px-3 py-2 text-left">Submission Deadline</th>
                       <th className="border border-gray-800 px-3 py-2 text-right">Bid Amount</th>
                       <th className="border border-gray-800 px-3 py-2 text-right">Cost</th>
                       <th className="border border-gray-800 px-3 py-2 text-center">Profit</th>
@@ -295,6 +357,23 @@ const OpenBidsReport = ({ bids, onClose }) => {
                             <div className="font-medium">{bid.authority || bid.clientName || 'N/A'}</div>
                             {bid.contactEmail && (
                               <div className="text-xs text-gray-500">{bid.contactEmail}</div>
+                            )}
+                          </td>
+                          <td className="border border-gray-800 px-3 py-2 text-center">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              bid.hasRegistration ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {bid.hasRegistration ? 'Yes' : 'No'}
+                            </span>
+                          </td>
+                          <td className="border border-gray-800 px-3 py-2">
+                            {bid.hasRegistration && bid.registrationDeadline ? (
+                              <div className="text-xs text-gray-700">
+                                {format(parseISO(bid.registrationDeadline), 'dd MMM yyyy')}
+                                {bid.registrationTime && ` ${bid.registrationTime}`}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
                             )}
                           </td>
                           <td className="border border-gray-800 px-3 py-2">
@@ -338,7 +417,7 @@ const OpenBidsReport = ({ bids, onClose }) => {
                   </tbody>
                   <tfoot>
                     <tr className="bg-gray-100 font-semibold">
-                      <td colSpan="4" className="border border-gray-800 px-3 py-3 text-right">TOTALS</td>
+                      <td colSpan="6" className="border border-gray-800 px-3 py-3 text-right">TOTALS</td>
                       <td className="border border-gray-800 px-3 py-3 text-right text-green-700">
                         MVR {stats.totalValue.toLocaleString()}
                       </td>
