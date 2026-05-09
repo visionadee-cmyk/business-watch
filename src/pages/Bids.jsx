@@ -801,7 +801,12 @@ const Bids = ({ initialFilter }) => {
   // Helper to get Cloudinary view URL for PDFs
   const getCloudinaryViewUrl = (url) => {
     if (!url) return '';
-    return url.replace('/image/upload/', '/raw/upload/fl_inline/');
+    // For PDFs, Cloudinary serves them natively - just use original URL
+    if (url.includes('.pdf')) {
+      return url;
+    }
+    // For images, can use raw for PDFs but for images use original
+    return url;
   };
 
   const resetForm = () => {
