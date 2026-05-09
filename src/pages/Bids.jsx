@@ -3207,12 +3207,33 @@ const Bids = ({ initialFilter }) => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <iframe
-                src={viewingDoc.url}
-                className="w-full h-full"
-                title={viewingDoc.name}
-              />
+            <div className="flex-1 overflow-hidden bg-gray-100">
+              {viewingDoc.url?.includes('.pdf') ? (
+                <object
+                  data={viewingDoc.url}
+                  type="application/pdf"
+                  className="w-full h-full"
+                >
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <FileText className="w-16 h-16 text-gray-400 mb-4" />
+                    <p className="text-gray-600 mb-4">PDF cannot be displayed inline</p>
+                    <a
+                      href={viewingDoc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                    >
+                      Open in New Tab
+                    </a>
+                  </div>
+                </object>
+              ) : (
+                <img
+                  src={viewingDoc.url}
+                  alt={viewingDoc.name}
+                  className="max-w-full max-h-full object-contain mx-auto"
+                />
+              )}
             </div>
           </div>
         </div>
